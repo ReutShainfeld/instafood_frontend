@@ -1,9 +1,11 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import UploadRecipePage from './pages/UploadRecipePage';
-import ProfilePage from './pages/ProfilePage';
-import Navbar from './components/Navbar';
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import HomePage from "./pages/HomePage";
+import ProfilePage from "./pages/ProfilePage";
+import UploadRecipePage from "./pages/UploadRecipePage";
+import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
     return (
@@ -11,8 +13,10 @@ function App() {
             <Navbar />
             <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/upload" element={<UploadRecipePage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/upload" element={<UploadRecipePage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login" element={<LoginPage />} />
             </Routes>
         </Router>
     );
