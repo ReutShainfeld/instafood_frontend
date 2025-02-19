@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,20 +14,27 @@ function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            console.log(`🔍 Sending login request for: ${formData.email}`);
+            
             const response = await fetch('http://localhost:5000/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
+
             const data = await response.json();
 
             if (response.ok) {
+                console.log("✅ Login successful!", data);
+
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('userId', data.userId);
                 localStorage.setItem('fullName', data.fullName);
+                
                 alert('✅ Login successful!');
                 navigate('/profile');
             } else {
+                console.error("❌ Login failed:", data.message);
                 alert(`❌ Login failed: ${data.message}`);
             }
         } catch (error) {
@@ -51,11 +60,11 @@ function LoginPage() {
 const styles = {
     container: { 
         textAlign: 'center', 
-        padding: '20px', 
+        padding: '50px', 
         display: 'flex', 
         flexDirection: 'column', 
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         height: '100vh'
     },
     form: { 
@@ -63,14 +72,14 @@ const styles = {
         flexDirection: 'column', 
         maxWidth: '350px', 
         width: '100%',
-        gap: '10px', 
+        gap: '12px', 
         background: '#fff', 
-        padding: '20px', 
-        borderRadius: '10px', 
-        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' 
+        padding: '25px', 
+        borderRadius: '12px', 
+        boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)' 
     },
     input: { 
-        padding: '10px', 
+        padding: '12px', 
         fontSize: '16px', 
         borderRadius: '5px', 
         border: '1px solid #ccc' 
@@ -87,4 +96,3 @@ const styles = {
 };
 
 export default LoginPage;
-

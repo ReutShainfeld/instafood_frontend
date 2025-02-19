@@ -63,26 +63,26 @@ function RegisterPage() {
 const styles = {
     container: { 
         textAlign: 'center', 
-        padding: '20px', 
+        padding: '50px', 
         display: 'flex', 
         flexDirection: 'column', 
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         height: '100vh'
     },
     form: { 
         display: 'flex', 
         flexDirection: 'column', 
-        maxWidth: '350px', 
+        maxWidth: '400px', 
         width: '100%',
-        gap: '10px', 
+        gap: '12px', 
         background: '#fff', 
-        padding: '20px', 
-        borderRadius: '10px', 
-        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' 
+        padding: '25px', 
+        borderRadius: '12px', 
+        boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)' 
     },
     input: { 
-        padding: '10px', 
+        padding: '12px', 
         fontSize: '16px', 
         borderRadius: '5px', 
         border: '1px solid #ccc' 
