@@ -6,33 +6,33 @@ function ProfilePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // קבלת ה-User ID מתוך ה-LocalStorage (נניח שהמשתמש מחובר)
-    const userId = localStorage.getItem('userId'); // 🔹 יש לוודא שהמשתמש מחובר!
+    const token = localStorage.getItem('token'); // 🔹 Ensure user is authenticated
 
     useEffect(() => {
-        if (!userId) {
+        if (!token) {
             setError("User not logged in");
             setLoading(false);
             return;
         }
 
-        fetch('http://localhost:5000/api/recipes')
+        fetch('http://localhost:5000/api/recipes/my-recipes', { // 🔹 Fetch user's recipes directly
+            headers: { 'Authorization': `Bearer ${token}` } // 🔹 Send authentication token
+        })
             .then(res => {
                 if (!res.ok) {
-                    throw new Error('Failed to fetch recipes');
+                    throw new Error('Failed to fetch user recipes');
                 }
                 return res.json();
             })
             .then(data => {
-                const userRecipes = data.filter(recipe => recipe.userId === userId);
-                setRecipes(userRecipes);
+                setRecipes(data);
                 setLoading(false);
             })
             .catch(err => {
                 setError(err.message);
                 setLoading(false);
             });
-    }, [userId]);
+    }, [token]); // 🔹 Depend on `token` to re-run if the user logs in/out
 
     return (
         <div>
@@ -51,7 +51,7 @@ function ProfilePage() {
 
             <div className="recipe-list">
                 {recipes.length > 0 ? (
-                    recipes.map(recipe => <RecipeCard key={recipe._id} recipe={recipe} />)
+                    recipes.map(recipe => <RecipeCard key={recipe._id} recipe={recipe} uploader="You" />) // 🔹 Pass `uploader="You"`
                 ) : (
                     !loading && (
                         <p>No recipes yet. Start adding some! 

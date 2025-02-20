@@ -4,12 +4,16 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import ShareIcon from '@mui/icons-material/Share';
 
-function RecipeCard({ recipe }) {
+function RecipeCard({ recipe, uploader }) { // 🔹 Added `uploader` prop
     const [likes, setLikes] = useState(recipe.likes || 0);
 
     const handleLike = async () => {
         setLikes(likes + 1);
-        await fetch(`http://localhost:5000/api/recipes/${recipe._id}/like`, { method: 'POST' });
+        await fetch(`http://localhost:5000/api/likes`, { // 🔹 Updated Like API route
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ recipe: recipe._id, user: localStorage.getItem('userId') }) // 🔹 Ensure user is authenticated
+        });
     };
 
     return (
@@ -28,6 +32,7 @@ function RecipeCard({ recipe }) {
 
             <CardContent>
                 <Typography variant="body2" sx={styles.description}>{recipe.description}</Typography>
+                <Typography variant="subtitle2" sx={styles.uploader}>👨‍🍳 Uploaded by: <strong>{uploader}</strong></Typography> {/* 🔹 Added uploader info */}
             </CardContent>
 
             <Box sx={styles.actions}>
@@ -65,6 +70,11 @@ const styles = {
     description: {
         color: "#5A5A5A",
         textAlign: "center",
+    },
+    uploader: { // 🔹 New style for uploader name
+        color: "#8a4b30",
+        textAlign: "center",
+        marginTop: "8px",
     },
     actions: {
         display: "flex",

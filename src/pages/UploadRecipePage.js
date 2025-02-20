@@ -5,6 +5,8 @@ function UploadRecipePage() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [imageFile, setImageFile] = useState(null);
+    
+    const token = localStorage.getItem('token'); // 🔹 Ensure user is authenticated
 
     const handleFileChange = (e) => {
         setImageFile(e.target.files[0]);
@@ -12,6 +14,11 @@ function UploadRecipePage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!token) { // 🔹 Prevent unauthenticated users from uploading
+            alert("❌ You must be logged in to upload a recipe!");
+            return;
+        }
 
         const formData = new FormData();
         formData.append('title', title);
@@ -21,6 +28,7 @@ function UploadRecipePage() {
         try {
             const response = await fetch('http://localhost:5000/api/recipes', {
                 method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }, // 🔹 Send authentication token
                 body: formData
             });
 
@@ -30,7 +38,8 @@ function UploadRecipePage() {
                 setDescription('');
                 setImageFile(null);
             } else {
-                alert("❌ Error uploading recipe.");
+                const data = await response.json();
+                alert(`❌ Error uploading recipe: ${data.error}`);
             }
         } catch (error) {
             alert("❌ Network error.");
@@ -39,9 +48,7 @@ function UploadRecipePage() {
 
     return (
         <Container maxWidth="sm">
-            <Typography variant="h4">
-              <span role="img" aria-label="camera">📸</span> Upload a Recipe
-              </Typography>
+            <Typography variant="h4">📸 Upload a Recipe</Typography>
             <Box component="form" onSubmit={handleSubmit}>
                 <TextField label="Recipe Title" value={title} onChange={(e) => setTitle(e.target.value)} required fullWidth />
                 <TextField label="Description" value={description} onChange={(e) => setDescription(e.target.value)} required fullWidth />
