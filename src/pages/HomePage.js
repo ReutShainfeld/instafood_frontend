@@ -41,13 +41,15 @@ function HomePage() {
 
             <div className="recipe-list">
                 {recipes.length > 0 ? (
-                    recipes.map(recipe => <RecipeCard key={recipe._id} recipe={recipe} />)
+                    recipes.map(recipe => (
+                        <RecipeCard 
+                            key={recipe._id} 
+                            recipe={recipe} 
+                            uploader={recipe.user?.username || "Anonymous"} // 🔹 Show uploader's name
+                        />
+                    ))
                 ) : (
-                    !loading && (
-                        <p>No recipes found. Be the first to share one! 
-                            <span role="img" aria-label="plate">🍽️</span>
-                        </p>
-                    )
+                    !loading && <p>No recipes found. Be the first to share one! 🍽️</p>
                 )}
             </div>
         </div>
