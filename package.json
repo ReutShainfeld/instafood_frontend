@@ -14,11 +14,14 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.0",
+    "postcss": "^8.5.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
     "react-scripts": "^3.0.1",
-    "recipes_social_network_frontend": "file:"
+    "recipes_social_network_frontend": "file:",
+    "resolve-url-loader": "^5.0.0",
+    "serialize-javascript": "^6.0.2"
   },
   "babel": {
     "presets": [
