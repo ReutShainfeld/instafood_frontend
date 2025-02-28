@@ -1,7 +1,7 @@
 /* 🎨 כללי - רקע וצבעים */
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(to right, #f9e0ae, #f7d9c4);
+    background: linear-gradient(to right, #f9aee4, #f0eeef);
     color: #3e3e3e;
     margin: 0;
     padding: 0;
@@ -9,7 +9,7 @@ body {
 
 /* 🎨 ניווט עליון */
 .navbar {
-    background: #8a4b30;
+    background: #c5399d;
     padding: 15px;
     display: flex;
     justify-content: center;
@@ -29,13 +29,13 @@ body {
 }
 
 .navbar a:hover {
-    color: #ffcc80;
+    color: #ac075c;
 }
 
 /* 🎨 כותרות */
 h1, h2 {
     text-align: center;
-    color: #8a4b30;
+    color: #a82265;
     font-weight: bold;
     margin-bottom: 10px;
 }
@@ -79,12 +79,12 @@ h1, h2 {
 .recipe-card h3 {
     padding: 10px;
     font-size: 20px;
-    color: #8a4b30;
+    color: #800c5d;
 }
 
 /* 🎨 כפתורים */
 button {
-    background: linear-gradient(to right, #d9773d, #b85e29);
+    background: linear-gradient(to right, #d3cdc9, #d5d0cd);
     color: white;
     padding: 12px 20px;
     border: none;
@@ -98,7 +98,7 @@ button {
 }
 
 button:hover {
-    background: linear-gradient(to right, #b85e29, #8a4b30);
+    background: linear-gradient(to right, #87057a, #c303a9);
     transform: scale(1.05);
 }
 

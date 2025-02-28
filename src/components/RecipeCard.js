@@ -1,12 +1,17 @@
+
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Typography, CardMedia, IconButton, Box, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, Button } from '@mui/material';
+import { 
+    Card, CardContent, Typography, CardMedia, IconButton, Box, 
+    Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, Button 
+} from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import ShareIcon from '@mui/icons-material/Share';
 import PeopleIcon from '@mui/icons-material/People';
 
 function RecipeCard({ recipe, uploader }) {
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem('userId'); // Check if user is logged in
+    const token = localStorage.getItem('token'); // Get auth token
     const [likes, setLikes] = useState(recipe.likes || 0);
     const [liked, setLiked] = useState(false);
     const [showLikes, setShowLikes] = useState(false);
@@ -14,6 +19,7 @@ function RecipeCard({ recipe, uploader }) {
 
     // Check if the user already liked the recipe
     useEffect(() => {
+        if (!userId) return;
         const checkLikeStatus = async () => {
             try {
                 const response = await fetch(`http://localhost:5000/api/likes/${recipe._id}/${userId}`);
@@ -26,26 +32,37 @@ function RecipeCard({ recipe, uploader }) {
         checkLikeStatus();
     }, [recipe._id, userId]);
 
+    // Handle Like/Unlike Button Click
     const handleLike = async () => {
+        if (!userId || !token) {
+            alert('❌ You must be logged in to like a recipe.');
+            return;
+        }
+
         try {
-            if (liked) {
-                setLikes(likes - 1);
-                setLiked(false);
-                await fetch(`http://localhost:5000/api/likes/${recipe._id}/${userId}`, { method: 'DELETE' });
+            const response = await fetch('http://localhost:5000/api/likes', {
+                method: 'POST', 
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ recipe: recipe._id, user: userId }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setLikes(data.liked ? likes + 1 : likes - 1);
+                setLiked(data.liked);
             } else {
-                setLikes(likes + 1);
-                setLiked(true);
-                await fetch(`http://localhost:5000/api/likes`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ recipe: recipe._id, user: userId }),
-                });
+                alert(`❌ ${data.message}`);
             }
         } catch (error) {
-            console.error('Error handling like:', error);
+            alert('❌ Failed to like/unlike recipe.');
         }
     };
 
+    // Fetch Users Who Liked This Recipe
     const handleShowLikes = async () => {
         try {
             const response = await fetch(`http://localhost:5000/api/likes/users/${recipe._id}`);
@@ -53,7 +70,7 @@ function RecipeCard({ recipe, uploader }) {
             setLikeUsers(data.users);
             setShowLikes(true);
         } catch (error) {
-            console.error('Failed to fetch users who liked this recipe', error);
+            console.error('❌ Failed to fetch liked users:', error);
         }
     };
 
@@ -77,17 +94,21 @@ function RecipeCard({ recipe, uploader }) {
             </CardContent>
 
             <Box sx={styles.actions}>
-                <IconButton onClick={handleLike} sx={styles.icon} color={liked ? 'error' : 'default'}>
-                    <FavoriteIcon /> {likes}
+                {/* Like Button */}
+                <IconButton onClick={handleLike} sx={styles.icon}>
+                    <FavoriteIcon sx={{ color: liked ? 'pink' : 'transparent', stroke: 'black', strokeWidth: 2 }} /> {likes}
                 </IconButton>
+
+                {/* View Likes Button */}
                 <IconButton onClick={handleShowLikes} sx={styles.icon}>
                     <PeopleIcon /> View Likes
                 </IconButton>
+
                 <IconButton sx={styles.icon}><ChatBubbleOutlineIcon /> Comments</IconButton>
                 <IconButton sx={styles.icon}><ShareIcon /> Share</IconButton>
             </Box>
 
-            {/* Modal to display users who liked the recipe */}
+            {/* Modal to Display Users Who Liked the Recipe */}
             <Dialog open={showLikes} onClose={() => setShowLikes(false)}>
                 <DialogTitle>People who liked this recipe</DialogTitle>
                 <DialogContent>
@@ -111,7 +132,7 @@ function RecipeCard({ recipe, uploader }) {
 
 const styles = {
     card: {
-        maxWidth: 450,
+        maxWidth: 500,
         margin: "20px auto",
         borderRadius: "15px",
         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
@@ -143,12 +164,15 @@ const styles = {
     },
     actions: {
         display: "flex",
-        justifyContent: "space-around",
-        padding: "10px",
+        justifyContent: "space-between",
+        padding: "15px",
     },
     icon: {
-        color: "#D9773D",
-    },
+        fontSize: "24px",
+        padding: "12px",
+    }
 };
 
 export default RecipeCard;
+
+

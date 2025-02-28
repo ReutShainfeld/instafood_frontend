@@ -1,51 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, List, ListItem, ListItemText } from '@mui/material';
 
-function Comments({ recipeId }) {
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState('');
+import React, { useState } from 'react';
 
-    useEffect(() => {
-        fetch(`http://localhost:5000/api/comments/${recipeId}`)
-            .then(res => res.json())
-            .then(data => setComments(data));
-    }, [recipeId]);
+function CommentSection({ recipeId }) {
+    const [comment, setComment] = useState('');
+    const token = localStorage.getItem('token'); // 🔹 Check if user is logged in
 
-    const handleAddComment = async () => {
-        const response = await fetch(`http://localhost:5000/api/comments/${recipeId}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: 'Anonymous', text: newComment })
-        });
+    const handleComment = async () => {
+        if (!token) {
+            alert('❌ You must be logged in to comment!');
+            return;
+        }
 
-        if (response.ok) {
-            const addedComment = await response.json();
-            setComments([addedComment, ...comments]);
-            setNewComment('');
+        try {
+            const response = await fetch(`http://localhost:5000/api/comments/${recipeId}`, {
+                method: 'POST',
+                headers: { 
+                    'Authorization': `Bearer ${token}`, 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({ text: comment })
+            });
+
+            if (response.ok) {
+                setComment('');
+                alert('✅ Comment added!');
+            } else {
+                const data = await response.json();
+                alert(`❌ ${data.message}`);
+            }
+        } catch (error) {
+            alert('❌ Failed to add comment.');
         }
     };
 
     return (
-        <Box sx={{ mt: 2 }}>
-            <Typography variant="h6">Comments</Typography>
-            <List>
-                {comments.map((comment, index) => (
-                    <ListItem key={index}>
-                        <ListItemText primary={comment.user} secondary={comment.text} />
-                    </ListItem>
-                ))}
-            </List>
-            <TextField
-                fullWidth
-                label="Write a comment..."
-                variant="outlined"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                sx={{ mt: 2 }}
-            />
-            <Button variant="contained" sx={{ mt: 1 }} onClick={handleAddComment}>Post Comment</Button>
-        </Box>
+        <div className="comment-section">
+            {token ? (
+                <>
+                    <textarea value={comment} onChange={(e) => setComment(e.target.value)} />
+                    <button onClick={handleComment}>Add Comment</button>
+                </>
+            ) : (
+                <p>❌ You must be logged in to comment.</p>
+            )}
+        </div>
     );
 }
 
-export default Comments;
+export default CommentSection;
