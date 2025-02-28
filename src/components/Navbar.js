@@ -16,9 +16,7 @@ function Navbar() {
             <Link to="/" style={styles.link}>
                 <span role="img" aria-label="home">🏠</span> Home
             </Link>
-            <Link to="/upload" style={styles.link}>
-                <span role="img" aria-label="camera">📸</span> Upload
-            </Link>
+ 
 
             {userName ? (
                 <>
@@ -49,7 +47,7 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
         gap: '20px',
-        background: 'linear-gradient(to right, #ff6f61, #d9773d)',
+        background: 'linear-gradient(to right,rgb(149, 13, 67), #d9773d)',
         padding: '15px 30px',
         boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
     },
