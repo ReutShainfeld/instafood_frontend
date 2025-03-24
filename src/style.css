@@ -1,11 +1,18 @@
 /* 🎨 כללי - רקע וצבעים */
-body {
+/* body {
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(to right, #f9aee4, #f0eeef);
     color: #3e3e3e;
     margin: 0;
     padding: 0;
-}
+} */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f9f9f9; /* ☁️ לבן נקי */
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
 
 /* 🎨 ניווט עליון */
 .navbar {
@@ -41,13 +48,19 @@ h1, h2 {
 }
 
 /* 🎨 רשת מתכונים */
-.recipe-grid {
+/* .recipe-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 20px;
     padding: 20px;
     justify-content: center;
-}
+} */
+.recipe-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 0;
+  }
 
 /* 🎨 עיצוב כרטיסי מתכונים */
 .recipe-card {
@@ -98,7 +111,7 @@ button {
 }
 
 button:hover {
-    background: linear-gradient(to right, #87057a, #c303a9);
+    background: linear-gradient(to right, #f9f7f9, #fbf9fb);
     transform: scale(1.05);
 }
 
