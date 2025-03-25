@@ -42,6 +42,8 @@ import Navbar from "./components/Navbar";
 import RecipePage from "./pages/RecipePage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import AdvancedSearchPage from "./pages/AdvancedSearchPage";
+import EditProfilePage from './pages/EditProfilePage';
+
 
 function App() {
     return (
@@ -58,6 +60,7 @@ function App() {
                 <Route path="/search/:type/:value" element={<SearchResultsPage />} /> 
                 <Route path="/search/query/:query" element={<SearchResultsPage />} />
                 <Route path="/search" element={<AdvancedSearchPage />} />
+                <Route path="/edit-profile" element={<EditProfilePage />} />
             </Routes>
         </Router>
     );
