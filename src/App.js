@@ -40,7 +40,8 @@ import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import Navbar from "./components/Navbar";
 import RecipePage from "./pages/RecipePage";
-import SearchResultsPage from "./pages/SearchResultsPage"; // ✅ חדש
+import SearchResultsPage from "./pages/SearchResultsPage";
+import AdvancedSearchPage from "./pages/AdvancedSearchPage";
 
 function App() {
     return (
@@ -54,7 +55,9 @@ function App() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/recipe/:id" element={<RecipePage />} />
-                <Route path="/search/:type/:value" element={<SearchResultsPage />} /> {/* ✅ חדש */}
+                <Route path="/search/:type/:value" element={<SearchResultsPage />} /> 
+                <Route path="/search/query/:query" element={<SearchResultsPage />} />
+                <Route path="/search" element={<AdvancedSearchPage />} />
             </Routes>
         </Router>
     );
