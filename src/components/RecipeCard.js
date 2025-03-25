@@ -1,5 +1,5 @@
 
-
+// // src/components/RecipeCard.js
 // import React, { useState, useEffect } from 'react';
 // import {
 //   Card, CardContent, Typography, CardMedia, IconButton, Box,
@@ -12,7 +12,7 @@
 // import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 // import AccessTimeIcon from '@mui/icons-material/AccessTime';
 // import GroupsIcon from '@mui/icons-material/Groups';
-// import { useNavigate } from 'react-router-dom'; // ✅ חדש
+// import { useNavigate } from 'react-router-dom';
 // import CommentSection from './Comments';
 
 // function RecipeCard({ recipe, uploader }) {
@@ -84,7 +84,7 @@
 //         image={`http://localhost:5000${recipe.imageUrl}`}
 //         alt={recipe.title}
 //         sx={{ ...styles.image, cursor: "pointer" }}
-//         onClick={() => navigate(`/recipe/${recipe._id}`)} // ✅ ניווט דרך תמונה
+//         onClick={() => navigate(`/recipe/${recipe._id}`)}
 //         onError={(e) => { e.target.src = '/default-image.png'; }}
 //       />
 //       <CardContent>
@@ -101,7 +101,7 @@
 //         <Typography
 //           variant="h6"
 //           sx={{ ...styles.title, cursor: "pointer" }}
-//           onClick={() => navigate(`/recipe/${recipe._id}`)} // ✅ ניווט דרך כותרת
+//           onClick={() => navigate(`/recipe/${recipe._id}`)}
 //         >
 //           {recipe.title}
 //         </Typography>
@@ -113,7 +113,12 @@
 //         {recipe.tags && recipe.tags.length > 0 && (
 //           <Box sx={styles.tagsBox}>
 //             {recipe.tags.map((tag, index) => (
-//               <Typography key={index} variant="caption" sx={styles.tag}>
+//               <Typography
+//                 key={index}
+//                 variant="caption"
+//                 sx={styles.tag}
+//                 onClick={() => navigate(`/search/tag/${tag}`)}
+//               >
 //                 #{tag}
 //               </Typography>
 //             ))}
@@ -251,7 +256,8 @@
 //     borderRadius: "12px",
 //     padding: "4px 8px",
 //     fontWeight: "bold",
-//     fontSize: "0.75rem"
+//     fontSize: "0.75rem",
+//     cursor: "pointer"
 //   }
 // };
 
@@ -333,11 +339,17 @@ function RecipeCard({ recipe, uploader }) {
     } catch {}
   };
 
+  // ✅ הכנה ל־Cloudinary או קובץ מקומי
+  const getImageUrl = (url) => {
+    if (!url) return '/default-image.png';
+    return url.startsWith('http') ? url : `http://localhost:5000${url}`;
+  };
+
   return (
     <Card sx={styles.card}>
       <CardMedia
         component="img"
-        image={`http://localhost:5000${recipe.imageUrl}`}
+        image={getImageUrl(recipe.imageUrl)}
         alt={recipe.title}
         sx={{ ...styles.image, cursor: "pointer" }}
         onClick={() => navigate(`/recipe/${recipe._id}`)}
