@@ -182,6 +182,7 @@ import {
 } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import RecipeCard from "../components/RecipeCard";
+<RecipeCard recipe={recipe} uploader={recipe.user?.username || "Anonymous"} />
 
 function SearchResultsPage() {
   const { type, value } = useParams();

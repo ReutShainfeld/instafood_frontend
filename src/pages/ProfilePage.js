@@ -210,6 +210,7 @@
 
 import React, { useEffect, useState } from 'react';
 import RecipeCard from '../components/RecipeCard';
+<RecipeCard recipe={recipe} uploader={recipe.user?.username || "Anonymous"} />
 
 function ProfilePage() {
     const [recipes, setRecipes] = useState([]);
