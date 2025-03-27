@@ -1,9 +1,13 @@
 
+<<<<<<< HEAD
 // // src/components/RecipeCard.js
+=======
+// src/components/RecipeCard.js
+>>>>>>> foryou
 // import React, { useState, useEffect } from 'react';
 // import {
-//   Card, CardContent, Typography, CardMedia, IconButton, Box,
-//   Avatar, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, Button
+//   Card, CardMedia, CardContent, Typography, Box, Avatar,
+//   IconButton, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, Button
 // } from '@mui/material';
 // import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 // import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -15,10 +19,11 @@
 // import { useNavigate } from 'react-router-dom';
 // import CommentSection from './Comments';
 
-// function RecipeCard({ recipe, uploader }) {
+// function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
 //   const navigate = useNavigate();
 //   const userId = localStorage.getItem('userId');
 //   const token = localStorage.getItem('token');
+
 //   const [likes, setLikes] = useState(recipe.likes || 0);
 //   const [liked, setLiked] = useState(false);
 //   const [showLikes, setShowLikes] = useState(false);
@@ -27,30 +32,23 @@
 //   const [commentsCount, setCommentsCount] = useState(0);
 
 //   useEffect(() => {
-//     if (!userId) return;
-//     const checkLikeStatus = async () => {
-//       try {
-//         const res = await fetch(`http://localhost:5000/api/likes/${recipe._id}/${userId}`);
-//         const data = await res.json();
-//         setLiked(data.liked);
-//       } catch {}
-//     };
-//     checkLikeStatus();
-//   }, [recipe._id, userId]);
+//     if (!userId || imageOnly) return;
+//     fetch(`http://localhost:5000/api/likes/${recipe._id}/${userId}`)
+//       .then(res => res.json())
+//       .then(data => setLiked(data.liked))
+//       .catch(() => {});
+//   }, [recipe._id, userId, imageOnly]);
 
 //   useEffect(() => {
-//     const fetchComments = async () => {
-//       try {
-//         const res = await fetch(`http://localhost:5000/api/comments/${recipe._id}`);
-//         const data = await res.json();
-//         setCommentsCount(data.length);
-//       } catch {}
-//     };
-//     fetchComments();
-//   }, [recipe._id]);
+//     if (imageOnly) return;
+//     fetch(`http://localhost:5000/api/comments/${recipe._id}`)
+//       .then(res => res.json())
+//       .then(data => setCommentsCount(data.length))
+//       .catch(() => {});
+//   }, [recipe._id, imageOnly]);
 
 //   const handleLike = async () => {
-//     if (!token || !userId) return alert("❌ Login required");
+//     if (!token || !userId) return alert("Login required");
 //     try {
 //       const res = await fetch("http://localhost:5000/api/likes", {
 //         method: "POST",
@@ -77,13 +75,32 @@
 //     } catch {}
 //   };
 
+//   if (imageOnly) {
+//     return (
+//       <Card sx={styles.card}>
+//         <CardMedia
+//           component="img"
+//           image={`http://localhost:5000${recipe.imageUrl}`}
+//           alt={recipe.title}
+//           sx={styles.imageOnly}
+//           onClick={() => navigate(`/recipe/${recipe._id}`)}
+//           onError={(e) => { e.target.src = '/default-image.png'; }}
+//         />
+//       </Card>
+//     );
+//   }
+
 //   return (
 //     <Card sx={styles.card}>
 //       <CardMedia
 //         component="img"
 //         image={`http://localhost:5000${recipe.imageUrl}`}
 //         alt={recipe.title}
+<<<<<<< HEAD
 //         sx={{ ...styles.image, cursor: "pointer" }}
+=======
+//         sx={styles.image}
+>>>>>>> foryou
 //         onClick={() => navigate(`/recipe/${recipe._id}`)}
 //         onError={(e) => { e.target.src = '/default-image.png'; }}
 //       />
@@ -110,7 +127,7 @@
 //           {recipe.description}
 //         </Typography>
 
-//         {recipe.tags && recipe.tags.length > 0 && (
+//         {recipe.tags?.length > 0 && (
 //           <Box sx={styles.tagsBox}>
 //             {recipe.tags.map((tag, index) => (
 //               <Typography
@@ -127,12 +144,12 @@
 
 //         <Box sx={styles.recipeInfo}>
 //           <Box sx={styles.infoItem}>
-//             <AccessTimeIcon sx={{ fontSize: 16 }} />&nbsp;
-//             <Typography variant="caption">{recipe.cookingTime || 25} mins</Typography>
+//             <AccessTimeIcon sx={{ fontSize: 16 }} />
+//             <Typography variant="caption" sx={{ ml: 0.5 }}>{recipe.cookingTime || 25} mins</Typography>
 //           </Box>
 //           <Box sx={styles.infoItem}>
-//             <GroupsIcon sx={{ fontSize: 16 }} />&nbsp;
-//             <Typography variant="caption">{recipe.servings || 4} servings</Typography>
+//             <GroupsIcon sx={{ fontSize: 16 }} />
+//             <Typography variant="caption" sx={{ ml: 0.5 }}>{recipe.servings || 4} servings</Typography>
 //           </Box>
 //         </Box>
 
@@ -169,9 +186,7 @@
 //           {likeUsers.length > 0 ? (
 //             <List>
 //               {likeUsers.map((user, i) => (
-//                 <ListItem key={i}>
-//                   <ListItemText primary={user} />
-//                 </ListItem>
+//                 <ListItem key={i}><ListItemText primary={user} /></ListItem>
 //               ))}
 //             </List>
 //           ) : (
@@ -188,17 +203,29 @@
 
 // const styles = {
 //   card: {
-//     width: 500,
-//     margin: "24px auto",
+//     width: "100%",
+//     maxWidth: 500,
+//     margin: "auto",
 //     borderRadius: "15px",
 //     overflow: "hidden",
-//     boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)",
+//     boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.08)",
 //     backgroundColor: "#fff"
 //   },
 //   image: {
 //     width: "100%",
-//     height: 300,
-//     objectFit: "cover"
+//     height: 220,
+//     objectFit: "cover",
+//     cursor: "pointer"
+//   },
+//   imageOnly: {
+//     width: "100%",
+//     height: 220,
+//     objectFit: "cover",
+//     cursor: "pointer",
+//     transition: "transform 0.2s ease",
+//     '&:hover': {
+//       transform: "scale(1.03)"
+//     }
 //   },
 //   uploaderBox: {
 //     display: "flex",
@@ -217,8 +244,7 @@
 //   },
 //   infoItem: {
 //     display: "flex",
-//     alignItems: "center",
-//     gap: 0.5
+//     alignItems: "center"
 //   },
 //   actions: {
 //     display: "flex",
@@ -232,14 +258,7 @@
 //     gap: "4px"
 //   },
 //   iconButton: {
-//     backgroundColor: "#fff",
-//     color: "#ff6600",
-//     padding: "6px",
-//     transition: "background-color 0.3s ease, transform 0.2s ease",
-//     '&:hover': {
-//       backgroundColor: "rgba(255, 102, 0, 0.1)",
-//       transform: "scale(1.05)"
-//     }
+//     color: "#ff6600"
 //   },
 //   iconSvg: {
 //     fontSize: 20
@@ -260,12 +279,10 @@
 //     cursor: "pointer"
 //   }
 // };
-
-// src/components/RecipeCard.js
 import React, { useState, useEffect } from 'react';
 import {
-  Card, CardContent, Typography, CardMedia, IconButton, Box,
-  Avatar, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, Button
+  Card, CardMedia, CardContent, Typography, Box, Avatar,
+  IconButton, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, Button
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -277,10 +294,11 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import { useNavigate } from 'react-router-dom';
 import CommentSection from './Comments';
 
-function RecipeCard({ recipe, uploader }) {
+function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const token = localStorage.getItem('token');
+
   const [likes, setLikes] = useState(recipe.likes || 0);
   const [liked, setLiked] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
@@ -289,30 +307,23 @@ function RecipeCard({ recipe, uploader }) {
   const [commentsCount, setCommentsCount] = useState(0);
 
   useEffect(() => {
-    if (!userId) return;
-    const checkLikeStatus = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/api/likes/${recipe._id}/${userId}`);
-        const data = await res.json();
-        setLiked(data.liked);
-      } catch {}
-    };
-    checkLikeStatus();
-  }, [recipe._id, userId]);
+    if (!userId || imageOnly) return;
+    fetch(`http://localhost:5000/api/likes/${recipe._id}/${userId}`)
+      .then(res => res.json())
+      .then(data => setLiked(data.liked))
+      .catch(() => {});
+  }, [recipe._id, userId, imageOnly]);
 
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/api/comments/${recipe._id}`);
-        const data = await res.json();
-        setCommentsCount(data.length);
-      } catch {}
-    };
-    fetchComments();
-  }, [recipe._id]);
+    if (imageOnly) return;
+    fetch(`http://localhost:5000/api/comments/${recipe._id}`)
+      .then(res => res.json())
+      .then(data => setCommentsCount(data.length))
+      .catch(() => {});
+  }, [recipe._id, imageOnly]);
 
   const handleLike = async () => {
-    if (!token || !userId) return alert("❌ Login required");
+    if (!token || !userId) return alert("Login required");
     try {
       const res = await fetch("http://localhost:5000/api/likes", {
         method: "POST",
@@ -339,11 +350,28 @@ function RecipeCard({ recipe, uploader }) {
     } catch {}
   };
 
+<<<<<<< HEAD
   // ✅ הכנה ל־Cloudinary או קובץ מקומי
   const getImageUrl = (url) => {
     if (!url) return '/default-image.png';
     return url.startsWith('http') ? url : `http://localhost:5000${url}`;
   };
+=======
+  if (imageOnly) {
+    return (
+      <Card sx={styles.card}>
+        <CardMedia
+          component="img"
+          image={`http://localhost:5000${recipe.imageUrl}`}
+          alt={recipe.title}
+          sx={styles.imageOnly}
+          onClick={() => navigate(`/recipe/${recipe._id}`)}
+          onError={(e) => { e.target.src = '/default-image.png'; }}
+        />
+      </Card>
+    );
+  }
+>>>>>>> foryou
 
   return (
     <Card sx={styles.card}>
@@ -351,7 +379,7 @@ function RecipeCard({ recipe, uploader }) {
         component="img"
         image={getImageUrl(recipe.imageUrl)}
         alt={recipe.title}
-        sx={{ ...styles.image, cursor: "pointer" }}
+        sx={styles.image}
         onClick={() => navigate(`/recipe/${recipe._id}`)}
         onError={(e) => { e.target.src = '/default-image.png'; }}
       />
@@ -378,7 +406,7 @@ function RecipeCard({ recipe, uploader }) {
           {recipe.description}
         </Typography>
 
-        {recipe.tags && recipe.tags.length > 0 && (
+        {recipe.tags?.length > 0 && (
           <Box sx={styles.tagsBox}>
             {recipe.tags.map((tag, index) => (
               <Typography
@@ -395,12 +423,12 @@ function RecipeCard({ recipe, uploader }) {
 
         <Box sx={styles.recipeInfo}>
           <Box sx={styles.infoItem}>
-            <AccessTimeIcon sx={{ fontSize: 16 }} />&nbsp;
-            <Typography variant="caption">{recipe.cookingTime || 25} mins</Typography>
+            <AccessTimeIcon sx={{ fontSize: 16 }} />
+            <Typography variant="caption" sx={{ ml: 0.5 }}>{recipe.cookingTime || 25} mins</Typography>
           </Box>
           <Box sx={styles.infoItem}>
-            <GroupsIcon sx={{ fontSize: 16 }} />&nbsp;
-            <Typography variant="caption">{recipe.servings || 4} servings</Typography>
+            <GroupsIcon sx={{ fontSize: 16 }} />
+            <Typography variant="caption" sx={{ ml: 0.5 }}>{recipe.servings || 4} servings</Typography>
           </Box>
         </Box>
 
@@ -437,9 +465,7 @@ function RecipeCard({ recipe, uploader }) {
           {likeUsers.length > 0 ? (
             <List>
               {likeUsers.map((user, i) => (
-                <ListItem key={i}>
-                  <ListItemText primary={user} />
-                </ListItem>
+                <ListItem key={i}><ListItemText primary={user} /></ListItem>
               ))}
             </List>
           ) : (
@@ -456,17 +482,29 @@ export default RecipeCard;
 
 const styles = {
   card: {
-    width: 500,
-    margin: "24px auto",
+    width: "100%",
+    maxWidth: 500,
+    margin: "auto",
     borderRadius: "15px",
     overflow: "hidden",
-    boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.08)",
     backgroundColor: "#fff"
   },
   image: {
     width: "100%",
-    height: 300,
-    objectFit: "cover"
+    height: 220,
+    objectFit: "cover",
+    cursor: "pointer"
+  },
+  imageOnly: {
+    width: "100%",
+    height: 220,
+    objectFit: "cover",
+    cursor: "pointer",
+    transition: "transform 0.2s ease",
+    '&:hover': {
+      transform: "scale(1.03)"
+    }
   },
   uploaderBox: {
     display: "flex",
@@ -485,8 +523,7 @@ const styles = {
   },
   infoItem: {
     display: "flex",
-    alignItems: "center",
-    gap: 0.5
+    alignItems: "center"
   },
   actions: {
     display: "flex",
@@ -500,14 +537,7 @@ const styles = {
     gap: "4px"
   },
   iconButton: {
-    backgroundColor: "#fff",
-    color: "#ff6600",
-    padding: "6px",
-    transition: "background-color 0.3s ease, transform 0.2s ease",
-    '&:hover': {
-      backgroundColor: "rgba(255, 102, 0, 0.1)",
-      transform: "scale(1.05)"
-    }
+    color: "#ff6600"
   },
   iconSvg: {
     fontSize: 20
@@ -528,3 +558,4 @@ const styles = {
     cursor: "pointer"
   }
 };
+

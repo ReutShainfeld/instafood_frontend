@@ -352,6 +352,7 @@ import {
   Grid,
 } from '@mui/material';
 
+
 function HomePage() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);

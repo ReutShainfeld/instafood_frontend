@@ -415,16 +415,95 @@
 // export default LoginPage;
 
 
+// import React, { useState } from 'react';
+// import { useNavigate, Link } from 'react-router-dom';
+// import '../styles/authPages.css';
+
+// function LoginPage() {
+//   const navigate = useNavigate();
+//   const [formData, setFormData] = useState({ email: '', password: '' });
+
+//   const handleChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     try {
+//       const response = await fetch('http://localhost:5000/api/auth/login', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(formData),
+//       });
+
+//       const data = await response.json();
+//       if (response.ok) {
+//         localStorage.setItem('token', data.token);
+//         localStorage.setItem('userId', data.userId);
+//         localStorage.setItem('fullName', data.fullName);
+//         alert('✅ Login successful!');
+//         navigate('/profile');
+//       } else {
+//         alert(`❌ Login failed: ${data.message}`);
+//       }
+//     } catch (error) {
+//       alert('❌ Failed to connect to server.');
+//     }
+//   };
+
+//   return (
+//     <div className="auth-page-container">
+//       <img src="/instaFood_logo.png" alt="InstaFood Logo" className="auth-logo" />
+//       <h2 className="auth-title">InstaFood Login</h2>
+
+//       <form onSubmit={handleSubmit} className="auth-form-box">
+//         <input
+//           type="email"
+//           name="email"
+//           placeholder="Email *"
+//           value={formData.email}
+//           onChange={handleChange}
+//           required
+//         />
+//         <input
+//           type="password"
+//           name="password"
+//           placeholder="Password *"
+//           value={formData.password}
+//           onChange={handleChange}
+//           required
+//         />
+//         <button type="submit">Login</button>
+//       </form>
+
+//       <p className="auth-link">
+//         Don't have an account?{' '}
+//         <Link to="/register" style={{ color: '#ff6600', textDecoration: 'underline' }}>
+//           Register here
+//         </Link>
+//       </p>
+//     </div>
+//   );
+// }
+
+// export default LoginPage;
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import '../styles/authPages.css';
+import { Snackbar, Alert, Slide } from '@mui/material';
 
 function LoginPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   const handleSubmit = async (e) => {
@@ -441,13 +520,13 @@ function LoginPage() {
         localStorage.setItem('token', data.token);
         localStorage.setItem('userId', data.userId);
         localStorage.setItem('fullName', data.fullName);
-        alert('✅ Login successful!');
-        navigate('/profile');
+        // setSnackbar({ open: true, message: '✅ Login successful!', severity: 'success' });
+        setTimeout(() => navigate('/profile'), 1500);
       } else {
-        alert(`❌ Login failed: ${data.message}`);
+        setSnackbar({ open: true, message: ` Username or Password is incorrect: ${data.message}`, severity: 'error' });
       }
     } catch (error) {
-      alert('❌ Failed to connect to server.');
+      setSnackbar({ open: true, message: ' Failed to connect to server.', severity: 'error' });
     }
   };
 
@@ -482,8 +561,32 @@ function LoginPage() {
           Register here
         </Link>
       </p>
+
+      <Snackbar
+  open={snackbar.open}
+  autoHideDuration={4000}
+  onClose={handleCloseSnackbar}
+  anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // show from top
+>
+  <Alert
+    onClose={handleCloseSnackbar}
+    severity={snackbar.severity}
+    sx={{
+      width: '100%',
+      bgcolor: 'white',        // background white
+      color: '#ff6600',        // orange text
+      border: '1px solid #ff6600',
+      fontWeight: 'bold'
+    }}
+    variant="outlined"         // optional: outlined style
+  >
+    {snackbar.message}
+  </Alert>
+</Snackbar>
     </div>
   );
 }
 
 export default LoginPage;
+
+ 

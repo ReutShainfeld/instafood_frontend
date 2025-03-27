@@ -53,6 +53,17 @@ function AdvancedSearchPage() {
       const history = [query, ...searchHistory.filter(term => term !== query)].slice(0, 10);
       setSearchHistory(history);
       localStorage.setItem("searchHistory", JSON.stringify(history));
+      
+      // ✅ Save to server as well
+fetch("http://localhost:5000/api/recipes/search-history", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+  body: JSON.stringify({ searchTerm: query }),
+});
+
     }
   };
 

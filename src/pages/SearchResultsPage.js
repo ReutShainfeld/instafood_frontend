@@ -183,6 +183,7 @@ import {
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import RecipeCard from "../components/RecipeCard";
 
+
 function SearchResultsPage() {
   const { type, value } = useParams();
   const [results, setResults] = useState([]);
