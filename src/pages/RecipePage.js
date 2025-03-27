@@ -1,5 +1,5 @@
 
-// // src/pages/RecipePage.js
+// src/pages/RecipePage.js
 // import React, { useEffect, useState } from "react";
 // import {
 //   Box, Typography, Avatar, Divider, IconButton, Chip, Dialog,
@@ -15,6 +15,8 @@
 // import ShareIcon from "@mui/icons-material/Share";
 // import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 // import CommentSection from "../components/Comments";
+
+
 
 // function RecipePage() {
 //   const { id } = useParams();
@@ -127,14 +129,34 @@
 //       <Box sx={styles.details}>
 //         <Chip icon={<AccessTimeIcon />} label={`${recipe.cookingTime} mins`} sx={styles.lightChip} />
 //         <Chip icon={<GroupsIcon />} label={`${recipe.servings} servings`} sx={styles.lightChip} />
-//         {recipe.difficulty && <Chip label={recipe.difficulty} sx={styles.darkChip} />}
-//         {recipe.category && <Chip label={recipe.category} sx={styles.darkChip} />}
+//         {recipe.difficulty && (
+//           <Chip
+//             label={recipe.difficulty}
+//             sx={styles.darkChip}
+//             onClick={() => navigate(`/search/difficulty/${recipe.difficulty}`)}
+//             clickable
+//           />
+//         )}
+//         {recipe.category && (
+//           <Chip
+//             label={recipe.category}
+//             sx={styles.darkChip}
+//             onClick={() => navigate(`/search/category/${recipe.category}`)}
+//             clickable
+//           />
+//         )}
 //       </Box>
 
 //       {recipe.tags && recipe.tags.length > 0 && (
 //         <Box sx={styles.tagsContainer}>
 //           {recipe.tags.map((tag, i) => (
-//             <Typography key={i} sx={styles.tag}>#{tag}</Typography>
+//             <Typography
+//               key={i}
+//               sx={styles.tag}
+//               onClick={() => navigate(`/search/tag/${tag}`)}
+//             >
+//               #{tag}
+//             </Typography>
 //           ))}
 //         </Box>
 //       )}
@@ -244,16 +266,17 @@
 //     flexWrap: "wrap",
 //   },
 //   lightChip: {
-//     backgroundColor: "#e6e6e6",
+//     backgroundColor: "#f1f1f1",
 //     fontSize: 13,
 //     height: 28,
 //     "& .MuiChip-icon": { fontSize: 18 },
 //   },
 //   darkChip: {
-//     backgroundColor: "#333",
+//     backgroundColor: "#4b4b4b",
 //     color: "#fff",
 //     fontSize: 13,
 //     height: 28,
+//     cursor: "pointer",
 //   },
 //   tagsContainer: {
 //     display: "flex",
@@ -265,6 +288,7 @@
 //     color: "#ff8a33",
 //     fontWeight: "bold",
 //     fontSize: 14,
+//     cursor: "pointer",
 //   },
 //   columns: {
 //     display: "flex",
@@ -304,12 +328,10 @@
 //     fontSize: 20,
 //   },
 // };
-
-// src/pages/RecipePage.js
 import React, { useEffect, useState } from "react";
 import {
   Box, Typography, Avatar, Divider, IconButton, Chip, Dialog,
-  DialogTitle, DialogContent, List, ListItem, ListItemText
+  DialogTitle, DialogContent, List, ListItem, ListItemText, Snackbar, Alert
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -321,8 +343,6 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ShareIcon from "@mui/icons-material/Share";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import CommentSection from "../components/Comments";
-
-
 
 function RecipePage() {
   const { id } = useParams();
@@ -337,6 +357,7 @@ function RecipePage() {
   const [likeUsers, setLikeUsers] = useState([]);
   const [showLikes, setShowLikes] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'error' });
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -347,7 +368,7 @@ function RecipePage() {
         setRecipe(found);
         setLikes(found.likes || 0);
       } catch (err) {
-        console.error("❌ Failed to fetch recipe", err);
+        setSnackbar({ open: true, message: '❌ Failed to fetch recipe', severity: 'error' });
       }
     };
 
@@ -357,7 +378,7 @@ function RecipePage() {
         const data = await res.json();
         setCommentsCount(data.length);
       } catch (err) {
-        console.error("❌ Failed to fetch comments", err);
+        setSnackbar({ open: true, message: '❌ Failed to fetch comments', severity: 'error' });
       }
     };
 
@@ -376,7 +397,7 @@ function RecipePage() {
   }, [id, userId]);
 
   const handleLike = async () => {
-    if (!token || !userId) return alert("❌ Login required");
+    if (!token || !userId) return setSnackbar({ open: true, message: '❌ Login required', severity: 'error' });
     try {
       const res = await fetch("http://localhost:5000/api/likes", {
         method: "POST",
@@ -402,6 +423,8 @@ function RecipePage() {
       setShowLikes(true);
     } catch {}
   };
+
+  const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
 
   if (!recipe) return <Typography>Loading...</Typography>;
 
@@ -532,6 +555,28 @@ function RecipePage() {
           )}
         </DialogContent>
       </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{
+            width: '100%',
+            bgcolor: 'white',
+            color: '#ff6600',
+            border: '1px solid #ff6600',
+            fontWeight: 'bold'
+          }}
+          variant="outlined"
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
@@ -634,3 +679,4 @@ const styles = {
     fontSize: 20,
   },
 };
+

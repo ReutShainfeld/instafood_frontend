@@ -351,7 +351,7 @@ import {
   Box,
   Grid,
 } from '@mui/material';
-<RecipeCard recipe={recipe} uploader={recipe.user?.username || "Anonymous"} />
+
 
 function HomePage() {
   const [recipes, setRecipes] = useState([]);

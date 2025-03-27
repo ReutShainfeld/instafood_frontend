@@ -98,7 +98,7 @@ function ForYouPage() {
 
   return (
     <div>
-      <h1>✨ Recipes Just For You</h1>
+      <h1>✨For You</h1>
 
       {loading && <p>Loading personalized recommendations... ⏳</p>}
       {error && <p style={{ color: "red" }}>❌ {error}</p>}
