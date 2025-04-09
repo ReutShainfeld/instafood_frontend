@@ -1,248 +1,21 @@
-
-// // // src/components/Navbar.js
-// // import React from 'react';
-// // import { Link, useNavigate } from 'react-router-dom';
-// // import { AppBar, Toolbar, Typography, IconButton, Box, Button } from '@mui/material';
-// // import HomeIcon from '@mui/icons-material/Home';
-// // import StarIcon from '@mui/icons-material/Star';
-// // import AddCircleIcon from '@mui/icons-material/AddCircle';
-// // import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-// // import LoginIcon from '@mui/icons-material/Login';
-// // import LogoutIcon from '@mui/icons-material/Logout';
-// // import HowToRegIcon from '@mui/icons-material/HowToReg';
-
-// // function Navbar() {
-// //     const navigate = useNavigate();
-// //     const userName = localStorage.getItem('fullName');
-
-// //     const handleLogout = () => {
-// //         localStorage.removeItem('fullName');
-// //         localStorage.removeItem('userId');
-// //         localStorage.removeItem('token');
-// //         navigate('/login');
-// //     };
-
-// //     return (
-// //         <AppBar position="static" color="default" sx={{ boxShadow: 'none', borderBottom: '1px solid #eee' }}>
-// //             <Toolbar sx={{ justifyContent: 'space-between', px: 2 }}>
-// //                 {/* לוגו בצד שמאל */}
-// //                 <Typography variant="h6" component={Link} to="/" sx={{ textDecoration: 'none', color: '#ff6600', fontWeight: 'bold' }}>
-// //                     InstaFood
-// //                 </Typography>
-
-// //                 {/* אייקונים בצד ימין */}
-// //                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-// //                     <IconButton component={Link} to="/" color="inherit" title="Home">
-// //                         <HomeIcon />
-// //                     </IconButton>
-// //                     <IconButton component={Link} to="/for-you" color="inherit" title="For You">
-// //                         <StarIcon />
-// //                     </IconButton>
-// //                     <IconButton component={Link} to="/upload" color="inherit" title="Upload Recipe">
-// //                         <AddCircleIcon />
-// //                     </IconButton>
-
-// //                     {userName ? (
-// //                         <>
-// //                             <IconButton component={Link} to="/profile" color="inherit" title={userName}>
-// //                                 <AccountCircleIcon />
-// //                             </IconButton>
-// //                             <IconButton onClick={handleLogout} color="inherit" title="Logout">
-// //                                 <LogoutIcon />
-// //                             </IconButton>
-// //                         </>
-// //                     ) : (
-// //                         <>
-// //                             <IconButton component={Link} to="/login" color="inherit" title="Login">
-// //                                 <LoginIcon />
-// //                             </IconButton>
-// //                             <IconButton component={Link} to="/register" color="inherit" title="Register">
-// //                                 <HowToRegIcon />
-// //                             </IconButton>
-// //                         </>
-// //                     )}
-// //                 </Box>
-// //             </Toolbar>
-// //         </AppBar>
-// //     );
-// // }
-
-// // export default Navbar;
-
-// // src/components/Navbar.js
-// import React, { useState, useEffect } from 'react';
-// import { Link, useNavigate } from 'react-router-dom';
-// import {
-//   AppBar, Toolbar, Typography, IconButton, Box, InputBase, Paper, List, ListItem, ListItemButton, ListItemText
-// } from '@mui/material';
-// import HomeIcon from '@mui/icons-material/Home';
-// import StarIcon from '@mui/icons-material/Star';
-// import AddCircleIcon from '@mui/icons-material/AddCircle';
-// import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-// import LoginIcon from '@mui/icons-material/Login';
-// import LogoutIcon from '@mui/icons-material/Logout';
-// import HowToRegIcon from '@mui/icons-material/HowToReg';
-// import SearchIcon from '@mui/icons-material/Search';
-
-// function Navbar() {
-//   const navigate = useNavigate();
-//   const userName = localStorage.getItem('fullName');
-//   const [showSearch, setShowSearch] = useState(false);
-//   const [query, setQuery] = useState('');
-//   const [results, setResults] = useState([]);
-
-//   const handleLogout = () => {
-//     localStorage.removeItem('fullName');
-//     localStorage.removeItem('userId');
-//     localStorage.removeItem('token');
-//     navigate('/login');
-//   };
-
-//   useEffect(() => {
-//     const fetchResults = async () => {
-//       if (!query.trim()) {
-//         setResults([]);
-//         return;
-//       }
-
-//       try {
-//         const res = await fetch('http://localhost:5000/api/recipes');
-//         const data = await res.json();
-//         const filtered = data.filter(recipe =>
-//           recipe.title?.toLowerCase().includes(query.toLowerCase()) ||
-//           recipe.description?.toLowerCase().includes(query.toLowerCase())
-//         );
-//         setResults(filtered.slice(0, 5)); // רק 5 תוצאות ראשונות
-//       } catch (err) {
-//         console.error('Search failed', err);
-//       }
-//     };
-
-//     fetchResults();
-//   }, [query]);
-
-//   const handleKeyPress = (e) => {
-//     if (e.key === 'Enter' && query.trim()) {
-//       navigate(`/search/query/${query}`);
-//       setShowSearch(false);
-//       setQuery('');
-//       setResults([]);
-//     }
-//   };
-
-//   const handleResultClick = (id) => {
-//     navigate(`/recipe/${id}`);
-//     setShowSearch(false);
-//     setQuery('');
-//     setResults([]);
-//   };
-
-//   return (
-//     <AppBar position="static" color="default" sx={{ boxShadow: 'none', borderBottom: '1px solid #eee' }}>
-//       <Toolbar sx={{ justifyContent: 'space-between', px: 2 }}>
-//         <Typography
-//           variant="h6"
-//           component={Link}
-//           to="/"
-//           sx={{ textDecoration: 'none', color: '#ff6600', fontWeight: 'bold' }}
-//         >
-//           InstaFood
-//         </Typography>
-
-//         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-//           <IconButton onClick={() => setShowSearch(!showSearch)} color="inherit" title="Search">
-//             <SearchIcon />
-//           </IconButton>
-
-//           {showSearch && (
-//             <Box sx={{ position: 'relative' }}>
-//               <Paper
-//                 sx={{
-//                   display: 'flex',
-//                   alignItems: 'center',
-//                   px: 1,
-//                   py: 0.5,
-//                   width: 200,
-//                   borderRadius: 2,
-//                 }}
-//               >
-//                 <InputBase
-//                   placeholder="Search..."
-//                   value={query}
-//                   onChange={(e) => setQuery(e.target.value)}
-//                   onKeyPress={handleKeyPress}
-//                   sx={{ width: '100%' }}
-//                   autoFocus
-//                 />
-//               </Paper>
-//               {results.length > 0 && (
-//                 <Paper
-//                   sx={{
-//                     position: 'absolute',
-//                     top: '100%',
-//                     left: 0,
-//                     width: '100%',
-//                     zIndex: 10,
-//                     mt: 1
-//                   }}
-//                 >
-//                   <List>
-//                     {results.map((recipe) => (
-//                       <ListItem disablePadding key={recipe._id}>
-//                         <ListItemButton onClick={() => handleResultClick(recipe._id)}>
-//                           <ListItemText primary={recipe.title} />
-//                         </ListItemButton>
-//                       </ListItem>
-//                     ))}
-//                   </List>
-//                 </Paper>
-//               )}
-//             </Box>
-//           )}
-
-//           <IconButton component={Link} to="/" color="inherit" title="Home">
-//             <HomeIcon />
-//           </IconButton>
-//           <IconButton component={Link} to="/for-you" color="inherit" title="For You">
-//             <StarIcon />
-//           </IconButton>
-//           <IconButton component={Link} to="/upload" color="inherit" title="Upload Recipe">
-//             <AddCircleIcon />
-//           </IconButton>
-
-//           {userName ? (
-//             <>
-//               <IconButton component={Link} to="/profile" color="inherit" title={userName}>
-//                 <AccountCircleIcon />
-//               </IconButton>
-//               <IconButton onClick={handleLogout} color="inherit" title="Logout">
-//                 <LogoutIcon />
-//               </IconButton>
-//             </>
-//           ) : (
-//             <>
-//               <IconButton component={Link} to="/login" color="inherit" title="Login">
-//                 <LoginIcon />
-//               </IconButton>
-//               <IconButton component={Link} to="/register" color="inherit" title="Register">
-//                 <HowToRegIcon />
-//               </IconButton>
-//             </>
-//           )}
-//         </Box>
-//       </Toolbar>
-//     </AppBar>
-//   );
-// }
-
-// export default Navbar;
-
-// src/components/Navbar.js
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  AppBar, Toolbar, Typography, IconButton, Box
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Box,
+  useMediaQuery,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Container,
 } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import StarIcon from '@mui/icons-material/Star';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -254,6 +27,8 @@ import SearchIcon from '@mui/icons-material/Search';
 
 function Navbar() {
   const navigate = useNavigate();
+  const isMobile = useMediaQuery('(max-width:768px)');
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
   const userName = localStorage.getItem('fullName');
 
   const handleLogout = () => {
@@ -264,60 +39,157 @@ function Navbar() {
   };
 
   const handleSearchClick = () => {
-    navigate('/search'); // 🔍 ניתוב לעמוד חיפוש ייעודי
+    navigate('/search');
   };
 
+  const toggleDrawer = (open) => () => {
+    setDrawerOpen(open);
+  };
+
+  const drawerList = (
+    <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+      <List>
+        <ListItem button component={Link} to="/">
+          <ListItemIcon><HomeIcon /></ListItemIcon>
+          <ListItemText primary="Home" />
+        </ListItem>
+        <ListItem button onClick={handleSearchClick}>
+          <ListItemIcon><SearchIcon /></ListItemIcon>
+          <ListItemText primary="Search" />
+        </ListItem>
+        <ListItem button component={Link} to="/for-you">
+          <ListItemIcon><StarIcon /></ListItemIcon>
+          <ListItemText primary="For You" />
+        </ListItem>
+        <ListItem button component={Link} to="/upload">
+          <ListItemIcon><AddCircleIcon /></ListItemIcon>
+          <ListItemText primary="Upload Recipe" />
+        </ListItem>
+        <Divider />
+        {userName ? (
+          <>
+            <ListItem button component={Link} to="/profile">
+              <ListItemIcon><AccountCircleIcon /></ListItemIcon>
+              <ListItemText primary={userName} />
+            </ListItem>
+            <ListItem button onClick={handleLogout}>
+              <ListItemIcon><LogoutIcon /></ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItem>
+          </>
+        ) : (
+          <>
+            <ListItem button component={Link} to="/login">
+              <ListItemIcon><LoginIcon /></ListItemIcon>
+              <ListItemText primary="Login" />
+            </ListItem>
+            <ListItem button component={Link} to="/register">
+              <ListItemIcon><HowToRegIcon /></ListItemIcon>
+              <ListItemText primary="Register" />
+            </ListItem>
+          </>
+        )}
+      </List>
+    </Box>
+  );
+
   return (
-    <AppBar position="static" color="default" sx={{ boxShadow: 'none', borderBottom: '1px solid #eee' }}>
-      <Toolbar sx={{ justifyContent: 'space-between', px: 2 }}>
-        {/* לוגו בצד שמאל */}
-        <Typography
-          variant="h6"
-          component={Link}
-          to="/"
-          sx={{ textDecoration: 'none', color: '#ff6600', fontWeight: 'bold' }}
-        >
-          InstaFood
-        </Typography>
+    <AppBar position="static" color="default" sx={{ boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', paddingY: "10px", borderBottom: '1px solid #eee' }}>
+      <Container>
+        <Toolbar sx={{ justifyContent: 'space-between', px: 2, minHeight: 100 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <img
+              src="/instaFood_logo.png"
+              alt="InstaFood logo"
+              style={{ width: 48, height: 48, marginRight: 12, borderRadius: '25%', border: "2px solid #ff6600", objectFit: 'cover' }}
+            />
+            <Typography
+              variant="h6"
+              component={Link}
+              to="/"
+              sx={{ textDecoration: 'none', color: '#ff6600', fontWeight: 'bold' }}
+            >
+              InstaFood
+            </Typography>
+          </Box>
 
-        {/* אייקונים בצד ימין */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <IconButton onClick={handleSearchClick} color="inherit" title="Search">
-            <SearchIcon />
-          </IconButton>
-          <IconButton component={Link} to="/" color="inherit" title="Home">
-            <HomeIcon />
-          </IconButton>
-          <IconButton component={Link} to="/for-you" color="inherit" title="For You">
-            <StarIcon />
-          </IconButton>
-          <IconButton component={Link} to="/upload" color="inherit" title="Upload Recipe">
-            <AddCircleIcon />
-          </IconButton>
+          {/* Desktop buttons */}
+          {!isMobile ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Link to="/search" style={linkStyle}>
+                <SearchIcon fontSize="large" sx={{ mr: 1 }} />
+                Search
+              </Link>
+              <Link to="/" style={linkStyle}>
+                Home
+              </Link>
+              <Link to="/for-you" style={linkStyle}>
+                For You
+              </Link>
+              <Link to="/upload" style={linkStyle}>
+                Upload
+              </Link>
 
-          {userName ? (
-            <>
-              <IconButton component={Link} to="/profile" color="inherit" title={userName}>
-                <AccountCircleIcon />
-              </IconButton>
-              <IconButton onClick={handleLogout} color="inherit" title="Logout">
-                <LogoutIcon />
-              </IconButton>
-            </>
+              {userName ? (
+                <>
+                  <Link to="/profile" style={linkStyle}>
+                    <AccountCircleIcon fontSize="large" sx={{ mr: 1 }} />
+                    {userName}
+                  </Link>
+                  <Box component="span" onClick={handleLogout} sx={linkStyle} style={{ cursor: 'pointer' }}>
+                    <LogoutIcon fontSize="large" sx={{ mr: 1 }} />
+                    Logout
+                  </Box>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" style={linkStyle}>
+                    <LoginIcon fontSize="large" sx={{ mr: 1 }} />
+                    Login
+                  </Link>
+                  <Link to="/register" style={linkStyle}>
+                    <HowToRegIcon fontSize="large" sx={{ mr: 1 }} />
+                    Register
+                  </Link>
+                </>
+              )}
+            </Box>
           ) : (
             <>
-              <IconButton component={Link} to="/login" color="inherit" title="Login">
-                <LoginIcon />
+              <IconButton edge="end" color="inherit" onClick={toggleDrawer(true)}>
+                <MenuIcon />
               </IconButton>
-              <IconButton component={Link} to="/register" color="inherit" title="Register">
-                <HowToRegIcon />
-              </IconButton>
+              <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
+                {drawerList}
+              </Drawer>
             </>
           )}
-        </Box>
-      </Toolbar>
+        </Toolbar>
+      </Container>
+
     </AppBar>
   );
 }
 
 export default Navbar;
+
+const linkStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  textDecoration: 'none',
+  color: '#333',
+  fontWeight: 500,
+  fontSize: '0.95rem',
+  padding: '6px 12px',
+  borderRadius: '8px',
+  transition: 'background-color 0.2s ease',
+  '&:hover': {
+    backgroundColor: 'rgba(255, 102, 0, 0.08)',
+    color: '#ff6600',
+  },
+  '&:active': {
+    backgroundColor: 'rgba(255, 102, 0, 0.16)',
+  }
+};
+
+

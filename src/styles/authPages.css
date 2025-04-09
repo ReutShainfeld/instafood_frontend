@@ -5,6 +5,7 @@ body {
   color: #333;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 /* 🎨 לוגו */
@@ -32,7 +33,6 @@ body {
   font-size: 26px;
   font-weight: bold;
   color: #ff6600;
-  font-family: 'Poppins', sans-serif;
   margin-bottom: 20px;
 }
 
@@ -46,14 +46,17 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-sizing: border-box;
 }
 
+/* Input fields */
 .auth-form-box input {
-  padding: 14px;
+  padding: 14px 16px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 16px;
-  font-family: 'Poppins', sans-serif;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .auth-form-box input:focus {
@@ -62,185 +65,80 @@ body {
   box-shadow: 0 0 5px rgba(255, 102, 0, 0.3);
 }
 
+/* 👁️ Password toggle */
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-input-wrapper input {
+  padding-right: 45px; /* space for the eye icon */
+}
+
+.toggle-password-icon {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #ff6600;
+  z-index: 2;
+}
+
+/* Button */
 .auth-form-box button {
   background: #ff6600;
   color: white;
-  border: 1px solid;
-  border-color: #ff6600;
+  border: 1px solid #ff6600;
   padding: 14px;
   font-size: 18px;
   font-weight: bold;
   border-radius: 10px;
   cursor: pointer;
   transition: 0.3s ease-in-out;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .auth-form-box button:hover {
-  background: #e25500;
+  background: #e65c00;
   transform: scale(1.02);
 }
 
-/* 🔗 לינקים */
+/* 🔗 לינק */
+.auth-link {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 16px;
+}
+
 .auth-page-container a {
   color: #ff6600;
   font-weight: bold;
   text-decoration: underline;
 }
 
-/* 🎨 תצוגת כרטיסי מתכונים */
-.recipe-card {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  max-width: 400px;
-  margin: auto;
-}
-
-.recipe-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-.recipe-card img {
-  width: 100%;
-  height: 250px;
-  object-fit: cover;
-  border-bottom: 5px solid #ff6600;
-}
-
-.recipe-card h3 {
-  padding: 10px;
-  font-size: 20px;
-  color: #ff6600;
-}
-
-/* 🎨 כפתורים */
-button,
-.MuiButton-root {
-  background-color: white ;
-  color: #ff6600 ;
-  padding: 12px 20px;
-  border: none;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 10px ;
-  transition: all 0.3s ease-in-out;
-  text-transform: none ;
-}
-
-button:hover,
-.MuiButton-root:hover {
-  background-color: #eebc9e !important;
-  transform: scale(1.03);
-}
-
-/* 🎨 שדות קלט */
-input,
-textarea,
-.MuiInputBase-root {
-  border-radius: 10px !important;
-  font-family: 'Poppins', sans-serif;
-  border-color: #666;
-}
-
-/* 🎨 העלאת תמונה */
-.upload-box {
-  border: 2px dashed gray;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  color: #666;
-  background: #fff;
-}
-
-.upload-box:hover {
-  cursor: pointer;
-}
-
-/* 🎨 אייקונים */
-.icon-button {
-  padding: 6px;
-  border-radius: 10px;
-  background-color: white;
-  border: 1.5px solid #ff6600;
-  color: #ff6600;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.icon-button:hover {
-  background-color: rgba(219, 152, 108, 0.377);
-  transform: scale(1.05);
-}
-
-.icon-button svg {
-  font-size: 20px;
-}
-
-/* 🎨 פעולות בתגובות */
-.comment-actions .icon-button {
-  margin-left: 5px;
-  min-width: 30px;
-  height: 30px;
-  padding: 4px;
-  background-color: white;
-  color: #ff6600;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-/* 🎨 ניווט עליון */
-.navbar {
-  background: white;
-  padding: 15px;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  align-items: center;
-  color: white;
-  font-size: 22px;
-  font-weight: bold;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.navbar a {
-  color: white;
-  text-decoration: none;
-  font-size: 18px;
-  transition: color 0.3s ease-in-out;
-}
-
-.navbar a:hover {
-  color: #ffcc99;
-}
-
-/* 🎨 כותרות כלליות */
-h1, h2 {
-  text-align: center;
-  color: #ff6600;
-  font-weight: bold;
-  margin-bottom: 10px;
-  font-family: 'Poppins', sans-serif;
-}
-
 /* 🎨 רספונסיביות */
 @media (max-width: 768px) {
-  .recipe-grid {
-    flex-direction: column;
+  .auth-form-box {
+    padding: 20px;
+    width: 100%;
   }
 
-  .navbar {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  .auth-title {
+    font-size: 22px;
   }
 
-  .navbar a {
-    margin-bottom: 10px;
+  .auth-form-box input,
+  .auth-form-box button {
+    font-size: 16px;
+  }
+
+  .auth-logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .auth-page-container {
+    padding: 20px 10px;
   }
 }
