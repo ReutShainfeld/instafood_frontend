@@ -1,357 +1,14 @@
-// // // // // // import React, { useEffect, useState } from 'react';
-// // // // // // import RecipeCard from '../components/RecipeCard';
-
-// // // // // // function HomePage() {
-// // // // // //     const [recipes, setRecipes] = useState([]);
-// // // // // //     const [loading, setLoading] = useState(true); // ✅ ספינר בזמן טעינה
-// // // // // //     const [error, setError] = useState(null); // ✅ טיפול בשגיאות
-
-// // // // // //     useEffect(() => {
-// // // // // //         fetch('http://localhost:5000/api/recipes')
-// // // // // //             .then(res => {
-// // // // // //                 if (!res.ok) {
-// // // // // //                     throw new Error('Failed to fetch recipes');
-// // // // // //                 }
-// // // // // //                 return res.json();
-// // // // // //             })
-// // // // // //             .then(data => {
-// // // // // //                 setRecipes(data);
-// // // // // //                 setLoading(false);
-// // // // // //             })
-// // // // // //             .catch(err => {
-// // // // // //                 setError(err.message);
-// // // // // //                 setLoading(false);
-// // // // // //             });
-// // // // // //     }, []);
-
-// // // // // //     return (
-// // // // // //         <div>
-// // // // // //             <h1>
-// // // // // //                 <span role="img" aria-label="book">📖</span> Sharing Recipes
-// // // // // //             </h1>
-
-// // // // // //             {loading && (
-// // // // // //                 <p>Loading recipes... <span role="img" aria-label="hourglass">⏳</span></p>
-// // // // // //             )}
-// // // // // //             {error && (
-// // // // // //                 <p style={{ color: 'red' }}>
-// // // // // //                     <span role="img" aria-label="error">❌</span> {error}
-// // // // // //                 </p>
-// // // // // //             )}
-
-// // // // // //             <div className="recipe-list">
-// // // // // //                 {recipes.length > 0 ? (
-// // // // // //                     recipes.map(recipe => (
-// // // // // //                         <RecipeCard 
-// // // // // //                             key={recipe._id} 
-// // // // // //                             recipe={recipe} 
-// // // // // //                             uploader={recipe.user?.username || "Anonymous"} // 🔹 Show uploader's name
-// // // // // //                         />
-// // // // // //                     ))
-// // // // // //                 ) : (
-// // // // // //                     !loading && <p>No recipes found. Be the first to share one! 🍽️</p>
-// // // // // //                 )}
-// // // // // //             </div>
-// // // // // //         </div>
-// // // // // //     );
-// // // // // // }
-
-// // // // // // export default HomePage;
-
-// // // // // import React, { useEffect, useState } from 'react';
-// // // // // import RecipeCard from '../components/RecipeCard';
-
-// // // // // function HomePage() {
-// // // // //     const [recipes, setRecipes] = useState([]);
-// // // // //     const [loading, setLoading] = useState(true);
-// // // // //     const [error, setError] = useState(null);
-
-// // // // //     useEffect(() => {
-// // // // //         fetch('http://localhost:5000/api/recipes')
-// // // // //             .then(res => res.json())
-// // // // //             .then(data => {
-// // // // //                 setRecipes(data);
-// // // // //                 setLoading(false);
-// // // // //             })
-// // // // //             .catch(err => {
-// // // // //                 setError(err.message);
-// // // // //                 setLoading(false);
-// // // // //             });
-// // // // //     }, []);
-
-// // // // //     return (
-// // // // //         <div>
-// // // // //             <h1>📖 Sharing Recipes</h1>
-
-// // // // //             {loading && <p>Loading recipes... ⏳</p>}
-// // // // //             {error && <p style={{ color: 'red' }}><span role="img" aria-label="error">❌</span> </p>}
-
-// // // // //             <div className="recipe-list">
-// // // // //                 {recipes.length > 0 ? (
-// // // // //                     recipes.map(recipe => (
-// // // // //                         <RecipeCard key={recipe._id} recipe={recipe} uploader={recipe.user?.username || "Anonymous"} />
-// // // // //                     ))
-// // // // //                 ) : (
-// // // // //                     !loading && <p>No recipes found. Be the first to share one! 🍽️</p>
-// // // // //                 )}
-// // // // //             </div>
-// // // // //         </div>
-// // // // //     );
-// // // // // }
-
-// // // // // export default HomePage;
-
-// // // // import React, { useEffect, useState } from 'react';
-// // // // import RecipeCard from '../components/RecipeCard';
-
-// // // // function HomePage() {
-// // // //     const [recipes, setRecipes] = useState([]);
-// // // //     const [loading, setLoading] = useState(true);
-// // // //     const [error, setError] = useState(null);
-
-// // // //     useEffect(() => {
-// // // //         fetch('http://localhost:5000/api/recipes')
-// // // //             .then(res => {
-// // // //                 if (!res.ok) {
-// // // //                     throw new Error('Failed to fetch recipes');
-// // // //                 }
-// // // //                 return res.json();
-// // // //             })
-// // // //             .then(data => {
-// // // //                 setRecipes(data);
-// // // //                 setLoading(false);
-// // // //             })
-// // // //             .catch(err => {
-// // // //                 setError(err.message);
-// // // //                 setLoading(false);
-// // // //             });
-// // // //     }, []);
-
-// // // //     return (
-// // // //         <div style={{ padding: '20px' }}>
-// // // //             <h1>📖 Sharing Recipes</h1>
-
-// // // //             {loading && <p>Loading recipes... ⏳</p>}
-// // // //             {error && <p style={{ color: 'red' }}>❌ {error}</p>}
-
-// // // //             <div className="recipe-list">
-// // // //                 {recipes.length > 0 ? (
-// // // //                     recipes.map(recipe => (
-// // // //                         <RecipeCard
-// // // //                             key={recipe._id}
-// // // //                             recipe={recipe}
-// // // //                             uploader={recipe.user?.username || "Anonymous"}
-// // // //                         />
-// // // //                     ))
-// // // //                 ) : (
-// // // //                     !loading && <p>No recipes found. Be the first to share one! 🍽️</p>
-// // // //                 )}
-// // // //             </div>
-// // // //         </div>
-// // // //     );
-// // // // }
-
-// // // // export default HomePage;
-
-// // // import React, { useEffect, useState } from 'react';
-// // // import RecipeCard from '../components/RecipeCard';
-// // // import { Container, Typography, CircularProgress, Box } from '@mui/material';
-
-// // // function HomePage() {
-// // //     const [recipes, setRecipes] = useState([]);
-// // //     const [loading, setLoading] = useState(true);
-// // //     const [error, setError] = useState(null);
-
-// // //     useEffect(() => {
-// // //         fetch('http://localhost:5000/api/recipes')
-// // //             .then(res => res.json())
-// // //             .then(data => {
-// // //                 setRecipes(data);
-// // //                 setLoading(false);
-// // //             })
-// // //             .catch(err => {
-// // //                 setError(err.message);
-// // //                 setLoading(false);
-// // //             });
-// // //     }, []);
-
-// // //     return (
-// // //         <Container maxWidth="sm" sx={{ mt: 4 }}>
-// // //             <Typography variant="h4" align="center" gutterBottom fontWeight="bold">
-// // //                 🍽️ Recipe Feed
-// // //             </Typography>
-
-// // //             {loading && (
-// // //                 <Box display="flex" justifyContent="center" mt={4}>
-// // //                     <CircularProgress />
-// // //                 </Box>
-// // //             )}
-// // //             {error && (
-// // //                 <Typography color="error" align="center">
-// // //                     ❌ {error}
-// // //                 </Typography>
-// // //             )}
-
-// // //             <Box display="flex" flexDirection="column" gap={4}>
-// // //                 {recipes.length > 0 ? (
-// // //                     recipes.map(recipe => (
-// // //                         <RecipeCard
-// // //                             key={recipe._id}
-// // //                             recipe={recipe}
-// // //                             uploader={recipe.user?.username || "Anonymous"}
-// // //                         />
-// // //                     ))
-// // //                 ) : (
-// // //                     !loading && (
-// // //                         <Typography align="center">
-// // //                             No recipes found. Be the first to share one! 🍲
-// // //                         </Typography>
-// // //                     )
-// // //                 )}
-// // //             </Box>
-// // //         </Container>
-// // //     );
-// // // }
-
-// // // export default HomePage;
-
-// // // src/pages/HomePage.js
-// // import React, { useEffect, useState } from 'react';
-// // import RecipeCard from '../components/RecipeCard';
-// // import { Container, CircularProgress, Typography, Box } from '@mui/material';
-
-// // function HomePage() {
-// //     const [recipes, setRecipes] = useState([]);
-// //     const [loading, setLoading] = useState(true);
-// //     const [error, setError] = useState(null);
-
-// //     useEffect(() => {
-// //         fetch('http://localhost:5000/api/recipes')
-// //             .then(res => res.json())
-// //             .then(data => {
-// //                 setRecipes(data);
-// //                 setLoading(false);
-// //             })
-// //             .catch(err => {
-// //                 setError(err.message);
-// //                 setLoading(false);
-// //             });
-// //     }, []);
-
-// //     return (
-// //         <Container maxWidth="md" sx={{ mt: 2, mb: 4 }}>
-// //             {loading && (
-// //                 <Box display="flex" justifyContent="center" mt={6}>
-// //                     <CircularProgress />
-// //                 </Box>
-// //             )}
-
-// //             {error && (
-// //                 <Typography color="error" align="center" mt={4}>
-// //                     ❌ {error}
-// //                 </Typography>
-// //             )}
-
-// //             <Box display="flex" flexDirection="column" gap={6}>
-// //                 {recipes.length > 0 ? (
-// //                     recipes.map(recipe => (
-// //                         <RecipeCard
-// //                             key={recipe._id}
-// //                             recipe={recipe}
-// //                             uploader={recipe.user?.username || "Anonymous"}
-// //                         />
-// //                     ))
-// //                 ) : (
-// //                     !loading && (
-// //                         <Typography align="center" mt={4}>
-// //                             No recipes found. Be the first to share one! 🍽️
-// //                         </Typography>
-// //                     )
-// //                 )}
-// //             </Box>
-// //         </Container>
-// //     );
-// // }
-
-// // export default HomePage;
-
-// import React, { useEffect, useState } from 'react';
-// import RecipeCard from '../components/RecipeCard';
-// import {
-//   Container,
-//   CircularProgress,
-//   Typography,
-//   Box,
-//   Grid,
-// } from '@mui/material';
-
-// function HomePage() {
-//   const [recipes, setRecipes] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     fetch('http://localhost:5000/api/recipes')
-//       .then((res) => res.json())
-//       .then((data) => {
-//         setRecipes(data);
-//         setLoading(false);
-//       })
-//       .catch((err) => {
-//         setError(err.message);
-//         setLoading(false);
-//       });
-//   }, []);
-
-//   return (
-//     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-//       {loading && (
-//         <Box display="flex" justifyContent="center" mt={6}>
-//           <CircularProgress />
-//         </Box>
-//       )}
-
-//       {error && (
-//         <Typography color="error" align="center" mt={4}>
-//           ❌ {error}
-//         </Typography>
-//       )}
-
-//       <Grid container direction="column" spacing={3}>
-//         {recipes.length > 0 ? (
-//           recipes.map((recipe) => (
-//             <Grid item key={recipe._id}>
-//               <RecipeCard
-//                 recipe={recipe}
-//                 uploader={recipe.user?.username || 'Anonymous'}
-//               />
-//             </Grid>
-//           ))
-//         ) : (
-//           !loading && (
-//             <Typography align="center" mt={4}>
-//               No recipes found. Be the first to share one! 🍽️
-//             </Typography>
-//           )
-//         )}
-//       </Grid>
-//     </Container>
-//   );
-// }
-
-// export default HomePage;
-
-
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import RecipeCard from '../components/RecipeCard';
 import {
   Container,
-  CircularProgress,
   Typography,
-  Box,
   Grid,
+  Box,
+  Fade,
 } from '@mui/material';
-
+import PageLoading from '../components/PageLoading';
 
 function HomePage() {
   const [recipes, setRecipes] = useState([]);
@@ -371,40 +28,131 @@ function HomePage() {
       });
   }, []);
 
+  if (loading) return <PageLoading />;
+
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      {loading && (
-        <Box display="flex" justifyContent="center" mt={6}>
-          <CircularProgress />
-        </Box>
-      )}
-
-      {error && (
-        <Typography color="error" align="center" mt={4}>
-          ❌ {error}
-        </Typography>
-      )}
-
-      <Grid container direction="column" spacing={3}>
-        {recipes.length > 0 ? (
-          recipes.map((recipe) => (
-            <Grid item key={recipe._id}>
-              <RecipeCard
-                recipe={recipe}
-                uploader={recipe.user?.username || 'Anonymous'}
-              />
-            </Grid>
-          ))
-        ) : (
-          !loading && (
-            <Typography align="center" mt={4}>
-              No recipes found. Be the first to share one! 🍽️
+    <Box sx={styles.background}>
+      <Box sx={styles.overlay}>
+        <Container maxWidth="lg">
+          <Box textAlign="center" mb={6} px={2}>
+            <Typography
+              variant="h3"
+              fontWeight={700}
+              color="text.primary"
+              gutterBottom
+              sx={{
+                fontSize: {
+                  xs: '1.8rem',
+                  sm: '2.2rem',
+                  md: '2.8rem',
+                  lg: '3.2rem',
+                },
+              }}
+            >
+              Discover Nourishing Recipes
             </Typography>
-          )
-        )}
-      </Grid>
-    </Container>
+
+            <Typography
+              variant="subtitle1"
+              color="text.secondary"
+              sx={{
+                fontSize: {
+                  xs: '0.9rem',
+                  sm: '1rem',
+                  md: '1.1rem',
+                  lg: '1.2rem',
+                },
+                maxWidth: '700px',
+                mx: 'auto',
+              }}
+            >
+              Curated wellness meals to support your lifestyle. Browse, cook, and thrive.
+            </Typography>
+          </Box>
+
+          {error && (
+            <Box textAlign="center" mb={6} px={2}>
+              <Typography color="error" variant="h6">
+                <span role="img" aria-label="cross mark">❌</span> {error}
+              </Typography>
+            </Box>
+          )}
+
+          <Grid container spacing={6} alignItems="stretch">
+            {recipes.length > 0 ? (
+              recipes.map((recipe, index) => (
+                <Fade in timeout={400 + index * 100} key={recipe._id}>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={3}
+                    sx={{ display: 'flex' }}
+                  >
+                    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                      <RecipeCard
+                        recipe={recipe}
+                        uploader={recipe.user?.username || 'Anonymous'}
+                      />
+                    </Box>
+                  </Grid>
+                </Fade>
+              ))
+            ) : (
+              <Grid item xs={12}>
+                <Box
+                  textAlign="center"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  height="40vh"
+                  px={2}
+                >
+                  <Typography variant="h6">
+                    No recipes found. Be the first to share one!{" "}
+                    <span role="img" aria-label="plate with cutlery">🍽️</span>
+                  </Typography>
+                </Box>
+              </Grid>
+            )}
+          </Grid>
+
+        </Container>
+      </Box>
+    </Box>
   );
 }
 
 export default HomePage;
+
+const styles = {
+  background: {
+    backgroundImage: 'url("/background.jpg")',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    minHeight: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlay: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    width: '100%',
+    minHeight: '100vh',
+    paddingTop: '60px',
+    paddingBottom: '60px',
+  },
+  cardWrapper: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+    '&:hover': {
+      transform: 'translateY(-6px)',
+      boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
+    },
+  },
+};

@@ -1,10 +1,12 @@
-// src/pages/AdvancedSearchPage.js
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import {
-  Box, Typography, InputBase, IconButton, Paper, Divider, Chip, Tabs, Tab
+  Box, Typography, InputBase, IconButton, Paper, Divider,
+  Chip, Tabs, Grid, Tab, Card, CardContent
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
+import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 import RecipeCard from "../components/RecipeCard";
 
 function AdvancedSearchPage() {
@@ -35,14 +37,13 @@ function AdvancedSearchPage() {
 
   const performSearch = () => {
     const lower = query.toLowerCase();
-    let filtered = recipes.filter(r =>
+    let filtered = lower !== "" ? recipes.filter(r =>
       r.title?.toLowerCase().includes(lower) ||
       r.description?.toLowerCase().includes(lower) ||
       r.ingredients?.some(ing => ing.toLowerCase().includes(lower)) ||
       r.tags?.some(tag => tag.toLowerCase().includes(lower)) ||
       r.category?.toLowerCase().includes(lower)
-    );
-
+    ) : recipes;
     if (activeCategory !== "All") {
       filtered = filtered.filter(r => r.category === activeCategory);
     }
@@ -53,17 +54,16 @@ function AdvancedSearchPage() {
       const history = [query, ...searchHistory.filter(term => term !== query)].slice(0, 10);
       setSearchHistory(history);
       localStorage.setItem("searchHistory", JSON.stringify(history));
-      
-      // ✅ Save to server as well
-fetch("http://localhost:5000/api/recipes/search-history", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  },
-  body: JSON.stringify({ searchTerm: query }),
-});
 
+      // ✅ Save to server as well
+      fetch("http://localhost:5000/api/recipes/search-history", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ searchTerm: query }),
+      });
     }
   };
 
@@ -82,76 +82,137 @@ fetch("http://localhost:5000/api/recipes/search-history", {
   const categories = ["All", "Breakfast", "Lunch", "Dinner", "Dessert", "Drinks"];
 
   return (
-    <Box sx={{ maxWidth: 900, mx: "auto", px: 2, py: 4 }}>
-      <Paper sx={{ p: 1.5, display: "flex", alignItems: "center", mb: 2 }}>
-        <SearchIcon sx={{ mr: 1 }} />
-        <InputBase
-          placeholder="Search recipes, ingredients..."
-          value={query}
-          onChange={handleQuery}
-          sx={{ flex: 1 }}
-        />
-        {query && (
-          <IconButton onClick={() => setQuery("")}>
-            <ClearIcon />
-          </IconButton>
-        )}
-      </Paper>
+    <Box sx={styles.background}>
+      <Box sx={styles.overlay}>
+        <Box sx={{ maxWidth: 1000, mx: "auto", px: 2 }}>
+          <Card elevation={6}>
+            <CardContent sx={{ py: 4, px: { xs: 2, sm: 4 } }}>
+              <Paper sx={{ p: 1.5, display: "flex", alignItems: "center", mb: 3 }}>
+                <SearchIcon sx={{ mr: 1 }} />
+                <InputBase
+                  placeholder="Search recipes, ingredients..."
+                  value={query}
+                  onChange={handleQuery}
+                  sx={{ flex: 1 }}
+                />
+                {query && (
+                  <IconButton onClick={() => setQuery("")}>
+                    <ClearIcon />
+                  </IconButton>
+                )}
+              </Paper>
 
-      <Typography fontWeight="bold" sx={{ mb: 1 }}>Filter by Category:</Typography>
-      <Tabs
-        value={activeCategory}
-        onChange={(e, val) => setActiveCategory(val)}
-        sx={{ mb: 3 }}
-        textColor="primary"
-        indicatorColor="primary"
-      >
-        {categories.map(cat => (
-          <Tab key={cat} label={cat} value={cat} />
-        ))}
-      </Tabs>
+              <Typography fontWeight="bold" sx={{ mb: 1 }}>Filter by Category:</Typography>
+              <Tabs
+                value={activeCategory}
+                onChange={(e, val) => setActiveCategory(val)}
+                sx={{ mb: 3 }}
+                variant="scrollable"
+                scrollButtons="auto"
+              >
+                {categories.map(cat => (
+                  <Tab
+                    key={cat}
+                    label={cat}
+                    value={cat}
+                    sx={{
+                      textTransform: "capitalize",
+                      fontWeight: 500,
+                      borderRadius: 2,
+                      px: 2,
+                      mx: 0.5,
+                      bgcolor: activeCategory === cat ? "#1976d2" : "#f0f0f0",
+                      color: activeCategory === cat ? "#fff !important" : "#333",
+                      transition: "all 0.2s",
+                      "&.Mui-selected": {
+                        color: "#fff !important",
+                      },
+                      "&:hover": {
+                        bgcolor: activeCategory === cat ? "#1565c0" : "#e0e0e0",
+                      },
+                    }}
+                  />
+                ))}
+              </Tabs>
 
-      {query === "" && searchHistory.length > 0 && (
-        <Box sx={{ mb: 4 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-            <Typography fontWeight="bold">Recent Searches</Typography>
-            <IconButton onClick={clearHistory} size="small">
-              <ClearIcon fontSize="small" />
-            </IconButton>
-          </Box>
-          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-            {searchHistory.map((term, i) => (
-              <Chip
-                key={i}
-                label={term}
-                onClick={() => setQuery(term)}
-                variant="outlined"
-                color="primary"
-              />
-            ))}
-          </Box>
+              {query === "" && searchHistory.length > 0 && (
+                <Box sx={{ mb: 4 }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                    <Typography fontWeight="bold">Recent Searches</Typography>
+                    <IconButton onClick={clearHistory} size="small">
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                    {searchHistory.map((term, i) => (
+                      <Chip
+                        key={i}
+                        label={term}
+                        onClick={() => setQuery(term)}
+                        variant="outlined"
+                        color="primary"
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              )}
+
+              <Typography variant="body2" align="center" sx={{ color: "gray", mt: 2 }}>
+                {query ? `Results for "${query}" (${results.length})` : "Start typing to search..."}
+              </Typography>
+
+              <Divider sx={{ my: 3 }} />
+
+              {results.length === 0 && query && (
+                <Box sx={{ textAlign: "center", mt: 5 }}>
+                  <SentimentDissatisfiedIcon sx={{ fontSize: 48, color: "gray", mb: 1 }} />
+                  <Typography color="text.secondary">No recipes found. Try a different keyword or category.</Typography>
+                </Box>
+              )}
+
+              <Grid container spacing={2}>
+                {results.map((recipe) => (
+                  <Grid item key={recipe._id} xs={12} sm={6} md={4} lg={4} sx={{ padding: 3 }}>
+                    <RecipeCard
+                      recipe={recipe}
+                      uploader={recipe.user?.username || "Unknown"}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </CardContent>
+          </Card>
         </Box>
-      )}
-
-      <Typography variant="body2" align="center" sx={{ color: "gray", mt: 2 }}>
-        {query ? `Results for "${query}" (${results.length})` : "Start typing to search..."}
-      </Typography>
-
-      <Divider sx={{ mb: 2 }} />
-
-      {results.length === 0 && query && (
-        <Typography color="text.secondary">No recipes found.</Typography>
-      )}
-
-      {results.map(recipe => (
-        <RecipeCard
-          key={recipe._id}
-          recipe={recipe}
-          uploader={recipe.user?.username || "Unknown"}
-        />
-      ))}
+      </Box>
     </Box>
   );
 }
 
 export default AdvancedSearchPage;
+
+const styles = {
+  background: {
+    backgroundImage: 'url("/background.jpg")',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    minHeight: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlay: {
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    width: '100%',
+    minHeight: '100vh',
+    paddingTop: '30px',
+    paddingBottom: '30px',
+  },
+  container: {
+    padding: '2rem',
+  },
+  gridContainer: {
+    justifyContent: 'flex-start !important', // align to the left
+    // rowGap: '2rem',
+  },
+};
