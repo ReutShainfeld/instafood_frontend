@@ -102,7 +102,8 @@ function ProfilePage() {
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, mb: 3 }}>
                     {/* Avatar Section */}
                     <Avatar
-                      src={user.profileImage}
+                      // src={user.profileImage}
+                      src={user.profileImage?.startsWith('/uploads') ? `http://localhost:5000${user.profileImage}` : user.profileImage}
                       alt="Profile"
                       sx={{
                         width: 120,

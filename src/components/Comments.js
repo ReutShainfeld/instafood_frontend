@@ -11,6 +11,10 @@ function CommentSection({ recipeId }) {
     const [replyingTo, setReplyingTo] = useState(null);
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
+    const getImageUrl = (url) => {
+        if (!url) return '/default-user.png';
+        return url.startsWith('http') ? url : `http://localhost:5000${url}`;
+      };
 
     const fetchComments = useCallback(async () => {
         try {
@@ -93,7 +97,6 @@ function CommentSection({ recipeId }) {
 
     return (
         <Box sx={styles.commentSection}>
-            <Typography variant="h6" sx={styles.commentsTitle}>Comments</Typography>
 
             {comments.length === 0 ? (
                 <Typography sx={styles.noCommentsText}>
@@ -105,7 +108,12 @@ function CommentSection({ recipeId }) {
                     <Box key={comment._id} sx={styles.commentBox}>
                         {/* Comment Header with Avatar and Username */}
                         <Box sx={styles.commentHeader}>
-                            <Avatar sx={styles.avatar} src={comment.user?.profileImage || '/default-avatar.png'} alt={comment.user?.username || 'User'} />
+                        <Avatar
+                        sx={styles.avatar}
+                        src={getImageUrl(comment.user?.profileImage)}
+                        alt={comment.user?.username || 'User'}
+                        />
+
                             <Typography variant="body2" sx={styles.username}>
                                 <strong>{comment.user?.username || 'User'}:</strong>
                             </Typography>

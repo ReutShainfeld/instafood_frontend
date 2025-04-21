@@ -46,6 +46,7 @@ function LoginPage() {
         localStorage.setItem('token', data.token);
         localStorage.setItem('userId', data.userId);
         localStorage.setItem('fullName', data.fullName);
+        localStorage.setItem('profileImage', data.profileImage || '');
         setSnackbar({ open: true, message: 'Login successful! Redirecting...', severity: 'success' });
         setTimeout(() => navigate('/profile'), 1500);
       } else {
