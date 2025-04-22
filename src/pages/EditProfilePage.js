@@ -51,6 +51,8 @@ function EditProfilePage() {
     fetchUser();
   }, [token]);
 
+  
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -122,6 +124,7 @@ function EditProfilePage() {
 
       if (!res.ok) throw new Error();
       showSnackbar('Profile updated successfully ✅', 'success');
+      localStorage.setItem('profileImage', uploadData.imageUrl);
       setTimeout(() => navigate('/profile'), 1000);
     } catch {
       showSnackbar('Error updating profile ❌', 'error');
@@ -197,7 +200,23 @@ function EditProfilePage() {
                   <input type="file" accept="image/*" onChange={handleImageChange} id="profile-img" hidden />
                   <label htmlFor="profile-img" style={{ cursor: 'pointer' }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-                      <Avatar src={previewUrl} sx={{ width: 120, height: 120, mb: 1, border: '3px solid #ff6600' }} />
+                    {/* <Avatar
+                    src={previewUrl ? (previewUrl.startsWith('http') ? previewUrl : `http://localhost:5000${previewUrl}`) : "/default-user.png"}
+                    sx={{ width: 120, height: 120, mb: 1, border: '3px solid #ff6600' }}
+                  /> */}
+                  <Avatar
+                    src={
+                      previewUrl
+                        ? previewUrl.startsWith('blob:')
+                          ? previewUrl
+                          : previewUrl.startsWith('http')
+                          ? previewUrl
+                          : `http://localhost:5000${previewUrl}`
+                        : "/default-user.png"
+                    }
+                    sx={{ width: 120, height: 120, mb: 1, border: '3px solid #ff6600' }}
+                  />
+
                       <Typography variant="caption" color="primary">
                         Click to change profile picture
                       </Typography>
