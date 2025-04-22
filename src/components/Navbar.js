@@ -1,5 +1,5 @@
 // Navbar.js – גרסה מלאה כולל תמונת פרופיל ליד שם המשתמש
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   AppBar,
@@ -34,7 +34,19 @@ function Navbar() {
   const isMobile = useMediaQuery('(max-width:768px)');
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const userName = localStorage.getItem('fullName');
-  const profileImage = localStorage.getItem('profileImage');
+  // const profileImage = localStorage.getItem('profileImage');
+  const [profileImage, setProfileImage] = React.useState(localStorage.getItem('profileImage') || null);
+
+// מוודא שה־Navbar יתעדכן אם משהו משתנה ב־localStorage
+useEffect(() => {
+  const interval = setInterval(() => {
+    const updatedImage = localStorage.getItem('profileImage');
+    setProfileImage(updatedImage);
+  }, 500); // בודק פעמיים בשנייה
+
+  return () => clearInterval(interval);
+}, []);
+
 
   const handleLogout = () => {
     localStorage.removeItem('fullName');
