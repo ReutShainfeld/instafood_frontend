@@ -73,7 +73,7 @@ useEffect(() => {
         </ListItem>
         <ListItem button onClick={handleSearchClick}>
           <ListItemIcon><SearchIcon /></ListItemIcon>
-          <ListItemText primary="Search" />
+        
         </ListItem>
         <ListItem button component={Link} to="/for-you">
           <ListItemIcon><StarIcon /></ListItemIcon>
