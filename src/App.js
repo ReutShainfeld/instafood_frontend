@@ -11,6 +11,7 @@ import SearchResultsPage from "./pages/SearchResultsPage";
 import AdvancedSearchPage from "./pages/AdvancedSearchPage";
 import EditProfilePage from './pages/EditProfilePage';
 import Layout from './components/Layout';
+import PublicProfilePage from './pages/PublicProfilePage';
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           <Route path="/search/query/:query" element={<SearchResultsPage />} />
           <Route path="/search" element={<AdvancedSearchPage />} />
           <Route path="/edit-profile" element={<EditProfilePage />} />
+          <Route path="/profile/:userId" element={<PublicProfilePage />} />
         </Route>
       </Routes>
     </Router>

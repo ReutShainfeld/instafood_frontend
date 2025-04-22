@@ -119,9 +119,14 @@ function RecipePage() {
               <Box sx={styles.header}>
                 <Avatar />
                 <Box>
-                  <Typography fontWeight="bold">
-                    {recipe.user?.username || "Unknown"}
-                  </Typography>
+                <Typography
+                  fontWeight="bold"
+                  sx={{ color: '#ff6600', cursor: 'pointer' }}
+                  onClick={() => navigate(`/profile/${recipe.user?._id}`)}
+                >
+                  {recipe.user?.username || "Unknown"}
+                </Typography>
+
                   <Typography fontSize={12} color="gray">
                     {recipe.createdAt
                       ? new Date(recipe.createdAt).toLocaleDateString()
