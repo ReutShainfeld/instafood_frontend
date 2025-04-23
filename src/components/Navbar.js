@@ -33,15 +33,19 @@ function Navbar() {
   const navigate = useNavigate();
   const isMobile = useMediaQuery('(max-width:768px)');
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const userName = localStorage.getItem('fullName');
+ // const userName = localStorage.getItem('fullName');
   // const profileImage = localStorage.getItem('profileImage');
   const [profileImage, setProfileImage] = React.useState(localStorage.getItem('profileImage') || null);
+  const [userName, setUserName] = React.useState(localStorage.getItem('fullName') || '');
 
 // מוודא שה־Navbar יתעדכן אם משהו משתנה ב־localStorage
 useEffect(() => {
   const interval = setInterval(() => {
     const updatedImage = localStorage.getItem('profileImage');
     setProfileImage(updatedImage);
+    const updateName = localStorage.getItem("fullName");
+    setUserName(updateName);
+    
   }, 500); // בודק פעמיים בשנייה
 
   return () => clearInterval(interval);

@@ -125,6 +125,7 @@ function EditProfilePage() {
       if (!res.ok) throw new Error();
       showSnackbar('Profile updated successfully ✅', 'success');
       localStorage.setItem('profileImage', uploadData.imageUrl);
+      localStorage.setItem('fullName', `${form.firstName} ${form.lastName}`);
       setTimeout(() => navigate('/profile'), 1000);
     } catch {
       showSnackbar('Error updating profile ❌', 'error');
