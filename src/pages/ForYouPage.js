@@ -1,6 +1,7 @@
+
 import React, { useEffect, useState } from "react";
 import RecipeCard from "../components/RecipeCard";
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, Container } from "@mui/material";
 import PageLoading from "../components/PageLoading";
 
 function ForYouPage() {
@@ -30,55 +31,44 @@ function ForYouPage() {
       });
   }, [token]);
 
-  if (loading) {
-    return (<PageLoading />);
-  }
+  if (loading) return <PageLoading />;
 
   return (
     <Box sx={styles.background}>
       <Box sx={styles.overlay}>
-        <Box sx={{ padding: { xs: "16px", sm: "32px" }, textAlign: "center" }}>
-          <Typography variant="h4" color="primary" gutterBottom>
-            <span role="img" aria-label="sparkles">
-              ✨
-            </span>{" "}
-            Personalized For You
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+          <Typography
+            variant="h3"
+            color="black"
+            align="center"
+            gutterBottom
+            sx={{ fontWeight: "bold", mb: 4 }}
+          >
+            ✨ For You
           </Typography>
 
           {error && (
-            <Typography variant="body1" color="error" sx={styles.errorText}>
-              <span role="img" aria-label="cross mark">❌</span> {error}
+            <Typography variant="body1" color="error" align="center">
+              ❌ {error}
             </Typography>
           )}
 
           {!loading && !error && recipes.length === 0 && (
-            <Typography variant="body1" sx={{ marginTop: 2 }}>
-              No recommendations yet. Start searching to see suggestions!{" "}
-              <span role="img" aria-label="glowing star">
-                🌟
-              </span>
+            <Typography variant="body1" align="center">
+              No recommendations yet. Start searching to see suggestions! 🌟
             </Typography>
           )}
 
-          <Grid
-            container
-            spacing={6}
-            sx={{
-              marginTop: 4,
-              justifyContent: "center",
-            }}
-          >
-            {recipes.length > 0 &&
-              recipes.map((recipe) => (
-                <Grid item key={recipe._id} xs={12} sm={6} md={4} lg={3}>
-                  <RecipeCard recipe={recipe} imageOnly={true} />
-                </Grid>
-              ))}
+          <Grid container spacing={2} justifyContent="center">
+            {recipes.map((recipe) => (
+              <Grid item key={recipe._id} xs={12} sm={6} md={3}>
+                <RecipeCard recipe={recipe} imageOnly={true} />
+              </Grid>
+            ))}
           </Grid>
-        </Box>
+        </Container>
       </Box>
     </Box>
-
   );
 }
 
@@ -87,19 +77,19 @@ export default ForYouPage;
 const styles = {
   background: {
     backgroundImage: 'url("/background.jpg")',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   overlay: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    width: '100%',
-    minHeight: '100vh',
-    paddingTop: '30px',
-    paddingBottom: '30px',
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    width: "100%",
+    minHeight: "100vh",
+    paddingTop: "20px",
+    paddingBottom: "20px",
   },
-}
+};
