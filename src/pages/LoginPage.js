@@ -140,11 +140,7 @@ function LoginPage() {
                 ),
               }}
             />
-            <Typography variant="body2" align="right">
-              <Link to="/forgot-password" style={{ color: '#1e88e5', textDecoration: 'none' }}>
-                Forgot password?
-              </Link>
-            </Typography>
+  
 
             <Button
               type="submit"

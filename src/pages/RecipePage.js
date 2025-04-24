@@ -10,7 +10,6 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import ShareIcon from "@mui/icons-material/Share";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import CommentSection from "../components/Comments";
 import PageLoading from "../components/PageLoading";
@@ -226,9 +225,7 @@ function RecipePage() {
                   <Typography>{commentsCount}</Typography>
                 </Box>
 
-                <IconButton sx={styles.iconButton}>
-                  <ShareIcon sx={styles.iconSvg} />
-                </IconButton>
+              
               </Box>
 
               {showComments && <CommentSection recipeId={recipe._id} />}
