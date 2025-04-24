@@ -214,12 +214,48 @@ function RegisterPage() {
     password: '',
   });
 
+  const [errors, setErrors] = useState({
+    email: '',
+    phone: '',
+    password: ''
+  });
+
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    
+    // Validate email
+    if (name === 'email' && value.trim() !== '') {
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+      if (!emailRegex.test(value)) {
+        setErrors(prev => ({ ...prev, email: 'Please enter a valid email address' }));
+      } else {
+        setErrors(prev => ({ ...prev, email: '' }));
+      }
+    }
+    
+    // Validate phone
+    if (name === 'phone' && value.trim() !== '') {
+      const phoneRegex = /^(\+\d{1,3}[- ]?)?\d{9,10}$/;
+      if (!phoneRegex.test(value)) {
+        setErrors(prev => ({ ...prev, phone: 'Please enter a valid phone number' }));
+      } else {
+        setErrors(prev => ({ ...prev, phone: '' }));
+      }
+    }
+    
+    // Validate password
+    if (name === 'password') {
+      if (value.length < 6) {
+        setErrors(prev => ({ ...prev, password: 'Password must be at least 6 characters long' }));
+      } else {
+        setErrors(prev => ({ ...prev, password: '' }));
+      }
+    }
   };
 
   const handleImageChange = (e) => {
@@ -236,6 +272,35 @@ function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate form before submission
+    let isValid = true;
+    const newErrors = { email: '', phone: '', password: '' };
+    
+    // Email validation
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+      isValid = false;
+    }
+    
+    // Phone validation
+    const phoneRegex = /^(\+\d{1,3}[- ]?)?\d{9,10}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Please enter a valid phone number';
+      isValid = false;
+    }
+    
+    // Password validation
+    if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters long';
+      isValid = false;
+    }
+    
+    setErrors(newErrors);
+    
+    if (!isValid) return;
+    
     try {
       const body = new FormData();
       Object.entries(formData).forEach(([key, val]) => body.append(key, val));
@@ -327,17 +392,57 @@ function RegisterPage() {
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField label="Username" name="username" required fullWidth value={formData.username} onChange={handleChange} />
+            <TextField 
+              label="Username" 
+              name="username" 
+              required 
+              fullWidth 
+              value={formData.username} 
+              onChange={handleChange} 
+            />
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField label="First Name" name="firstName" required fullWidth value={formData.firstName} onChange={handleChange} />
+                <TextField 
+                  label="First Name" 
+                  name="firstName" 
+                  required 
+                  fullWidth 
+                  value={formData.firstName} 
+                  onChange={handleChange} 
+                />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField label="Last Name" name="lastName" required fullWidth value={formData.lastName} onChange={handleChange} />
+                <TextField 
+                  label="Last Name" 
+                  name="lastName" 
+                  required 
+                  fullWidth 
+                  value={formData.lastName} 
+                  onChange={handleChange} 
+                />
               </Grid>
             </Grid>
-            <TextField label="Email Address" name="email" type="email" required fullWidth value={formData.email} onChange={handleChange} />
-            <TextField label="Phone Number" name="phone" required fullWidth value={formData.phone} onChange={handleChange} />
+            <TextField 
+              label="Email Address" 
+              name="email" 
+              type="email" 
+              required 
+              fullWidth 
+              value={formData.email} 
+              onChange={handleChange}
+              error={!!errors.email}
+              helperText={errors.email}
+            />
+            <TextField 
+              label="Phone Number" 
+              name="phone" 
+              required 
+              fullWidth 
+              value={formData.phone} 
+              onChange={handleChange}
+              error={!!errors.phone}
+              helperText={errors.phone}
+            />
             <TextField
               label="Password"
               name="password"
@@ -346,6 +451,8 @@ function RegisterPage() {
               fullWidth
               value={formData.password}
               onChange={handleChange}
+              error={!!errors.password}
+              helperText={errors.password}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">

@@ -122,6 +122,9 @@ function ProfilePage() {
                       <Typography variant="h5" fontWeight="700" color="primary" sx={{ mb: 1 }}>
                         {`${user.firstName} ${user.lastName}` || 'Full Name Not Available'}
                       </Typography>
+                      <Typography variant="subtitle1" fontWeight="500" color="secondary" sx={{ mb: 1 }}>
+                        @{user.username || 'username'}
+                      </Typography>
                       <Typography color="text.secondary" sx={{ mb: 2 }}>
                         {user.email}
                       </Typography>

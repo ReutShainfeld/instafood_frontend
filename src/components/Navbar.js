@@ -1,6 +1,6 @@
 // Navbar.js – גרסה מלאה כולל תמונת פרופיל ליד שם המשתמש
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -31,12 +31,19 @@ import HideOnScroll from '../components/HideOnScroll'; // או הנתיב שבו
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useMediaQuery('(max-width:768px)');
   const [drawerOpen, setDrawerOpen] = React.useState(false);
  // const userName = localStorage.getItem('fullName');
   // const profileImage = localStorage.getItem('profileImage');
   const [profileImage, setProfileImage] = React.useState(localStorage.getItem('profileImage') || null);
   const [userName, setUserName] = React.useState(localStorage.getItem('fullName') || '');
+
+  const isActive = (path) => {
+    if (path === '/' && location.pathname === '/') return true;
+    if (path === '/search' && location.pathname.includes('/search')) return true;
+    return location.pathname === path;
+  };
 
 // מוודא שה־Navbar יתעדכן אם משהו משתנה ב־localStorage
 useEffect(() => {
@@ -73,19 +80,19 @@ useEffect(() => {
       <List>
         <ListItem button component={Link} to="/">
           <ListItemIcon><HomeIcon /></ListItemIcon>
-          <ListItemText primary="Home" />
+          <ListItemText primary="Home" sx={{ '& .MuiTypography-root': { fontWeight: isActive('/') ? 700 : 400 } }} />
         </ListItem>
         <ListItem button onClick={handleSearchClick}>
           <ListItemIcon><SearchIcon /></ListItemIcon>
-          <ListItemText primary="Search" />
+          <ListItemText primary="Search" sx={{ '& .MuiTypography-root': { fontWeight: isActive('/search') ? 700 : 400 } }} />
         </ListItem>
         <ListItem button component={Link} to="/for-you">
           <ListItemIcon><StarIcon /></ListItemIcon>
-          <ListItemText primary="For You" />
+          <ListItemText primary="For You" sx={{ '& .MuiTypography-root': { fontWeight: isActive('/for-you') ? 700 : 400 } }} />
         </ListItem>
         <ListItem button component={Link} to="/upload">
           <ListItemIcon><AddCircleIcon /></ListItemIcon>
-          <ListItemText primary="Upload Recipe" />
+          <ListItemText primary="Upload Recipe" sx={{ '& .MuiTypography-root': { fontWeight: isActive('/upload') ? 700 : 400 } }} />
         </ListItem>
         <Divider />
         {userName ? (
@@ -94,7 +101,7 @@ useEffect(() => {
               <ListItemIcon>
                 <Avatar src={profileImage || "/default-user.png"} sx={{ width: 28, height: 28 }} />
               </ListItemIcon>
-              <ListItemText primary={userName} />
+              <ListItemText primary={userName} sx={{ '& .MuiTypography-root': { fontWeight: isActive('/profile') ? 700 : 400 } }} />
             </ListItem>
             <ListItem button onClick={handleLogout}>
               <ListItemIcon><LogoutIcon /></ListItemIcon>
@@ -141,23 +148,23 @@ useEffect(() => {
           {/* Desktop buttons */}
           {!isMobile ? (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Link to="/search" style={linkStyle}>
+              <Link to="/search" style={{...linkStyle, ...(isActive('/search') ? activeStyle : {})}}>
                 <SearchIcon fontSize="large" sx={{ mr: 1 }} />
                 Search
               </Link>
-              <Link to="/" style={linkStyle}>
+              <Link to="/" style={{...linkStyle, ...(isActive('/') ? activeStyle : {})}}>
                 Home
               </Link>
-              <Link to="/for-you" style={linkStyle}>
+              <Link to="/for-you" style={{...linkStyle, ...(isActive('/for-you') ? activeStyle : {})}}>
                 For You
               </Link>
-              <Link to="/upload" style={linkStyle}>
+              <Link to="/upload" style={{...linkStyle, ...(isActive('/upload') ? activeStyle : {})}}>
                 Upload
               </Link>
 
               {userName ? (
                 <>
-                  <Link to="/profile" style={linkStyle}>
+                  <Link to="/profile" style={{...linkStyle, ...(isActive('/profile') ? activeStyle : {})}}>
                     {/* <Avatar src={profileImage || "/default-user.png"} sx={{ width: 28, height: 28, mr: 1 }} /> */}
                     <Avatar
                     src={
@@ -215,7 +222,7 @@ const linkStyle = {
   fontSize: '0.95rem',
   padding: '6px 12px',
   borderRadius: '8px',
-  transition: 'background-color 0.2s ease',
+  transition: 'all 0.2s ease',
   '&:hover': {
     backgroundColor: 'rgba(255, 102, 0, 0.08)',
     color: '#ff6600',
@@ -223,6 +230,12 @@ const linkStyle = {
   '&:active': {
     backgroundColor: 'rgba(255, 102, 0, 0.16)',
   }
+};
+
+const activeStyle = {
+  fontWeight: 700,
+  color: '#ff6600',
+  backgroundColor: 'rgba(255, 102, 0, 0.08)'
 };
 
 

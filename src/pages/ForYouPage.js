@@ -1,19 +1,25 @@
 
 import React, { useEffect, useState } from "react";
 import RecipeCard from "../components/RecipeCard";
-import { Box, Typography, Grid, Container } from "@mui/material";
+import { Box, Typography, Grid, Container, Snackbar, Alert } from "@mui/material";
 import PageLoading from "../components/PageLoading";
+import { useNavigate } from "react-router-dom";
 
 function ForYouPage() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
 
   useEffect(() => {
     if (!token) {
-      setError("User not logged in");
-      setLoading(false);
+      // Show login alert and then redirect after a delay
+      setShowLoginAlert(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 2000); // Redirect after 2 seconds
       return;
     }
 
@@ -31,9 +37,29 @@ function ForYouPage() {
       });
   }, [token]);
 
-  if (loading) return <PageLoading />;
+  if (loading && token) return <PageLoading />;
 
   return (
+    <>
+      {/* Login Alert - Outside the main Box to ensure it shows regardless of loading state */}
+      <Snackbar 
+        open={showLoginAlert} 
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={2000}
+      >
+        <Alert 
+          severity="warning" 
+          variant="filled"
+          sx={{ 
+            width: '100%',
+            backgroundColor: '#ff6600',
+            color: 'white',
+            fontWeight: 'bold'
+          }}
+        >
+          You need to login first to access this page
+        </Alert>
+      </Snackbar>
     <Box sx={styles.background}>
       <Box sx={styles.overlay}>
         <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -69,6 +95,7 @@ function ForYouPage() {
         </Container>
       </Box>
     </Box>
+    </>
   );
 }
 

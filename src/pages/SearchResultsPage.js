@@ -1,100 +1,5 @@
-// import React, { useEffect, useState } from "react";
-// import { useParams, useNavigate } from "react-router-dom";
-// import {
-//   Box, Typography, IconButton, Divider
-// } from "@mui/material";
-// import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-// import RecipeCard from "../components/RecipeCard";
-
-
-// function SearchResultsPage() {
-//   const { type, value } = useParams();
-//   const [results, setResults] = useState([]);
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     const fetchFiltered = async () => {
-//       try {
-//         const res = await fetch("http://localhost:5000/api/recipes");
-//         const data = await res.json();
-
-//         const filtered = data.filter((r) => {
-//           if (type === "tag") return r.tags?.includes(value);
-//           if (type === "category") return r.category === value;
-//           if (type === "difficulty") return r.difficulty === value;
-
-//           if (type === "query") {
-//             const lower = value.toLowerCase();
-//             return (
-//               r.title?.toLowerCase().includes(lower) ||
-//               r.description?.toLowerCase().includes(lower) ||
-//               r.tags?.some((tag) => tag.toLowerCase().includes(lower)) ||
-//               r.ingredients?.some((ing) => ing.toLowerCase().includes(lower)) ||
-//               r.category?.toLowerCase().includes(lower) ||
-//               r.difficulty?.toLowerCase().includes(lower)
-//             );
-//           }
-
-//           return false;
-//         });
-
-//         setResults(filtered);
-//       } catch (err) {
-//         console.error("❌ Failed to fetch filtered results", err);
-//       }
-//     };
-
-//     fetchFiltered();
-//   }, [type, value]);
-
-//   return (
-//     <Box sx={styles.container}>
-//       <Box sx={{ position: "relative" }}>
-//         <IconButton onClick={() => navigate(-1)} sx={styles.backBtn}>
-//           <ArrowForwardIosIcon />
-//         </IconButton>
-//       </Box>
-
-//       <Typography variant="h5" fontWeight="bold" sx={{ mt: 1 }}>
-//         תוצאות עבור <span style={{ color: "#ff6600" }}>{value}</span>
-//       </Typography>
-
-//       <Divider sx={{ my: 2 }} />
-
-//       {results.length === 0 ? (
-//         <Typography>לא נמצאו תוצאות.</Typography>
-//       ) : (
-//         results.map((recipe) => (
-//           <RecipeCard
-//             key={recipe._id}
-//             recipe={recipe}
-//             uploader={recipe.user?.username || "Unknown"}
-//           />
-//         ))
-//       )}
-//     </Box>
-//   );
-// }
-
-// export default SearchResultsPage;
-
-// const styles = {
-//   container: {
-//     maxWidth: 900,
-//     margin: "auto",
-//     padding: 2,
-//   },
-//   backBtn: {
-//     position: "absolute",
-//     top: 12,
-//     right: 12,
-//     backgroundColor: "#fff",
-//     "&:hover": {
-//       backgroundColor: "#f0f0f0",
-//     },
-//   },
-// };
 import React, { useEffect, useState } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -102,60 +7,123 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Grid
+  Grid,
+  CircularProgress
 } from '@mui/material';
 import RecipeCard from '../components/RecipeCard';
 
 function SearchResultsPage() {
   const [results, setResults] = useState([]);
-  const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [loading, setLoading] = useState(true);
+  const { type, value } = useParams(); // Added useParams to capture route params
+  const location = useLocation();
 
   useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
+    // Set loading state at the beginning of data fetching
+    setLoading(true);
+    
+    // Handle both URL formats: /search/tag/:value and /search?q=term
+    const query = new URLSearchParams(location.search);
     const searchTerm = query.get('q');
 
-    fetch(`http://localhost:5000/api/recipes/search?q=${searchTerm}`)
-      .then(res => res.json())
-      .then(data => {
-        setResults(data || []);
-      })
-      .catch(err => {
-        console.error("Search failed", err);
-        setResults([]);
-      });
-  }, []);
+    if (type === 'tag' && value) {
+      // Handle tag search from URL path /search/tag/:value
+      fetch('http://localhost:5000/api/recipes')
+        .then(res => res.json())
+        .then(data => {
+          const filtered = data.filter(recipe => 
+            recipe.tags?.some(tag => tag.toLowerCase() === value.toLowerCase())
+          );
+          setResults(filtered || []);
+          
+          // Extract unique categories from the filtered results
+          const uniqueCategories = [...new Set(filtered.map(recipe => recipe.category).filter(Boolean))];
+          setCategories(uniqueCategories);
+          
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Search failed", err);
+          setResults([]);
+          setCategories([]);
+          setLoading(false);
+        });
+    } else if (searchTerm) {
+      // Handle regular search from query param /search?q=term
+      fetch(`http://localhost:5000/api/recipes/search?q=${searchTerm}`)
+        .then(res => res.json())
+        .then(data => {
+          setResults(data || []);
+          
+          // Extract unique categories from the search results
+          const uniqueCategories = [...new Set(data.map(recipe => recipe.category).filter(Boolean))];
+          setCategories(uniqueCategories);
+          
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Search failed", err);
+          setResults([]);
+          setCategories([]);
+          setLoading(false);
+        });
+    } else {
+      // No search parameters, exit loading state
+      setLoading(false);
+      setCategories([]);
+    }
+  }, [type, value, location.search]);
 
-  const filteredResults = category
-    ? results.filter(recipe => recipe.tags?.includes(category))
+  const filteredResults = selectedCategory
+    ? results.filter(recipe => recipe.category === selectedCategory)
     : results;
 
   return (
     <Box sx={{ maxWidth: 1000, mx: 'auto', mt: 4, px: 2 }}>
       <Typography variant="h5" fontWeight="bold" gutterBottom>
-        תוצאות חיפוש
+        {type === 'tag' ? `Results for tag: #${value}` : 'Search Results'}
+        {selectedCategory && ` • Category: ${selectedCategory}`}
       </Typography>
 
       <Box sx={{ mb: 4 }}>
         <FormControl variant="standard" sx={{ minWidth: 180 }}>
-          <InputLabel>קטגוריה</InputLabel>
+          <InputLabel>Filter by Category</InputLabel>
           <Select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
             disableUnderline
             inputProps={{ disableUnderline: true }}
           >
-            <MenuItem value="">הכל</MenuItem>
-            <MenuItem value="בשרי">בשרי</MenuItem>
-            <MenuItem value="צמחוני">צמחוני</MenuItem>
-            <MenuItem value="טבעוני">טבעוני</MenuItem>
-            <MenuItem value="אחר">אחר</MenuItem>
+            <MenuItem value="">All Categories</MenuItem>
+            {categories.length > 0 ? (
+              categories.map(cat => (
+                <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+              ))
+            ) : (
+              <>
+                <MenuItem value="Breakfast">Breakfast</MenuItem>
+                <MenuItem value="Lunch">Lunch</MenuItem>
+                <MenuItem value="Dinner">Dinner</MenuItem>
+                <MenuItem value="Dessert">Dessert</MenuItem>
+                <MenuItem value="Drinks">Drinks</MenuItem>
+              </>
+            )}
           </Select>
         </FormControl>
       </Box>
 
-      {filteredResults.length === 0 ? (
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+          <CircularProgress color="warning" />
+          <Typography variant="body1" color="text.secondary" sx={{ ml: 2 }}>
+            Searching recipes...
+          </Typography>
+        </Box>
+      ) : filteredResults.length === 0 ? (
         <Typography sx={{ textAlign: "center", mt: 4, fontWeight: 'bold', color: 'gray' }}>
-          😕 לא נמצאו מתכונים התואמים לחיפוש שלך
+          😕 No recipes found matching your search
         </Typography>
       ) : (
         <Grid container spacing={3}>

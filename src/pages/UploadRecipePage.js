@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   TextField, Button, IconButton, InputLabel, MenuItem,
-  FormControl, Select, Autocomplete, Box, Card, CardContent, Typography
+  FormControl, Select, Autocomplete, Box, Card, CardContent, Typography, Snackbar, Alert
 } from "@mui/material";
 import { AddCircle, RemoveCircle, ImageOutlined } from "@mui/icons-material";
 import '../styles/authPages.css';
@@ -23,11 +23,23 @@ function UploadRecipePage() {
   });
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
 
   const tagOptions = [
     "בשרי", "חלבי", "פרווה", "ילדים", "טבעוני",
     "צמחוני", "מתוק", "תוספת", "עיקרית", "חגים", "שבת"
   ];
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // Show login alert and then redirect after a delay
+      setShowLoginAlert(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 2000); // Redirect after 2 seconds
+    }
+  }, [navigate]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -61,7 +73,13 @@ function UploadRecipePage() {
     e.preventDefault();
 
     const token = localStorage.getItem("token");
-    if (!token) return alert("Login required.");
+    if (!token) {
+      setShowLoginAlert(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+      return;
+    }
     if (!image) return alert("Please upload an image.");
 
     try {
@@ -102,6 +120,26 @@ function UploadRecipePage() {
   };
 
   return (
+    <>
+      {/* Login Alert - Outside the main Box to ensure it always shows */}
+      <Snackbar 
+        open={showLoginAlert} 
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        autoHideDuration={2000}
+      >
+        <Alert 
+          severity="warning" 
+          variant="filled"
+          sx={{ 
+            width: '100%',
+            backgroundColor: '#ff6600',
+            color: 'white',
+            fontWeight: 'bold'
+          }}
+        >
+          You need to login first to upload recipes
+        </Alert>
+      </Snackbar>
     <Box sx={styles.background}>
       <Box sx={styles.overlay}>
         <Box sx={styles.wrapper}>
@@ -229,6 +267,7 @@ function UploadRecipePage() {
         </Box>
       </Box>
     </Box>
+    </>
   );
 }
 
