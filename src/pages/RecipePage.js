@@ -6,7 +6,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import GroupsIcon from "@mui/icons-material/Groups";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
@@ -109,7 +109,7 @@ function RecipePage() {
                 onError={(e) => (e.target.src = "/default-image.png")}
               />
               <IconButton onClick={() => navigate(-1)} sx={styles.backBtn}>
-                <ArrowForwardIosIcon />
+                <ArrowBackIosIcon />
               </IconButton>
             </Box>
 
