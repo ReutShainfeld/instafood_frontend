@@ -11,7 +11,11 @@ import SearchResultsPage from "./pages/SearchResultsPage";
 import AdvancedSearchPage from "./pages/AdvancedSearchPage";
 import EditProfilePage from './pages/EditProfilePage';
 import Layout from './components/Layout';
-import PublicProfilePage from './pages/PublicProfilePage';
+import EmailVerifiedPage from './pages/EmailVerifiedPage';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 
 function App() {
@@ -30,9 +34,12 @@ function App() {
           <Route path="/search/query/:query" element={<SearchResultsPage />} />
           <Route path="/search" element={<AdvancedSearchPage />} />
           <Route path="/edit-profile" element={<EditProfilePage />} />
-          <Route path="/profile/:userId" element={<PublicProfilePage />} />
+          <Route path="/email-verified" element={<EmailVerifiedPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         </Route>
       </Routes>
+      <ToastContainer />
     </Router>
   );
 }

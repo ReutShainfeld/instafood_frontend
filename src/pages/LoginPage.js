@@ -13,6 +13,9 @@ import {
   Grid,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { auth, googleProvider } from "../firebase";
+import { signInWithPopup } from "firebase/auth";
+
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -57,6 +60,82 @@ function LoginPage() {
     }
   };
 
+  const loginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+  
+      const fullName = user.displayName || '';
+      const email = user.email || '';
+      const profileImage = user.photoURL || '';
+  
+      const [firstName, lastName] = fullName.split(' ');
+  
+      // ננסה להתחבר קודם
+      const response = await fetch('http://localhost:5000/api/auth/google-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        // התחברות קיימת
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.userId);
+        localStorage.setItem('fullName', data.fullName);
+        localStorage.setItem('profileImage', data.profileImage || '');
+  
+        setSnackbar({ open: true, message: 'Login with Google successful! Redirecting...', severity: 'success' });
+        setTimeout(() => navigate('/profile'), 1500);
+      } else if (response.status === 404) {
+        // יוזר לא קיים - נרשום אותו
+        await registerGoogleUser(email, firstName, lastName, profileImage, user.uid);
+      } else {
+        throw new Error('Unknown error during Google login');
+      }
+    } catch (error) {
+      console.error('Google login error:', error);
+      setSnackbar({ open: true, message: 'Google sign-in failed', severity: 'error' });
+    }
+  };
+
+  const registerGoogleUser = async (email, firstName, lastName, profileImage, password) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: email.split('@')[0], 
+          firstName: firstName || 'First',
+          lastName: lastName || 'Last',
+          email,
+          password,
+          phone: '0000000000',
+          profileImage,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.userId);
+        localStorage.setItem('fullName', data.fullName);
+        localStorage.setItem('profileImage', data.profileImage || '');
+  
+        setSnackbar({ open: true, message: 'Registered with Google! Redirecting...', severity: 'success' });
+        setTimeout(() => navigate('/profile'), 1500);
+      } else {
+        setSnackbar({ open: true, message: `Registration failed: ${data.message}`, severity: 'error' });
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setSnackbar({ open: true, message: 'Registration failed', severity: 'error' });
+    }
+  };
+  
   return (
     <Grid container sx={{ minHeight: '100vh' }}>
       {/* Left Panel */}
@@ -110,6 +189,17 @@ function LoginPage() {
             </Link>
           </Typography>
 
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={loginWithGoogle}
+            sx={{ fontWeight: 'bold', bgcolor: '#4285F4', '&:hover': { bgcolor: '#357ae8' }, mb: 2 }}
+          >
+            Sign in with Google
+          </Button>
+
+
           <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
               label="Email Address"
@@ -141,7 +231,14 @@ function LoginPage() {
               }}
             />
   
-
+           <Box textAlign="right">
+              <Link
+                to="/forgot-password"
+                style={{ color: '#ff6600', fontSize: '0.9rem', textDecoration: 'none', fontWeight: 'bold' }}
+              >
+                Forgot Password?
+              </Link>
+            </Box>
             <Button
               type="submit"
               variant="contained"
