@@ -126,7 +126,14 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
       />
       <CardContent>
         <Box sx={styles.uploaderBox}>
-          <Avatar />
+        <Avatar
+            src={
+                recipe.user?.profileImage?.startsWith('/uploads')
+                ? `http://localhost:5000${recipe.user.profileImage}`
+                : recipe.user?.profileImage || '/default-user.png'
+            }
+            />
+
           <Box sx={{ ml: 1 }}>
             <Typography variant="subtitle2" fontWeight="bold">{uploader}</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>

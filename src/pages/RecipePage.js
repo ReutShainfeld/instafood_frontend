@@ -6,14 +6,14 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import GroupsIcon from "@mui/icons-material/Groups";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import ShareIcon from "@mui/icons-material/Share";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import CommentSection from "../components/Comments";
 import PageLoading from "../components/PageLoading";
-import { Button } from "@mui/material";
 
 function RecipePage() {
   const { id } = useParams();
@@ -29,14 +29,22 @@ function RecipePage() {
   const [showLikes, setShowLikes] = useState(false);
   const [showComments, setShowComments] = useState(false);
 
+  const getImageUrl = (url) => {
+    if (!url) return '/default-user.png';
+    return url.startsWith('http') ? url : `http://localhost:5000${url}`;
+  };
+
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/recipes");
+        // const res = await fetch("http://localhost:5000/api/recipes");
+        // const data = await res.json();
+        // const found = data.find((r) => r._id === id);
+        // setRecipe(found);
+        const res = await fetch(`http://localhost:5000/api/recipes/${id}`);
         const data = await res.json();
-        const found = data.find((r) => r._id === id);
-        setRecipe(found);
-        setLikes(found.likes || 0);
+        setRecipe(data);
+        setLikes(data.likes || 0);
       } catch (err) {
         console.error("❌ Failed to fetch recipe", err);
       }
@@ -94,29 +102,6 @@ function RecipePage() {
     } catch { }
   };
 
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this recipe?')) return;
-    try {
-      const res = await fetch(`http://localhost:5000/api/recipes/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
-      if (res.ok) {
-        alert('Recipe deleted!');
-        navigate('/profile');
-      } else {
-        const errorData = await res.json();
-        alert(errorData.message || 'Failed to delete');
-      }
-    } catch (err) {
-      console.error('Error deleting recipe:', err);
-      alert('Error deleting recipe.');
-    }
-  };
-  
   if (!recipe) return <PageLoading />;
 
   return (
@@ -126,44 +111,55 @@ function RecipePage() {
           <Box sx={styles.pageContainer}>
             {/* LEFT: Recipe Image */}
             <Box sx={styles.imageSection}>
-              <img
-                src={recipe.imageUrl}
-                alt={recipe.title}
-                style={styles.recipeImage}
-                onError={(e) => (e.target.src = "/default-image.png")}
-              />
+            <img
+            src={
+              recipe.imageUrl?.startsWith('http')
+                ? recipe.imageUrl
+                : `http://localhost:5000${recipe.imageUrl}`
+            }
+            alt={recipe.title}
+            style={styles.recipeImage}
+            onError={(e) => (e.target.src = "/default-image.png")}
+          />
+
               <IconButton onClick={() => navigate(-1)} sx={styles.backBtn}>
-                <ArrowBackIosIcon />
+                <ArrowForwardIosIcon />
               </IconButton>
             </Box>
 
             {/* RIGHT: Recipe Details */}
-            <Box sx={styles.contentSection}>
+            {/* <Box sx={styles.contentSection}>
               <Box sx={styles.header}>
                 <Avatar />
                 <Box>
-                <Typography
-                  fontWeight="bold"
-                  sx={{ color: '#ff6600', cursor: 'pointer' }}
-                  onClick={() => navigate(`/profile/${recipe.user?._id}`)}
-                >
-                  {recipe.user?.username || "Unknown"}
-                </Typography>
-
+                  <Typography fontWeight="bold">
+                    {recipe.user?.username || "Unknown"}
+                  </Typography>
                   <Typography fontSize={12} color="gray">
                     {recipe.createdAt
                       ? new Date(recipe.createdAt).toLocaleDateString()
                       : "Unknown Date"}
                   </Typography>
-
-                  {/* הוספה של מיקום */}
-  {recipe.location && (
-    <Typography fontSize={12} color="gray">
-      {recipe.location}
-    </Typography>
-  )}
                 </Box>
-              </Box>
+              </Box> */}
+
+              <Box sx={styles.contentSection}>
+                <Box sx={styles.header}>
+                  <Avatar
+                    src={getImageUrl(recipe.user?.profileImage)}
+                    sx={{ width: 56, height: 56, mr: 2 }}
+                  />
+                  <Box>
+                    <Typography fontWeight="bold">
+                      {recipe.user?.username || "Unknown"}
+                    </Typography>
+                    <Typography fontSize={12} color="gray">
+                      {recipe.createdAt
+                        ? new Date(recipe.createdAt).toLocaleDateString()
+                        : "Unknown Date"}
+                    </Typography>
+                  </Box>
+                </Box>
 
               <Typography variant="h4" sx={{ mt: 2, fontWeight: 600 }}>
                 {recipe.title}
@@ -256,41 +252,9 @@ function RecipePage() {
                   <Typography>{commentsCount}</Typography>
                 </Box>
 
-                {recipe.user?._id === userId && ( // רואים רק אם המשתמש הוא הבעלים
-  <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-    <Button
-      variant="outlined"
-      color="primary"
-      onClick={() => navigate(`/edit-recipe/${recipe._id}`)}
-      sx={{
-        textTransform: 'none',
-        fontWeight: 'bold',
-        borderRadius: '8px',
-        color: '#ff6600',
-        borderColor: '#ff6600',
-        '&:hover': { backgroundColor: 'rgba(255, 102, 0, 0.1)' },
-      }}
-    >
-      Edit Recipe
-    </Button>
-
-    <Button
-      variant="outlined"
-      color="error"
-      onClick={handleDelete}
-      sx={{
-        textTransform: 'none',
-        fontWeight: 'bold',
-        borderRadius: '8px',
-        borderColor: '#d32f2f',
-        '&:hover': { backgroundColor: 'rgba(211, 47, 47, 0.1)' },
-      }}
-    >
-      Delete Recipe
-    </Button>
-  </Box>
-)}
-
+                <IconButton sx={styles.iconButton}>
+                  <ShareIcon sx={styles.iconSvg} />
+                </IconButton>
               </Box>
 
               {showComments && <CommentSection recipeId={recipe._id} />}
