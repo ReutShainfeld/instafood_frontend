@@ -91,7 +91,7 @@ function LoginPage() {
         setTimeout(() => navigate('/profile'), 1500);
       } else if (response.status === 404) {
         // יוזר לא קיים - נרשום אותו
-        await registerGoogleUser(email, firstName, lastName, profileImage, user.uid);
+        await registerGoogleUser(email, firstName, lastName, profileImage, user);
       } else {
         throw new Error('Unknown error during Google login');
       }
@@ -101,7 +101,7 @@ function LoginPage() {
     }
   };
 
-  const registerGoogleUser = async (email, firstName, lastName, profileImage, password) => {
+  const registerGoogleUser = async (email, firstName, lastName, profileImage, user) => {
     try {
       const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
@@ -111,8 +111,8 @@ function LoginPage() {
           firstName: firstName || 'First',
           lastName: lastName || 'Last',
           email,
-          password,
-          phone: '0000000000',
+          password: user.uid,
+          phone: `google-${user.uid}`,
           profileImage,
         }),
       });
