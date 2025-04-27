@@ -181,6 +181,14 @@ function CommentSection({ recipeId, onClose }) {
       </DialogTitle>
 
       <DialogContent dividers={false} sx={{ p: 0 }}>
+        {/* ----- List / Empty state ----- */}
+        {comments.length === 0 ? (
+          <Typography sx={sx.noCommentsText}>
+            No comments yet. Be the first to comment! 💬
+          </Typography>
+        ) : (
+          <Box sx={{ mt: 3 }}>{comments.map((c) => renderComment(c))}</Box>
+        )}
         {/* ----- Add comment box ----- */}
         <Box sx={sx.writeArea}>
           <TextField
@@ -198,15 +206,6 @@ function CommentSection({ recipeId, onClose }) {
             Post
           </Button>
         </Box>
-
-        {/* ----- List / Empty state ----- */}
-        {comments.length === 0 ? (
-          <Typography sx={sx.noCommentsText}>
-            No comments yet. Be the first to comment! 💬
-          </Typography>
-        ) : (
-          <Box sx={{ mt: 3 }}>{comments.map((c) => renderComment(c))}</Box>
-        )}
       </DialogContent>
     </Dialog>
   );

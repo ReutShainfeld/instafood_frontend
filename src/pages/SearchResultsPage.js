@@ -140,8 +140,10 @@ function SearchResultsPage() {
     : results;
 
   return (
-    <Box sx={{ maxWidth: 1000, mx: 'auto', mt: 4, px: 2 }}>
-      <Typography variant="h5" fontWeight="bold" gutterBottom>
+    <Box sx={styles.background}>
+    <Box sx={styles.overlay}>
+      <Box sx={{ maxWidth: 1000, mx: 'auto', px: 2 }}>
+              <Typography variant="h5" fontWeight="bold" gutterBottom>
         {type === 'tag' ? `Results for tag: #${value}` : 'Search Results'}
         {selectedCategory && ` • Category: ${selectedCategory}`}
       </Typography>
@@ -196,8 +198,30 @@ function SearchResultsPage() {
           ))}
         </Grid>
       )}
-    </Box>
+      </Box> {/* סגירת inner container */}
+    </Box>   {/* סגירת overlay */}
+  </Box>     
   );
 }
 
 export default SearchResultsPage;
+
+const styles = {
+  background: {
+    backgroundImage: 'url("/background.jpg")',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    minHeight: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  overlay: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    width: '100%',
+    minHeight: '100vh',
+    paddingTop: '60px',
+    paddingBottom: '60px',
+  },
+};
