@@ -295,10 +295,11 @@ function ProfilePage() {
                   ) : (
                     likedRecipes.length > 0 ? (
                       likedRecipes.map((r) => (
-                        <Grid item xs={12} sm={6} md={6} key={r._id} sx={{ padding: 3 }}>
-                          <RecipeCard recipe={r} uploader={r.user?.username || "Unknown"} />
-                        </Grid>
-                      ))
+  <Grid item xs={12} sm={6} md={6} key={r._id} sx={{ padding: 3 }}>
+    <RecipeCard recipe={r} uploader={r.user?.username || r.username || "Unknown"} />
+  </Grid>
+))
+
                     ) : (
                       <Typography align="center" mt={2}>No liked recipes yet.</Typography>
                     )

@@ -16,6 +16,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import PublicProfilePage from './pages/PublicProfilePage';
+
 
 
 function App() {
@@ -37,6 +39,8 @@ function App() {
           <Route path="/email-verified" element={<EmailVerifiedPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+          <Route path="/profile/:userId" element={<PublicProfilePage />} />
+
         </Route>
       </Routes>
       <ToastContainer />

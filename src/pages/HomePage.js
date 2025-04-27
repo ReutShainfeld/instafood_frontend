@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import PageLoading from '../components/PageLoading';
 
+
 function HomePage() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +50,7 @@ function HomePage() {
                 },
               }}
             >
-              Discover Nourishing Recipes
+              Discover Recipes
             </Typography>
 
             <Typography
@@ -66,7 +67,7 @@ function HomePage() {
                 mx: 'auto',
               }}
             >
-              Curated wellness meals to support your lifestyle. Browse, cook, and thrive.
+              Browse, cook, and thrive.
             </Typography>
           </Box>
 

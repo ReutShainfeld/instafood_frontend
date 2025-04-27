@@ -24,6 +24,7 @@ function UploadRecipePage() {
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [showLoginAlert, setShowLoginAlert] = useState(false);
+  const [location, setLocation] = useState('');
 
   const tagOptions = [
     "בשרי", "חלבי", "פרווה", "ילדים", "טבעוני",
@@ -39,6 +40,33 @@ function UploadRecipePage() {
         navigate('/');
       }, 2000); // Redirect after 2 seconds
     }
+  // 🧡 ניסיון להשיג מיקום ולתרגם לכתובת
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const response = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyBZXi0TxIVSgvV-3e3OKjJzDcrluiZsdtg`
+          );
+          const data = await response.json();
+          console.log("🌍 Full Google Maps API response:", data);
+          if (data.status === "OK") {
+            const address = data.results[0]?.formatted_address || '';
+            console.log("🏡 Detected Address:", address);
+            setLocation(address);
+          } else {
+            console.error("Error with Geocoding API:", data.status);
+          }
+        } catch (err) {
+          console.error("Error fetching address:", err);
+        }
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+      }
+    );
+  }
   }, [navigate]);
 
   const handleImageChange = (e) => {
@@ -95,6 +123,7 @@ function UploadRecipePage() {
       formData.append("image", image);
       formData.append("ingredients", JSON.stringify(recipe.ingredients));
       formData.append("instructions", JSON.stringify(recipe.instructions));
+      formData.append("location", location);
 
       const res = await fetch("http://localhost:5000/api/recipes", {
         method: "POST",
@@ -178,15 +207,24 @@ function UploadRecipePage() {
                 <TextField name="title" label="Recipe Title *" value={recipe.title}
                   onChange={handleChange} fullWidth required sx={styles.input} />
 
-                <TextField name="description" label="Description *" value={recipe.description}
-                  onChange={handleChange} fullWidth required multiline rows={3} sx={styles.input} />
+<TextField
+  name="location"
+  label="Location (optional)"
+  value={location}
+  onChange={(e) => setLocation(e.target.value)}
+  fullWidth
+  sx={styles.input}
+/>
+
+                <TextField name="description" label="Description" value={recipe.description}
+                  onChange={handleChange} fullWidth multiline rows={3} sx={styles.input} />
 
                 <div style={styles.row}>
                   <TextField name="cookingTime" label="Cooking Time (minutes) *" type="number"
                     value={recipe.cookingTime} onChange={handleChange} fullWidth required
                     inputProps={{ min: 0 }} sx={styles.input} />
-                  <TextField name="servings" label="Servings *" type="number"
-                    value={recipe.servings} onChange={handleChange} fullWidth required
+                  <TextField name="servings" label="Servings" type="number"
+                    value={recipe.servings} onChange={handleChange} fullWidth 
                     inputProps={{ min: 0 }} sx={styles.input} />
                 </div>
 
@@ -204,7 +242,7 @@ function UploadRecipePage() {
                   <FormControl fullWidth sx={styles.input}>
                     <InputLabel>Category</InputLabel>
                     <Select label="Category" name="category"
-                      value={recipe.category} onChange={handleChange} required>
+                      value={recipe.category} onChange={handleChange} >
                       <MenuItem value="Breakfast">Breakfast</MenuItem>
                       <MenuItem value="Lunch">Lunch</MenuItem>
                       <MenuItem value="Dinner">Dinner</MenuItem>
