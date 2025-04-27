@@ -19,29 +19,35 @@ function SearchResultsPage() {
   const [loading, setLoading] = useState(true);
   const { type, value } = useParams(); // Added useParams to capture route params
   const location = useLocation();
-
   useEffect(() => {
-    // Set loading state at the beginning of data fetching
     setLoading(true);
-    
-    // Handle both URL formats: /search/tag/:value and /search?q=term
+  
     const query = new URLSearchParams(location.search);
     const searchTerm = query.get('q');
-
-    if (type === 'tag' && value) {
-      // Handle tag search from URL path /search/tag/:value
+  
+    if ((type === 'tag' || type === 'category' || type === 'difficulty') && value) {
       fetch('http://localhost:5000/api/recipes')
         .then(res => res.json())
         .then(data => {
-          const filtered = data.filter(recipe => 
-            recipe.tags?.some(tag => tag.toLowerCase() === value.toLowerCase())
-          );
+          let filtered = [];
+  
+          if (type === 'tag') {
+            filtered = data.filter(recipe => 
+              recipe.tags?.some(tag => tag.toLowerCase() === value.toLowerCase())
+            );
+          } else if (type === 'category') {
+            filtered = data.filter(recipe => 
+              recipe.category?.toLowerCase() === value.toLowerCase()
+            );
+          } else if (type === 'difficulty') {
+            filtered = data.filter(recipe => 
+              recipe.difficulty?.toLowerCase() === value.toLowerCase()
+            );
+          }
+  
           setResults(filtered || []);
-          
-          // Extract unique categories from the filtered results
           const uniqueCategories = [...new Set(filtered.map(recipe => recipe.category).filter(Boolean))];
           setCategories(uniqueCategories);
-          
           setLoading(false);
         })
         .catch(err => {
@@ -50,17 +56,14 @@ function SearchResultsPage() {
           setCategories([]);
           setLoading(false);
         });
+  
     } else if (searchTerm) {
-      // Handle regular search from query param /search?q=term
       fetch(`http://localhost:5000/api/recipes/search?q=${searchTerm}`)
         .then(res => res.json())
         .then(data => {
           setResults(data || []);
-          
-          // Extract unique categories from the search results
           const uniqueCategories = [...new Set(data.map(recipe => recipe.category).filter(Boolean))];
           setCategories(uniqueCategories);
-          
           setLoading(false);
         })
         .catch(err => {
@@ -69,12 +72,68 @@ function SearchResultsPage() {
           setCategories([]);
           setLoading(false);
         });
+  
     } else {
-      // No search parameters, exit loading state
       setLoading(false);
       setCategories([]);
     }
   }, [type, value, location.search]);
+  
+  // useEffect(() => {
+  //   // Set loading state at the beginning of data fetching
+  //   setLoading(true);
+    
+  //   // Handle both URL formats: /search/tag/:value and /search?q=term
+  //   const query = new URLSearchParams(location.search);
+  //   const searchTerm = query.get('q');
+
+    // if (type === 'tag' && value) {
+    //   // Handle tag search from URL path /search/tag/:value
+    //   fetch('http://localhost:5000/api/recipes')
+    //     .then(res => res.json())
+    //     .then(data => {
+    //       const filtered = data.filter(recipe => 
+    //         recipe.tags?.some(tag => tag.toLowerCase() === value.toLowerCase())
+    //       );
+    //       setResults(filtered || []);
+          
+    //       // Extract unique categories from the filtered results
+    //       const uniqueCategories = [...new Set(filtered.map(recipe => recipe.category).filter(Boolean))];
+    //       setCategories(uniqueCategories);
+          
+    //       setLoading(false);
+    //     })
+    //     .catch(err => {
+    //       console.error("Search failed", err);
+    //       setResults([]);
+    //       setCategories([]);
+    //       setLoading(false);
+    //     });
+  //   } else if (searchTerm) {
+  //     // Handle regular search from query param /search?q=term
+  //     fetch(`http://localhost:5000/api/recipes/search?q=${searchTerm}`)
+  //       .then(res => res.json())
+  //       .then(data => {
+  //         setResults(data || []);
+          
+  //         // Extract unique categories from the search results
+  //         const uniqueCategories = [...new Set(data.map(recipe => recipe.category).filter(Boolean))];
+  //         setCategories(uniqueCategories);
+          
+  //         setLoading(false);
+  //       })
+  //       .catch(err => {
+  //         console.error("Search failed", err);
+  //         setResults([]);
+  //         setCategories([]);
+  //         setLoading(false);
+  //       });
+  //   } else {
+  //     // No search parameters, exit loading state
+  //     setLoading(false);
+  //     setCategories([]);
+  //   }
+  // }, [type, value, location.search]);
 
   const filteredResults = selectedCategory
     ? results.filter(recipe => recipe.category === selectedCategory)
