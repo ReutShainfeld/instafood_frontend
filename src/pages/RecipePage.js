@@ -131,6 +131,13 @@ function RecipePage() {
                       ? new Date(recipe.createdAt).toLocaleDateString()
                       : "Unknown Date"}
                   </Typography>
+
+                  {/* הוספה של מיקום */}
+  {recipe.location && (
+    <Typography fontSize={12} color="gray">
+      {recipe.location}
+    </Typography>
+  )}
                 </Box>
               </Box>
 
