@@ -13,6 +13,7 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import CommentSection from "../components/Comments";
 import PageLoading from "../components/PageLoading";
+import { Button } from "@mui/material";
 
 function RecipePage() {
   const { id } = useParams();
@@ -93,6 +94,29 @@ function RecipePage() {
     } catch { }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this recipe?')) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/recipes/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (res.ok) {
+        alert('Recipe deleted!');
+        navigate('/profile');
+      } else {
+        const errorData = await res.json();
+        alert(errorData.message || 'Failed to delete');
+      }
+    } catch (err) {
+      console.error('Error deleting recipe:', err);
+      alert('Error deleting recipe.');
+    }
+  };
+  
   if (!recipe) return <PageLoading />;
 
   return (
@@ -232,7 +256,41 @@ function RecipePage() {
                   <Typography>{commentsCount}</Typography>
                 </Box>
 
-              
+                {recipe.user?._id === userId && ( // רואים רק אם המשתמש הוא הבעלים
+  <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+    <Button
+      variant="outlined"
+      color="primary"
+      onClick={() => navigate(`/edit-recipe/${recipe._id}`)}
+      sx={{
+        textTransform: 'none',
+        fontWeight: 'bold',
+        borderRadius: '8px',
+        color: '#ff6600',
+        borderColor: '#ff6600',
+        '&:hover': { backgroundColor: 'rgba(255, 102, 0, 0.1)' },
+      }}
+    >
+      Edit Recipe
+    </Button>
+
+    <Button
+      variant="outlined"
+      color="error"
+      onClick={handleDelete}
+      sx={{
+        textTransform: 'none',
+        fontWeight: 'bold',
+        borderRadius: '8px',
+        borderColor: '#d32f2f',
+        '&:hover': { backgroundColor: 'rgba(211, 47, 47, 0.1)' },
+      }}
+    >
+      Delete Recipe
+    </Button>
+  </Box>
+)}
+
               </Box>
 
               {showComments && <CommentSection recipeId={recipe._id} />}
