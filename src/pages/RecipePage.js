@@ -14,6 +14,8 @@ import ShareIcon from "@mui/icons-material/Share";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import CommentSection from "../components/Comments";
 import PageLoading from "../components/PageLoading";
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 function RecipePage() {
   const { id } = useParams();
@@ -44,6 +46,8 @@ function RecipePage() {
         const res = await fetch(`http://localhost:5000/api/recipes/${id}`);
         const data = await res.json();
         setRecipe(data);
+        console.log("📦 Recipe loaded:", recipe);
+
         setLikes(data.likes || 0);
       } catch (err) {
         console.error("❌ Failed to fetch recipe", err);
@@ -111,16 +115,36 @@ function RecipePage() {
           <Box sx={styles.pageContainer}>
             {/* LEFT: Recipe Image */}
             <Box sx={styles.imageSection}>
-            <img
-            src={
-              recipe.imageUrl?.startsWith('http')
-                ? recipe.imageUrl
-                : `http://localhost:5000${recipe.imageUrl}`
-            }
-            alt={recipe.title}
-            style={styles.recipeImage}
-            onError={(e) => (e.target.src = "/default-image.png")}
-          />
+            {recipe.media && recipe.media.length > 0 ? (
+              <Carousel showThumbs={false} infiniteLoop useKeyboardArrows autoPlay={false}>
+  {recipe.media.map((file, idx) => (
+    <div key={idx} style={{ backgroundColor: "#fff" }}>
+      {file.endsWith('.mp4') || file.endsWith('.mov') || file.endsWith('.avi') ? (
+        <video
+          src={file}
+          controls
+          style={{ width: "100%", height: "auto", maxHeight: "500px", objectFit: "contain" }}
+        />
+      ) : (
+        <img
+          src={file}
+          alt=""
+          style={{ width: "100%", height: "auto", maxHeight: "500px", objectFit: "cover" }}
+        />
+      )}
+    </div>
+  ))}
+</Carousel>
+
+) : (
+  <img
+    src="/default-image.png"
+    alt="default"
+    style={{ width: "100%", height: "auto", maxHeight: "500px", objectFit: "cover" }}
+  />
+)}
+
+
 
               <IconButton onClick={() => navigate(-1)} sx={styles.backBtn}>
                 <ArrowForwardIosIcon />

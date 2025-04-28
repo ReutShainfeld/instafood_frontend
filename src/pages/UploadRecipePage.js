@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   TextField, Button, IconButton, InputLabel, MenuItem,
@@ -6,6 +6,7 @@ import {
 } from "@mui/material";
 import { AddCircle, RemoveCircle, ImageOutlined } from "@mui/icons-material";
 import '../styles/authPages.css';
+import { VolumeUp, VolumeOff, PlayArrow } from '@mui/icons-material';
 
 function UploadRecipePage() {
   const navigate = useNavigate();
@@ -21,8 +22,9 @@ function UploadRecipePage() {
     instructions: [""],
     tags: []
   });
-  const [image, setImage] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [mediaFiles, setMediaFiles] = useState([]); // קבצים מרובים
+  const [previewUrls, setPreviewUrls] = useState([]); // תצוגות מקדימות מרובות
+
   const [showLoginAlert, setShowLoginAlert] = useState(false);
   const [location, setLocation] = useState('');
 
@@ -70,12 +72,30 @@ function UploadRecipePage() {
   }, [navigate]);
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      setPreviewUrl(URL.createObjectURL(file));
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+  
+    const newFiles = [...mediaFiles, ...files];
+  
+    if (newFiles.length > 10) {
+      alert("You can upload up to 10 files only.");
+      return;
     }
+  
+    setMediaFiles(newFiles);
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    setPreviewUrls(prev => [...prev, ...newPreviews]);
   };
+  
+  const handleRemoveMedia = (index) => {
+    const updatedFiles = [...mediaFiles];
+    const updatedPreviews = [...previewUrls];
+    updatedFiles.splice(index, 1);
+    updatedPreviews.splice(index, 1);
+    setMediaFiles(updatedFiles);
+    setPreviewUrls(updatedPreviews);
+  };
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -108,7 +128,7 @@ function UploadRecipePage() {
       }, 2000);
       return;
     }
-    if (!image) return alert("Please upload an image.");
+    if (mediaFiles.length === 0) return alert("Please upload at least one image or video.");
 
     try {
       setIsUploading(true);
@@ -120,7 +140,9 @@ function UploadRecipePage() {
       formData.append("difficulty", recipe.difficulty);
       formData.append("category", recipe.category);
       formData.append("tags", JSON.stringify(recipe.tags));
-      formData.append("image", image);
+      mediaFiles.forEach((file) => {
+        formData.append("media", file); // שים לב: אותו שם לכולם
+      });
       formData.append("ingredients", JSON.stringify(recipe.ingredients));
       formData.append("instructions", JSON.stringify(recipe.instructions));
       formData.append("location", location);
@@ -148,6 +170,82 @@ function UploadRecipePage() {
     }
   };
 
+  function VideoPlayer({ src }) {
+    const [playing, setPlaying] = useState(true);
+    const [muted, setMuted] = useState(true);
+    const videoRef = useRef(null);
+  
+    const handleTogglePlay = () => {
+      if (playing) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setPlaying(!playing);
+    };
+  
+    const handleToggleMute = (e) => {
+      e.stopPropagation();
+      setMuted(!muted);
+      if (videoRef.current) {
+        videoRef.current.muted = !muted;
+      }
+    };
+  
+    return (
+      <Box sx={{ position: 'relative', width: '100%', height: 220 }}>
+        <video
+          ref={videoRef}
+          src={src}
+          autoPlay
+          muted={muted}
+          loop
+          playsInline
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            borderRadius: '10px',
+            cursor: 'pointer',
+          }}
+          onClick={handleTogglePlay}
+        />
+        {/* כפתור השתקה בצד ימין למעלה */}
+        <IconButton
+          onClick={handleToggleMute}
+          sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            backgroundColor: 'rgba(255,255,255,0.6)',
+            zIndex: 10,
+            width: 32,
+            height: 32,
+          }}
+        >
+          {muted ? <VolumeOff fontSize="small" /> : <VolumeUp fontSize="small" />}
+        </IconButton>
+        {/* כפתור פליי במרכז כשהווידאו מושהה */}
+        {!playing && (
+          <IconButton
+            onClick={handleTogglePlay}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: 'rgba(255,255,255,0.7)',
+              zIndex: 10,
+            }}
+          >
+            <PlayArrow fontSize="large" />
+          </IconButton>
+        )}
+      </Box>
+    );
+  }
+  
+  
   return (
     <>
       {/* Login Alert - Outside the main Box to ensure it always shows */}
@@ -182,27 +280,54 @@ function UploadRecipePage() {
               </Box>
 
               <form onSubmit={handleSubmit} style={styles.form}>
-                <div style={styles.imageUpload}>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    style={{ display: "none" }}
-                    id="image-upload"
-                  />
-                  <label htmlFor="image-upload" style={styles.uploadBox}>
-                    {previewUrl ? (
-                      <img src={previewUrl} alt="Preview" style={styles.imagePreview} />
-                    ) : (
-                      <Box sx={styles.uploadPlaceholder}>
-                        <ImageOutlined sx={{ fontSize: 48, color: "#aaa" }} />
-                        <Typography variant="body1" sx={{ color: "#555", mt: 1 }}>
-                          Click to upload recipe image
-                        </Typography>
-                      </Box>
-                    )}
-                  </label>
-                </div>
+              <div style={styles.imageUpload}>
+  {/* input הסתרת קובץ */}
+  <input
+    type="file"
+    accept="image/*,video/*"
+    multiple
+    onChange={handleImageChange}
+    style={{ display: "none" }}
+    id="image-upload"
+  />
+
+  {/* תמיד להראות את המלבן להעלאה */}
+  <label htmlFor="image-upload" style={styles.uploadBox}>
+    <Box sx={styles.uploadPlaceholder}>
+      <ImageOutlined sx={{ fontSize: 48, color: "#aaa" }} />
+      <Typography variant="body1" sx={{ color: "#555", mt: 1 }}>
+        Click to upload recipe media
+      </Typography>
+    </Box>
+  </label>
+
+  {/* הצגת המדיות אם קיימות */}
+  {previewUrls.length > 0 && (
+    previewUrls.map((url, idx) => (
+      <div key={idx} style={{ marginBottom: '10px', position: 'relative' }}>
+        {mediaFiles[idx]?.type?.startsWith('video') ? (
+          <VideoPlayer src={url} />
+        ) : (
+          <img src={url} alt={`Preview ${idx}`} style={styles.imagePreview} />
+        )}
+        <IconButton
+          onClick={() => handleRemoveMedia(idx)}
+          sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            zIndex: 10,
+          }}
+        >
+          <RemoveCircle sx={{ color: '#ff0000' }} />
+        </IconButton>
+      </div>
+    ))
+  )}
+</div>
+
+
 
                 <TextField name="title" label="Recipe Title *" value={recipe.title}
                   onChange={handleChange} fullWidth required sx={styles.input} />

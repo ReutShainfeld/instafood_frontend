@@ -27,6 +27,7 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
   const [likeUsers, setLikeUsers] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [commentsCount, setCommentsCount] = useState(0);
+  
 
   useEffect(() => {
     if (!userId || imageOnly) return;
@@ -72,12 +73,21 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
     } catch {}
   };
 
-  const getImageUrl = (url) => {
-    if (!url) return '/default-image.png';
-    return url.startsWith('http') ? url : `http://localhost:5000${url}`;
+  const getFirstMediaFile = (recipe) => {
+    if (!recipe.media || recipe.media.length === 0) {
+      return { url: '/default-image.png', type: 'image' };
+    }
+    const firstFile = recipe.media[0];
+    const isVideo = firstFile.endsWith('.mp4') || firstFile.endsWith('.mov') || firstFile.endsWith('.avi');
+    const url = firstFile.startsWith('http') ? firstFile : `http://localhost:5000${firstFile}`;
+    return { url, type: isVideo ? 'video' : 'image' };
   };
+  
+  
+  
 
   if (imageOnly) {
+    const { url, type } = getFirstMediaFile(recipe);
     return (
       <Card
         sx={{
@@ -90,40 +100,63 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
           lineHeight: 0,
         }}
       >
-        <CardMedia
-          component="img"
-          image={getImageUrl(recipe.imageUrl)}
-          alt={recipe.title}
-          sx={{
-            width: "100%",
-            height: 220,
-            objectFit: "cover",
-            cursor: "pointer",
-            display: "block",
-            transition: "transform 0.3s ease-in-out",
-            "&:hover": {
-              transform: "scale(1.05)",
-            },
-          }}
-          onClick={() => navigate(`/recipe/${recipe._id}`)}
-          onError={(e) => {
-            e.target.src = "/default-image.png";
-          }}
-        />
+{type === 'image' ? (
+  <CardMedia
+    component="img"
+    image={url}
+    alt={recipe.title}
+    sx={{
+      width: "100%",
+      height: 220,
+      objectFit: "cover",
+      cursor: "pointer",
+      display: "block",
+      transition: "transform 0.3s ease-in-out",
+      "&:hover": { transform: "scale(1.05)" },
+    }}
+    onClick={() => navigate(`/recipe/${recipe._id}`)}
+    onError={(e) => { e.target.src = "/default-image.png"; }}
+  />
+) : (
+  <video
+    src={url}
+    controls
+    style={{
+      width: "100%",
+      height: 220,
+      objectFit: "contain",
+      cursor: "pointer",
+    }}
+    onClick={() => navigate(`/recipe/${recipe._id}`)}
+    onError={(e) => { e.target.poster = "/default-image.png"; }}
+  />
+)}
+
       </Card>
     );
   }
-
+  const { url, type } = getFirstMediaFile(recipe);
   return (
     <Card sx={styles.card}>
-      <CardMedia
-        component="img"
-        image={getImageUrl(recipe.imageUrl)}
-        alt={recipe.title}
-        sx={styles.image}
-        onClick={() => navigate(`/recipe/${recipe._id}`)}
-        onError={(e) => { e.target.src = '/default-image.png'; }}
-      />
+{type === 'image' ? (
+  <CardMedia
+    component="img"
+    image={url}
+    alt={recipe.title}
+    sx={styles.image}
+    onClick={() => navigate(`/recipe/${recipe._id}`)}
+    onError={(e) => { e.target.src = "/default-image.png"; }}
+  />
+) : (
+  <video
+    src={url}
+    controls
+    style={{ ...styles.image, objectFit: 'contain' }}
+    onClick={() => navigate(`/recipe/${recipe._id}`)}
+    onError={(e) => { e.target.poster = "/default-image.png"; }}
+  />
+)}
+
       <CardContent>
         <Box sx={styles.uploaderBox}>
         <Avatar
