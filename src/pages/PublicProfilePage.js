@@ -21,7 +21,7 @@ function PublicProfilePage() {
   /*  ---------------  state  ---------------- */
   const [user, setUser]               = useState(null);
   const [recipes, setRecipes]         = useState([]);
-  const [likedRecipes, setLiked]      = useState([]);
+  // const [likedRecipes, setLiked]      = useState([]);
   const [selectedTab, setSelectedTab] = useState(0);
   const [snackbar, setSnackbar]       = useState({ open: false, message: '', severity: 'error' });
 
@@ -56,24 +56,24 @@ function PublicProfilePage() {
       }
     };
 
-    /* user liked recipes (optional) */
-    const fetchLiked = async () => {
-      try {
-        const res = await fetch(`http://localhost:5000/api/users/${userId}/liked`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setLiked(data.recipes || []);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
+    // /* user liked recipes (optional) */
+    // const fetchLiked = async () => {
+    //   try {
+    //     const res = await fetch(`http://localhost:5000/api/users/${userId}/liked`, {
+    //       headers: { Authorization: `Bearer ${token}` },
+    //     });
+    //     if (res.ok) {
+    //       const data = await res.json();
+    //       setLiked(data.recipes || []);
+    //     }
+    //   } catch (err) {
+    //     console.error(err);
+    //   }
+    // };
 
     fetchUser();
     fetchRecipes();
-    fetchLiked();
+    // fetchLiked();
   }, [userId]);
 
   const handleCloseSnackbar = () => setSnackbar(s => ({ ...s, open: false }));
@@ -129,14 +129,14 @@ function PublicProfilePage() {
                             Recipes
                           </Typography>
                         </Box>
-                        <Box sx={{ textAlign: 'center' }}>
+                        {/* <Box sx={{ textAlign: 'center' }}>
                           <Typography fontWeight={700} sx={{ fontSize: 18 }}>
                             {likedRecipes.length}
                           </Typography>
                           <Typography fontSize={14} color="text.secondary">
                             Liked
                           </Typography>
-                        </Box>
+                        </Box> */}
                       </Box>
                     </Box>
                   </Box>
@@ -166,7 +166,7 @@ function PublicProfilePage() {
                     '&:hover': { color: '#ff6600', fontWeight: 'bold' },
                   }}
                 />
-                <Tab
+                {/* <Tab
                   label="Liked Recipes"
                   sx={{
                     color: selectedTab === 1 ? '#ff6600' : 'gray',
@@ -177,7 +177,9 @@ function PublicProfilePage() {
                     '&:hover': { color: '#ff6600', fontWeight: 'bold' },
                   }}
                 />
-              </Tabs>
+               </Tabs> */}
+               </Tabs>
+               
 
               {/* recipes list */}
               <Card sx={{ mt: 3, p: 3, boxShadow: '0 4px 15px rgba(0,0,0,0.1)', borderRadius: 2 }}>
@@ -194,12 +196,12 @@ function PublicProfilePage() {
                           No recipes yet.
                         </Typography>
                       )
-                    : likedRecipes.length
-                      ? likedRecipes.map(r => (
-                          <Grid item xs={12} sm={6} md={6} key={r._id} sx={{ p: 3 }}>
-                            <RecipeCard recipe={r} uploader={r.user?.username || 'Unknown'} />
-                          </Grid>
-                        ))
+                    // : likedRecipes.length
+                    //   ? likedRecipes.map(r => (
+                    //       <Grid item xs={12} sm={6} md={6} key={r._id} sx={{ p: 3 }}>
+                    //         <RecipeCard recipe={r} uploader={r.user?.username || 'Unknown'} />
+                    //       </Grid>
+                    //     ))
                       : (
                         <Typography align="center" mt={2} sx={{ width: '100%' }}>
                           No liked recipes yet.
