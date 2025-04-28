@@ -150,9 +150,17 @@ function RecipePage() {
                     sx={{ width: 56, height: 56, mr: 2 }}
                   />
                   <Box>
-                    <Typography fontWeight="bold">
+                    {/* <Typography fontWeight="bold">
                       {recipe.user?.username || "Unknown"}
-                    </Typography>
+                    </Typography> */}
+                    <Typography
+                    fontWeight="bold"
+                    sx={{ cursor: "pointer", textDecoration: "underline" }}
+                    onClick={() => navigate(`/profile/${recipe.user?._id}`)}
+                  >
+                    {recipe.user?.username || "Unknown"}
+                  </Typography>
+
                     <Typography fontSize={12} color="gray">
                       {recipe.createdAt
                         ? new Date(recipe.createdAt).toLocaleDateString()
@@ -256,6 +264,45 @@ function RecipePage() {
                   <ShareIcon sx={styles.iconSvg} />
                 </IconButton>
               </Box>
+              {recipe.user?._id === userId && (
+  <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+    <Chip
+      label="Edit"
+      color="primary"
+      onClick={() => navigate(`/edit-recipe/${recipe._id}`)}
+      clickable
+    />
+    <Chip
+      label="Delete"
+      color="error"
+      onClick={async () => {
+        const confirm = window.confirm("Are you sure you want to delete this recipe?");
+        if (!confirm) return;
+
+        try {
+          const res = await fetch(`http://localhost:5000/api/recipes/${recipe._id}`, {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (res.ok) {
+            alert("Recipe deleted successfully");
+            navigate("/"); // תחזיר לדף הבית או פרופיל
+          } else {
+            alert("Failed to delete recipe");
+          }
+        } catch (err) {
+          console.error("❌ Delete error:", err);
+          alert("An error occurred while deleting.");
+        }
+      }}
+      clickable
+    />
+  </Box>
+)}
+
 
               {showComments && <CommentSection recipeId={recipe._id} />}
             </Box>
