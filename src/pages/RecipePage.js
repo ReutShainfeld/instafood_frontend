@@ -261,7 +261,7 @@ function RecipePage() {
                 </Box>
 
                 <IconButton sx={styles.iconButton}>
-                  <ShareIcon sx={styles.iconSvg} />
+          
                 </IconButton>
               </Box>
               {recipe.user?._id === userId && (
