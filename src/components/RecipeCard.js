@@ -90,142 +90,177 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
           lineHeight: 0,
         }}
       >
-        <CardMedia
-          component="img"
-          image={getImageUrl(recipe.imageUrl)}
-          alt={recipe.title}
-          sx={{
-            width: "100%",
-            height: 220,
-            objectFit: "cover",
-            cursor: "pointer",
-            display: "block",
-            transition: "transform 0.3s ease-in-out",
-            "&:hover": {
-              transform: "scale(1.05)",
-            },
-          }}
-          onClick={() => navigate(`/recipe/${recipe._id}`)}
-          onError={(e) => {
-            e.target.src = "/default-image.png";
-          }}
-        />
+        <Box sx={{ position: "relative", width: "100%", paddingTop: "65%", overflow: "hidden" }}>
+          <CardMedia
+            component="img"
+            image={getImageUrl(recipe.imageUrl)}
+            alt={recipe.title}
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center",
+              cursor: "pointer",
+              display: "block",
+              transition: "transform 0.3s ease-in-out",
+              "&:hover": {
+                transform: "scale(1.05)",
+              },
+            }}
+            onClick={() => navigate(`/recipe/${recipe._id}`)}
+            onError={(e) => {
+              e.target.src = "/default-image.png";
+            }}
+          />
+        </Box>
       </Card>
     );
   }
 
   return (
     <Card sx={styles.card}>
-      <CardMedia
-        component="img"
-        image={getImageUrl(recipe.imageUrl)}
-        alt={recipe.title}
-        sx={styles.image}
-        onClick={() => navigate(`/recipe/${recipe._id}`)}
-        onError={(e) => { e.target.src = '/default-image.png'; }}
-      />
-      <CardContent>
-        <Box sx={styles.uploaderBox}>
-        <Avatar
-            src={
+      <Box sx={{ position: "relative", width: "100%", paddingTop: "65%" }}>
+        <CardMedia
+          component="img"
+          image={getImageUrl(recipe.imageUrl)}
+          alt={recipe.title}
+          sx={{
+            ...styles.image,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: "100%"
+          }}
+          onClick={() => navigate(`/recipe/${recipe._id}`)}
+          onError={(e) => { e.target.src = '/default-image.png'; }}
+        />
+      </Box>
+      <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        <Box>
+          <Box sx={styles.uploaderBox}>
+            <Avatar
+              src={
                 recipe.user?.profileImage?.startsWith('/uploads')
-                ? `http://localhost:5000${recipe.user.profileImage}`
-                : recipe.user?.profileImage || '/default-user.png'
-            }
+                  ? `http://localhost:5000${recipe.user.profileImage}`
+                  : recipe.user?.profileImage || '/default-user.png'
+              }
             />
 
-          <Box sx={{ ml: 1 }}>
-            <Typography variant="subtitle2" fontWeight="bold">{uploader}</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-  <CalendarTodayIcon sx={{ fontSize: 16, color: 'gray', mr: 0.5 }} />
-  <Typography variant="caption" color="text.secondary">
-    {recipe.createdAt ? new Date(recipe.createdAt).toLocaleDateString() : 'Unknown Date'}
-  </Typography>
-</Box>
+            <Box sx={{ ml: 1 }}>
+              <Typography variant="subtitle2" fontWeight="bold">{uploader}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <CalendarTodayIcon sx={{ fontSize: 16, color: 'gray', mr: 0.5 }} />
+                <Typography variant="caption" color="text.secondary">
+                  {recipe.createdAt ? new Date(recipe.createdAt).toLocaleDateString() : 'Unknown Date'}
+                </Typography>
+              </Box>
 
-            {recipe.location && (
-  <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-    <LocationOnIcon sx={{ fontSize: 16, color: 'gray', mr: 0.5 }} />
-    <Typography
-      variant="caption"
-      color="text.secondary"
-      noWrap
-      sx={{
-        maxWidth: '120px', 
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {recipe.location}
-    </Typography>
-  </Box>
-)}
-  
+              {recipe.location && (
+                <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                  <LocationOnIcon sx={{ fontSize: 16, color: 'gray', mr: 0.5 }} />
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    noWrap
+                    sx={{
+                      maxWidth: '120px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {recipe.location}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
           </Box>
-        </Box>
 
-        <Typography
-          variant="h6"
-          sx={{ ...styles.title, cursor: "pointer" }}
-          onClick={() => navigate(`/recipe/${recipe._id}`)}
-        >
-          {recipe.title}
-        </Typography>
+          <Typography
+            variant="h6"
+            sx={{ ...styles.title, cursor: "pointer" }}
+            onClick={() => navigate(`/recipe/${recipe._id}`)}
+          >
+            {recipe.title}
+          </Typography>
 
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          {recipe.description}
-        </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1, height: '40px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+            {recipe.description || "No description provided"}
+          </Typography>
 
-        {recipe.tags?.length > 0 && (
           <Box sx={styles.tagsBox}>
-            {recipe.tags.map((tag, index) => (
+            {recipe.tags?.length > 0 ? (
+              <>
+                {recipe.tags.slice(0, 3).map((tag, index) => (
+                  <Typography
+                    key={index}
+                    variant="caption"
+                    sx={styles.tag}
+                    onClick={() => navigate(`/search/tag/${tag}`)}
+                  >
+                    #{tag}
+                  </Typography>
+                ))}
+                {recipe.tags.length > 3 && (
+                  <Typography
+                    variant="caption"
+                    sx={{ ...styles.tag, backgroundColor: '#ff8a33', color: '#fff' }}
+                    onClick={() => navigate(`/recipe/${recipe._id}`)}
+                  >
+                    +{recipe.tags.length - 3}
+                  </Typography>
+                )}
+              </>
+            ) : (
               <Typography
-                key={index}
                 variant="caption"
-                sx={styles.tag}
-                onClick={() => navigate(`/search/tag/${tag}`)}
+                sx={{ ...styles.tag, backgroundColor: '#f0f0f0', color: '#999' }}
               >
-                #{tag}
+                No tags
               </Typography>
-            ))}
+            )}
           </Box>
-        )}
 
-        <Box sx={styles.recipeInfo}>
-          <Box sx={styles.infoItem}>
-            <AccessTimeIcon sx={{ fontSize: 16 }} />
-            <Typography variant="caption" sx={{ ml: 0.5 }}>{recipe.cookingTime || 25} mins</Typography>
-          </Box>
-          <Box sx={styles.infoItem}>
-            <GroupsIcon sx={{ fontSize: 16 }} />
-            <Typography variant="caption" sx={{ ml: 0.5 }}>{recipe.servings || 4} servings</Typography>
+          <Box sx={styles.recipeInfo}>
+            <Box sx={styles.infoItem}>
+              <AccessTimeIcon sx={{ fontSize: 16 }} />
+              <Typography variant="caption" sx={{ ml: 0.5 }}>{recipe.cookingTime || 25} mins</Typography>
+            </Box>
+            <Box sx={styles.infoItem}>
+              <GroupsIcon sx={{ fontSize: 16 }} />
+              <Typography variant="caption" sx={{ ml: 0.5 }}>{recipe.servings || 4} servings</Typography>
+            </Box>
           </Box>
         </Box>
 
-        <Box sx={styles.actions}>
-          <Box sx={styles.iconGroup}>
-            <IconButton onClick={handleLike} sx={styles.iconButton}>
-              {liked ? <FavoriteIcon sx={styles.iconSvg} /> : <FavoriteBorderIcon sx={styles.iconSvg} />}
-            </IconButton>
-            <Typography variant="body2">{likes}</Typography>
+        <Box sx={{ marginTop: 'auto', paddingTop: '0px' }}>
+          <Box sx={styles.actions}>
+            <Box sx={styles.iconGroup}>
+              <IconButton onClick={handleLike} sx={styles.iconButton}>
+                {liked ? <FavoriteIcon sx={styles.iconSvg} /> : <FavoriteBorderIcon sx={styles.iconSvg} />}
+              </IconButton>
+              <Typography variant="body2">{likes}</Typography>
+            </Box>
+
+            <Box sx={styles.iconGroup}>
+              <IconButton onClick={handleShowLikes} sx={styles.iconButton}>
+                <PeopleAltOutlinedIcon sx={styles.iconSvg} />
+              </IconButton>
+            </Box>
+
+            <Box sx={styles.iconGroup}>
+              <IconButton onClick={() => setShowComments(!showComments)} sx={styles.iconButton}>
+                <ChatBubbleOutlineIcon sx={styles.iconSvg} />
+              </IconButton>
+              <Typography variant="body2">{commentsCount}</Typography>
+            </Box>
           </Box>
 
-          <Box sx={styles.iconGroup}>
-            <IconButton onClick={handleShowLikes} sx={styles.iconButton}>
-              <PeopleAltOutlinedIcon sx={styles.iconSvg} />
-            </IconButton>
-          </Box>
-
-          <Box sx={styles.iconGroup}>
-            <IconButton onClick={() => setShowComments(!showComments)} sx={styles.iconButton}>
-              <ChatBubbleOutlineIcon sx={styles.iconSvg} />
-            </IconButton>
-            <Typography variant="body2">{commentsCount}</Typography>
-          </Box>
+          {showComments && <CommentSection recipeId={recipe._id} />}
         </Box>
-
-        {showComments && <CommentSection recipeId={recipe._id} />}
       </CardContent>
 
       <Dialog open={showLikes} onClose={() => setShowLikes(false)}>
@@ -253,17 +288,22 @@ const styles = {
   card: {
     width: "100%",
     maxWidth: 500,
+    height: 550, // Fixed height for all cards
     margin: "auto",
     borderRadius: "15px",
     overflow: "hidden",
     boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.08)",
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    display: "flex",
+    flexDirection: "column"
   },
   image: {
     width: "100%",
-    height: 220,
+    height: 260,
     objectFit: "cover",
-    cursor: "pointer"
+    objectPosition: "center",
+    cursor: "pointer",
+    aspectRatio: "3/2"
   },
   uploaderBox: {
     display: "flex",
@@ -272,13 +312,19 @@ const styles = {
   },
   title: {
     fontWeight: "bold",
-    marginTop: 1
+    marginTop: 1,
+    height: '28px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: '-webkit-box',
+    WebkitLineClamp: 1,
+    WebkitBoxOrient: 'vertical'
   },
   recipeInfo: {
     display: "flex",
     gap: 2,
     marginTop: 1,
-    marginBottom: 1
+    marginBottom: 0
   },
   infoItem: {
     display: "flex",
@@ -288,7 +334,7 @@ const styles = {
     display: "flex",
     justifyContent: "space-between", // aligned cleanly
     alignItems: "center",
-    marginTop: 2
+    marginTop: 0
   },
   iconGroup: {
     display: "flex",
@@ -303,9 +349,10 @@ const styles = {
   },
   tagsBox: {
     display: "flex",
-    flexWrap: "wrap",
+    flexWrap: "nowrap",
     gap: "6px",
-    marginBottom: "8px"
+    marginBottom: "8px",
+    overflow: "hidden"
   },
   tag: {
     backgroundColor: "#f2f2f2",
