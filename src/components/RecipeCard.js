@@ -261,14 +261,12 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
 
           {showComments && <CommentSection recipeId={recipe._id} />}
         </Box>
-<<<<<<< HEAD
+
 
         {showComments && <CommentSection recipeId={recipe._id}
          onCommentAdded={(diff) => 
           setCommentsCount(prev => prev + diff)} />
       }
-=======
->>>>>>> 5f7c68f968ae700c6f0cb1c476a391173d075a6f
       </CardContent>
 
       <Dialog open={showLikes} onClose={() => setShowLikes(false)}>
