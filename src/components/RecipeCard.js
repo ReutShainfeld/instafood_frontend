@@ -14,8 +14,6 @@ import CommentSection from './Comments';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
-
-
 function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
@@ -72,12 +70,18 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
     } catch {}
   };
 
-  const getImageUrl = (url) => {
-    if (!url) return '/default-image.png';
-    return url.startsWith('http') ? url : `http://localhost:5000${url}`;
+  const getFirstMediaFile = (recipe) => {
+    if (!recipe.media || recipe.media.length === 0) {
+      return { url: '/default-image.png', type: 'image' };
+    }
+    const firstFile = recipe.media[0];
+    const isVideo = firstFile.endsWith('.mp4') || firstFile.endsWith('.mov') || firstFile.endsWith('.avi');
+    const url = firstFile.startsWith('http') ? firstFile : `http://localhost:5000${firstFile}`;
+    return { url, type: isVideo ? 'video' : 'image' };
   };
 
   if (imageOnly) {
+    const { url, type } = getFirstMediaFile(recipe);
     return (
       <Card
         sx={{
@@ -91,53 +95,76 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
         }}
       >
         <Box sx={{ position: "relative", width: "100%", paddingTop: "65%", overflow: "hidden" }}>
-          <CardMedia
-            component="img"
-            image={getImageUrl(recipe.imageUrl)}
-            alt={recipe.title}
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "center",
-              cursor: "pointer",
-              display: "block",
-              transition: "transform 0.3s ease-in-out",
-              "&:hover": {
-                transform: "scale(1.05)",
-              },
-            }}
-            onClick={() => navigate(`/recipe/${recipe._id}`)}
-            onError={(e) => {
-              e.target.src = "/default-image.png";
-            }}
-          />
+          {type === 'image' ? (
+            <CardMedia
+              component="img"
+              image={url}
+              alt={recipe.title}
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+                cursor: "pointer",
+                transition: "transform 0.3s ease-in-out",
+                "&:hover": { transform: "scale(1.05)" },
+              }}
+              onClick={() => navigate(`/recipe/${recipe._id}`)}
+              onError={(e) => { e.target.src = "/default-image.png"; }}
+            />
+          ) : (
+            <video
+              src={url}
+              muted
+              autoPlay
+              loop
+              playsInline
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+                borderRadius: "12px",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate(`/recipe/${recipe._id}`)}
+              onError={(e) => { e.target.poster = "/default-image.png"; }}
+            />
+          )}
         </Box>
       </Card>
     );
   }
 
+  const { url, type } = getFirstMediaFile(recipe);
+
   return (
     <Card sx={styles.card}>
-      <Box sx={{ position: "relative", width: "100%", paddingTop: "65%" }}>
+      {type === 'image' ? (
         <CardMedia
           component="img"
-          image={getImageUrl(recipe.imageUrl)}
+          image={url}
           alt={recipe.title}
-          sx={{
-            ...styles.image,
-            position: "absolute",
-            top: 0,
-            left: 0,
-            height: "100%"
-          }}
+          sx={styles.image}
           onClick={() => navigate(`/recipe/${recipe._id}`)}
-          onError={(e) => { e.target.src = '/default-image.png'; }}
+          onError={(e) => { e.target.src = "/default-image.png"; }}
         />
-      </Box>
+      ) : (
+        <video
+          src={url}
+          controls
+          style={{ ...styles.image, objectFit: 'contain' }}
+          onClick={() => navigate(`/recipe/${recipe._id}`)}
+          onError={(e) => { e.target.poster = "/default-image.png"; }}
+        />
+      )}
+
       <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
         <Box>
           <Box sx={styles.uploaderBox}>
@@ -148,7 +175,6 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
                   : recipe.user?.profileImage || '/default-user.png'
               }
             />
-
             <Box sx={{ ml: 1 }}>
               <Typography variant="subtitle2" fontWeight="bold">{uploader}</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -157,7 +183,6 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
                   {recipe.createdAt ? new Date(recipe.createdAt).toLocaleDateString() : 'Unknown Date'}
                 </Typography>
               </Box>
-
               {recipe.location && (
                 <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                   <LocationOnIcon sx={{ fontSize: 16, color: 'gray', mr: 0.5 }} />
@@ -187,7 +212,19 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
             {recipe.title}
           </Typography>
 
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1, height: '40px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              mb: 1,
+              height: '40px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical'
+            }}
+          >
             {recipe.description || "No description provided"}
           </Typography>
 
@@ -294,7 +331,7 @@ const styles = {
   card: {
     width: "100%",
     maxWidth: 500,
-    height: 550, // Fixed height for all cards
+    height: 550,
     margin: "auto",
     borderRadius: "15px",
     overflow: "hidden",
@@ -338,7 +375,7 @@ const styles = {
   },
   actions: {
     display: "flex",
-    justifyContent: "space-between", // aligned cleanly
+    justifyContent: "space-between",
     alignItems: "center",
     marginTop: 0
   },
