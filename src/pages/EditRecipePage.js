@@ -259,7 +259,7 @@ function EditRecipePage() {
   const [recipe, setRecipe] = useState(null);
   const [newMediaFiles, setNewMediaFiles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [popup, setPopup] = useState({ open: false, message: '', severity: '' });
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -270,7 +270,7 @@ function EditRecipePage() {
         setRecipe(data);
       } catch (err) {
         console.error(err);
-        setSnackbar({ open: true, message: 'Error loading recipe', severity: 'error' });
+        setPopup({ open: true, message: 'Error loading recipe', severity: 'error' });
       } finally {
         setLoading(false);
       }
@@ -280,22 +280,22 @@ function EditRecipePage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setRecipe((prev) => ({ ...prev, [name]: value }));
+    setRecipe(prev => ({ ...prev, [name]: value }));
   };
 
   const handleListChange = (index, value, field) => {
     const updated = [...recipe[field]];
     updated[index] = value;
-    setRecipe({ ...recipe, [field]: updated });
+    setRecipe(prev => ({ ...prev, [field]: updated }));
   };
 
   const addField = (field) => {
-    setRecipe({ ...recipe, [field]: [...recipe[field], ""] });
+    setRecipe(prev => ({ ...prev, [field]: [...prev[field], ""] }));
   };
 
   const removeField = (index, field) => {
     const updated = recipe[field].filter((_, i) => i !== index);
-    setRecipe({ ...recipe, [field]: updated });
+    setRecipe(prev => ({ ...prev, [field]: updated }));
   };
 
   const handleAddMedia = (e) => {
@@ -337,15 +337,18 @@ function EditRecipePage() {
 
       if (!res.ok) throw new Error('Failed to update recipe');
 
-      setSnackbar({ open: true, message: 'Recipe updated!', severity: 'success' });
+      setPopup({ open: true, message: 'Recipe updated!', severity: 'success' });
       setTimeout(() => navigate(`/recipe/${id}`), 1500);
     } catch (err) {
       console.error(err);
-      setSnackbar({ open: true, message: 'Error saving changes', severity: 'error' });
+      setPopup({ open: true, message: 'Error saving changes', severity: 'error' });
     }
   };
 
+
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
+
+
 
   if (loading) {
     return (
@@ -355,7 +358,13 @@ function EditRecipePage() {
     );
   }
 
-  if (!recipe) return <Typography align="center">Recipe not found</Typography>;
+  if (!recipe) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+        <Typography variant="h6" color="error">Recipe not found</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ backgroundColor: '#fafafa', minHeight: '100vh', py: 5 }}>
@@ -415,9 +424,11 @@ function EditRecipePage() {
           </CardContent>
         </Card>
 
+
         <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
           <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="outlined" sx={{ bgcolor: '#fff', color: snackbar.severity === 'success' ? '#2e7d32' : '#d32f2f', border: `1px solid ${snackbar.severity === 'success' ? '#2e7d32' : '#d32f2f'}`, fontWeight: 'bold' }}>
             {snackbar.message}
+
           </Alert>
         </Snackbar>
       </Container>
