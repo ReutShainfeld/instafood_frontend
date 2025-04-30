@@ -131,25 +131,6 @@ function RecipePage() {
 
   if (!recipe) return <PageLoading />;
 
-  {/* <Carousel showThumbs={false} infiniteLoop useKeyboardArrows autoPlay={false}>
-  {recipe.media.map((file, idx) => (
-    <div key={idx} style={{ backgroundColor: "#fff" }}>
-      {file.endsWith('.mp4') || file.endsWith('.mov') || file.endsWith('.avi') ? (
-        <video
-          src={file}
-          controls
-          style={{ width: "100%", height: "auto", maxHeight: "500px", objectFit: "contain" }}
-        />
-      ) : (
-        <img
-          src={file}
-          alt=""
-          style={{ width: "100%", height: "auto", maxHeight: "500px", objectFit: "cover" }}
-        />
-      )}
-    </div>
-  ))}
-</Carousel> */}
 
 
   return (
@@ -197,7 +178,7 @@ function RecipePage() {
           style={{
             maxWidth: '100%',
             maxHeight: '100%',
-            objectFit: 'contain',
+            objectFit: 'cover',
           }}
         />
       ) : (
@@ -207,7 +188,7 @@ function RecipePage() {
           style={{
             maxWidth: '100%',
             maxHeight: '100%',
-            objectFit: 'contain',
+            objectFit: 'cover',
           }}
         />
       )}
