@@ -6,6 +6,7 @@ import {
 } from "@mui/material";
 import { AddCircle, RemoveCircle, Delete } from "@mui/icons-material";
 import { useSnackbar } from "../components/context/SnackbarContext";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
 function EditRecipePage() {
   const { id } = useParams();
@@ -123,6 +124,23 @@ function EditRecipePage() {
         <Box sx={styles.wrapper}>
           <Card sx={styles.card}>
             <CardContent>
+            <IconButton
+  onClick={() => navigate(-1)}
+  sx={{
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    backgroundColor: '#fff',
+    boxShadow: 2,
+    zIndex: 10,
+    '&:hover': {
+      backgroundColor: 'rgba(170, 170, 170, 0.1)',
+    },
+  }}
+>
+  <ArrowBackIosIcon sx={{ transform: 'rotate(180deg)' }} />
+</IconButton>
+
               <Typography variant="h5" sx={styles.title}>Edit Recipe</Typography>
 
               <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} style={styles.form}>
@@ -257,6 +275,7 @@ const styles = {
     padding: '0 20px'
   },
   card: {
+    position: 'relative',
     padding: 2,
     borderRadius: 3,
     boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
