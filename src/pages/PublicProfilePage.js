@@ -14,8 +14,13 @@ import {
 import { useParams } from 'react-router-dom';
 import RecipeCard from '../components/RecipeCard';
 import PageLoading from '../components/PageLoading';
+import { IconButton } from '@mui/material';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useNavigate } from 'react-router-dom';
 
 function PublicProfilePage() {
+  const navigate = useNavigate();
+
   const { userId } = useParams();
 
   /*  ---------------  state  ---------------- */
@@ -56,20 +61,6 @@ function PublicProfilePage() {
       }
     };
 
-    // /* user liked recipes (optional) */
-    // const fetchLiked = async () => {
-    //   try {
-    //     const res = await fetch(`http://localhost:5000/api/users/${userId}/liked`, {
-    //       headers: { Authorization: `Bearer ${token}` },
-    //     });
-    //     if (res.ok) {
-    //       const data = await res.json();
-    //       setLiked(data.recipes || []);
-    //     }
-    //   } catch (err) {
-    //     console.error(err);
-    //   }
-    // };
 
     fetchUser();
     fetchRecipes();
@@ -84,6 +75,23 @@ function PublicProfilePage() {
   return (
     <Box sx={styles.background}>
       <Box sx={styles.overlay}>
+      <IconButton
+  onClick={() => navigate(-1)}
+  sx={{
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    backgroundColor: '#fff',
+    boxShadow: 2,
+    zIndex: 10,
+    '&:hover': {
+      backgroundColor: 'rgba(170, 170, 170, 0.1)',
+    },
+  }}
+>
+  <ArrowForwardIosIcon sx={{ transform: 'rotate(0deg)' }} />
+</IconButton>
+
         <Box sx={{ maxWidth: 1100, margin: 'auto', p: 2 }}>
           <Grid container spacing={2}>
             {/*  -------- left column -------- */}
@@ -129,14 +137,7 @@ function PublicProfilePage() {
                             Recipes
                           </Typography>
                         </Box>
-                        {/* <Box sx={{ textAlign: 'center' }}>
-                          <Typography fontWeight={700} sx={{ fontSize: 18 }}>
-                            {likedRecipes.length}
-                          </Typography>
-                          <Typography fontSize={14} color="text.secondary">
-                            Liked
-                          </Typography>
-                        </Box> */}
+                        
                       </Box>
                     </Box>
                   </Box>
@@ -166,18 +167,7 @@ function PublicProfilePage() {
                     '&:hover': { color: '#ff6600', fontWeight: 'bold' },
                   }}
                 />
-                {/* <Tab
-                  label="Liked Recipes"
-                  sx={{
-                    color: selectedTab === 1 ? '#ff6600' : 'gray',
-                    fontWeight: selectedTab === 1 ? 'bold' : 'normal',
-                    textTransform: 'none',
-                    fontSize: 16,
-                    transition: 'color 0.3s,font-weight 0.3s',
-                    '&:hover': { color: '#ff6600', fontWeight: 'bold' },
-                  }}
-                />
-               </Tabs> */}
+               
                </Tabs>
                
 
@@ -196,12 +186,7 @@ function PublicProfilePage() {
                           No recipes yet.
                         </Typography>
                       )
-                    // : likedRecipes.length
-                    //   ? likedRecipes.map(r => (
-                    //       <Grid item xs={12} sm={6} md={6} key={r._id} sx={{ p: 3 }}>
-                    //         <RecipeCard recipe={r} uploader={r.user?.username || 'Unknown'} />
-                    //       </Grid>
-                    //     ))
+                  
                       : (
                         <Typography align="center" mt={2} sx={{ width: '100%' }}>
                           No liked recipes yet.
@@ -250,6 +235,7 @@ const styles = {
     alignItems: 'center',
   },
   overlay: {
+    position: 'relative',
     backgroundColor: 'rgba(255,255,255,0.8)',
     width: '100%',
     minHeight: '100vh',

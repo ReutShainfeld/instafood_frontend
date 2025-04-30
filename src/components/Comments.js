@@ -7,6 +7,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ReplyIcon from '@mui/icons-material/Reply';
 import CloseIcon from '@mui/icons-material/Close';
+import { useSnackbar } from '../components/context/SnackbarContext';
+import { useConfirmDialog } from '../components/context/ConfirmDialogContext';
 
 /* ---------- Dialog transition (נחמדות UX) ---------- */
 const Transition = forwardRef(function Transition(props, ref) {
@@ -20,6 +22,8 @@ function CommentSection({ recipeId, onClose }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
+  const { showSnackbar } = useSnackbar();
+  const { showConfirmDialog } = useConfirmDialog();
 
   /* Auth */
   const token  = localStorage.getItem('token');
@@ -56,7 +60,14 @@ function CommentSection({ recipeId, onClose }) {
 
   /* Actions ------------------------------------------------------------- */
   const handleAddComment = async () => {
-    if (!token) return alert('❌ You must be logged in to comment!');
+    if (!token) {
+      showSnackbar({
+        message: 'You must be logged in to comment!',
+        severity: 'error',
+        requireAction: true,
+      });
+      return;
+    }
     try {
       const res = await fetch(
         `http://localhost:5000/api/comments/${recipeId}${replyingTo ? `/${replyingTo}` : ''}`,
@@ -75,37 +86,125 @@ function CommentSection({ recipeId, onClose }) {
         fetchComments();
       }
     } catch {
-      alert('❌ Failed to add comment.');
+      showSnackbar({
+        message: 'Failed to add comment',
+        severity: 'error',
+        requireAction: true,
+      });
+      
     }
   };
 
+  // const handleDeleteComment = async (id) => {
+  //   if (!token) return;
+  //   if (window.confirm('Are you sure you want to delete this comment?')) {
+  //     try {
+  //       const res = await fetch(`http://localhost:5000/api/comments/${id}`, {
+  //         method: 'DELETE',
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       });
+  //       res.ok && fetchComments();
+  //     } catch {
+  //       alert('❌ Error deleting comment.');
+  //     }
+  //   }
+  // };
   const handleDeleteComment = async (id) => {
-    if (!token) return;
-    if (window.confirm('Are you sure you want to delete this comment?')) {
-      try {
-        const res = await fetch(`http://localhost:5000/api/comments/${id}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        res.ok && fetchComments();
-      } catch {
-        alert('❌ Error deleting comment.');
-      }
+    if (!token) {
+      showSnackbar({
+        message: 'You must be logged in to delete a comment!',
+        severity: 'error',
+        requireAction: true,
+      });
+      return;
     }
+  
+    showConfirmDialog({
+      title: 'Delete Comment',
+      message: 'Are you sure you want to delete this comment?',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`http://localhost:5000/api/comments/${id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.ok) {
+            showSnackbar({
+              message: 'Comment deleted successfully',
+              severity: 'success',
+            });
+            fetchComments();
+          } else {
+            showSnackbar({
+              message: 'Failed to delete comment',
+              severity: 'error',
+              requireAction: true,
+            });
+          }
+        } catch {
+          showSnackbar({
+            message: 'An error occurred while deleting the comment',
+            severity: 'error',
+            requireAction: true,
+          });
+        }
+      },
+    });
   };
+  
 
+  // const handleLikeComment = async (id) => {
+  //   if (!token) {  showSnackbar({
+  //     message: 'You must be logged in to like a comment!',
+  //     severity: 'error',
+  //     requireAction: true,
+  //   });
+  //   return
+  //   }
+  //   try {
+  //     const res = await fetch(`http://localhost:5000/api/comments/like/${id}`, {
+  //       method: 'POST',
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     res.ok && fetchComments();
+  //   } catch {
+  //     alert('❌ Error liking comment.');
+  //   }
+  // };
   const handleLikeComment = async (id) => {
-    if (!token) return alert('❌ You must be logged in to like a comment!');
+    if (!token) {
+      showSnackbar({
+        message: 'You must be logged in to like a comment!',
+        severity: 'error',
+        requireAction: true,
+      });
+      return;
+    }
+  
     try {
       const res = await fetch(`http://localhost:5000/api/comments/like/${id}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       });
-      res.ok && fetchComments();
+  
+      if (res.ok) {
+        fetchComments();
+      } else {
+        showSnackbar({
+          message: 'Failed to like comment.',
+          severity: 'error',
+          requireAction: true,
+        });
+      }
     } catch {
-      alert('❌ Error liking comment.');
+      showSnackbar({
+        message: 'Server error while liking comment.',
+        severity: 'error',
+        requireAction: true,
+      });
     }
   };
+  
 
   /* Render -------------------------------------------------------------- */
   const renderComment = (c, level = 0) => (

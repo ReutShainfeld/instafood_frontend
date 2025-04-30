@@ -11,13 +11,17 @@ import {
   CircularProgress
 } from '@mui/material';
 import RecipeCard from '../components/RecipeCard';
+import { IconButton } from '@mui/material';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useNavigate } from 'react-router-dom';
 
 function SearchResultsPage() {
+  const navigate = useNavigate();
   const [results, setResults] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
-  const { type, value } = useParams(); // Added useParams to capture route params
+  const { type, value } = useParams(); 
   const location = useLocation();
   useEffect(() => {
     setLoading(true);
@@ -79,61 +83,6 @@ function SearchResultsPage() {
     }
   }, [type, value, location.search]);
   
-  // useEffect(() => {
-  //   // Set loading state at the beginning of data fetching
-  //   setLoading(true);
-    
-  //   // Handle both URL formats: /search/tag/:value and /search?q=term
-  //   const query = new URLSearchParams(location.search);
-  //   const searchTerm = query.get('q');
-
-    // if (type === 'tag' && value) {
-    //   // Handle tag search from URL path /search/tag/:value
-    //   fetch('http://localhost:5000/api/recipes')
-    //     .then(res => res.json())
-    //     .then(data => {
-    //       const filtered = data.filter(recipe => 
-    //         recipe.tags?.some(tag => tag.toLowerCase() === value.toLowerCase())
-    //       );
-    //       setResults(filtered || []);
-          
-    //       // Extract unique categories from the filtered results
-    //       const uniqueCategories = [...new Set(filtered.map(recipe => recipe.category).filter(Boolean))];
-    //       setCategories(uniqueCategories);
-          
-    //       setLoading(false);
-    //     })
-    //     .catch(err => {
-    //       console.error("Search failed", err);
-    //       setResults([]);
-    //       setCategories([]);
-    //       setLoading(false);
-    //     });
-  //   } else if (searchTerm) {
-  //     // Handle regular search from query param /search?q=term
-  //     fetch(`http://localhost:5000/api/recipes/search?q=${searchTerm}`)
-  //       .then(res => res.json())
-  //       .then(data => {
-  //         setResults(data || []);
-          
-  //         // Extract unique categories from the search results
-  //         const uniqueCategories = [...new Set(data.map(recipe => recipe.category).filter(Boolean))];
-  //         setCategories(uniqueCategories);
-          
-  //         setLoading(false);
-  //       })
-  //       .catch(err => {
-  //         console.error("Search failed", err);
-  //         setResults([]);
-  //         setCategories([]);
-  //         setLoading(false);
-  //       });
-  //   } else {
-  //     // No search parameters, exit loading state
-  //     setLoading(false);
-  //     setCategories([]);
-  //   }
-  // }, [type, value, location.search]);
 
   const filteredResults = selectedCategory
     ? results.filter(recipe => recipe.category === selectedCategory)
@@ -142,6 +91,23 @@ function SearchResultsPage() {
   return (
     <Box sx={styles.background}>
     <Box sx={styles.overlay}>
+    <IconButton
+  onClick={() => navigate(-1)}
+  sx={{
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    backgroundColor: '#fff',
+    boxShadow: 2,
+    zIndex: 10,
+    '&:hover': {
+      backgroundColor: 'rgba(170, 170, 170, 0.1)',
+    },
+  }}
+>
+  <ArrowForwardIosIcon sx={{ transform: 'rotate(0deg)' }} />
+</IconButton>
+
       <Box sx={{ maxWidth: 1000, mx: 'auto', px: 2 }}>
               <Typography variant="h5" fontWeight="bold" gutterBottom>
         {type === 'tag' ? `Results for tag: #${value}` : 'Search Results'}
@@ -198,8 +164,8 @@ function SearchResultsPage() {
           ))}
         </Grid>
       )}
-      </Box> {/* סגירת inner container */}
-    </Box>   {/* סגירת overlay */}
+      </Box> 
+    </Box>   
   </Box>     
   );
 }
@@ -218,10 +184,12 @@ const styles = {
     alignItems: 'center',
   },
   overlay: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    width: '100%',
-    minHeight: '100vh',
-    paddingTop: '60px',
-    paddingBottom: '60px',
-  },
+  position: 'relative', 
+  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  width: '100%',
+  minHeight: '100vh',
+  paddingTop: '60px',
+  paddingBottom: '60px',
+},
+
 };

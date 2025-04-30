@@ -5,6 +5,7 @@ import {
 import { Visibility, VisibilityOff, ArrowBackIosNew } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import PageLoading from '../components/PageLoading';
+import { useSnackbar } from '../components/context/SnackbarContext';
 
 function EditProfilePage() {
   const [user, setUser] = useState(null);
@@ -20,7 +21,8 @@ function EditProfilePage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [snack, setSnack] = useState({ open: false, message: '', severity: 'success' });
+  
+  const { showSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -79,12 +81,27 @@ function EditProfilePage() {
       const data = await res.json();
       if (res.ok) {
         setPasswordConfirmed(true);
-        showSnackbar('Password verified successfully ✅', 'success');
+        
+        showSnackbar({
+          message: "Password verified successfully ",
+          severity: "success"
+        });
+        
       } else {
-        showSnackbar(data.message || 'Incorrect password ❌', 'error');
+        showSnackbar({
+          message: data.message || 'Incorrect password ',
+          severity: 'error',
+          requireAction: true 
+        });
+        
       }
     } catch (err) {
-      showSnackbar('Server error during password verification ❌', 'error');
+      showSnackbar({
+        message: 'Server error during password verification ',
+        severity: 'error',
+        requireAction: true  
+      });
+      
     }
   };
 
@@ -123,22 +140,44 @@ function EditProfilePage() {
       });
 
       if (!res.ok) throw new Error();
-      showSnackbar('Profile updated successfully ✅', 'success');
+      
+      showSnackbar({
+        message: "Profile updated successfully ",
+        severity: "success"
+      });      
       localStorage.setItem('profileImage', uploadData.imageUrl);
       localStorage.setItem('fullName', `${form.firstName} ${form.lastName}`);
       setTimeout(() => navigate('/profile'), 1000);
     } catch {
-      showSnackbar('Error updating profile ❌', 'error');
+      
+      showSnackbar({
+        message: 'Error updating profile ',
+        severity: 'error',
+      });
+      
     }
   };
 
   const handlePasswordChange = async () => {
+    
     if (newPassword.length < 6) {
-      return showSnackbar('Password must be at least 6 characters ❌', 'error');
+      showSnackbar({
+        message: 'Password must be at least 6 characters ',
+        severity: 'error',
+        requireAction: true
+      });
+      return;
     }
+    
     if (newPassword !== confirmPassword) {
-      return showSnackbar("Passwords don't match ❌", 'error');
+      showSnackbar({
+        message: "Passwords don't match ",
+        severity: 'error',
+        requireAction: true
+      });
+      return;
     }
+    
     try {
       const res = await fetch('http://localhost:5000/api/users/change-password', {
         method: 'PUT',
@@ -149,19 +188,27 @@ function EditProfilePage() {
         body: JSON.stringify({ password: newPassword })
       });
       if (!res.ok) throw new Error();
-      showSnackbar('Password changed successfully ✅', 'success');
+      //showSnackbar('Password changed successfully ✅', 'success');
+      showSnackbar({
+        message: "Password changed successfully ",
+        severity: "success"
+      });
+      
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
       setPasswordConfirmed(false);
     } catch {
-      showSnackbar('Failed to change password ❌', 'error');
+      //showSnackbar('Failed to change password ❌', 'error');
+      showSnackbar({
+        message: 'Failed to change password ',
+        severity: 'error',
+        requireAction: true
+      });
     }
   };
 
-  const showSnackbar = (message, severity) => {
-    setSnack({ open: true, message, severity });
-  };
+  
 
   if (isLoading) {
     return (<PageLoading />)
@@ -201,10 +248,7 @@ function EditProfilePage() {
                   <input type="file" accept="image/*" onChange={handleImageChange} id="profile-img" hidden />
                   <label htmlFor="profile-img" style={{ cursor: 'pointer' }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-                    {/* <Avatar
-                    src={previewUrl ? (previewUrl.startsWith('http') ? previewUrl : `http://localhost:5000${previewUrl}`) : "/default-user.png"}
-                    sx={{ width: 120, height: 120, mb: 1, border: '3px solid #ff6600' }}
-                  /> */}
+                    
                   <Avatar
                     src={
                       previewUrl
@@ -333,18 +377,6 @@ function EditProfilePage() {
               </CardContent>
             </Card>
           </Box>
-
-          {/* Snackbar for Notifications */}
-          <Snackbar
-            open={snack.open}
-            autoHideDuration={3000}
-            onClose={() => setSnack({ ...snack, open: false })}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-          >
-            <Alert severity={snack.severity} sx={{ width: '100%', fontFamily: 'inherit' }} onClose={() => setSnack({ ...snack, open: false })}>
-              {snack.message}
-            </Alert>
-          </Snackbar>
         </Box>
       </Box>
     </Box>
