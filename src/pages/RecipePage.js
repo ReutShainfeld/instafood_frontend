@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Box, Typography, Avatar, Divider, IconButton, Chip, Dialog,
   DialogTitle, DialogContent, List, ListItem, ListItemText
@@ -16,6 +16,8 @@ import CommentSection from "../components/Comments";
 import PageLoading from "../components/PageLoading";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { useSnackbar } from '../components/context/SnackbarContext';
+import { useConfirmDialog } from '../components/context/ConfirmDialogContext';
 
 function RecipePage() {
   const { id } = useParams();
@@ -30,6 +32,9 @@ function RecipePage() {
   const [likeUsers, setLikeUsers] = useState([]);
   const [showLikes, setShowLikes] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const { showSnackbar } = useSnackbar();
+  const { showConfirmDialog } = useConfirmDialog();
+  const videoRefs = useRef([]);
 
   const getImageUrl = (url) => {
     if (!url) return '/default-user.png';
@@ -39,10 +44,6 @@ function RecipePage() {
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        // const res = await fetch("http://localhost:5000/api/recipes");
-        // const data = await res.json();
-        // const found = data.find((r) => r._id === id);
-        // setRecipe(found);
         const res = await fetch(`http://localhost:5000/api/recipes/${id}`);
         const data = await res.json();
         setRecipe(data);
@@ -79,7 +80,18 @@ function RecipePage() {
   }, [id, userId]);
 
   const handleLike = async () => {
-    if (!token || !userId) return alert("❌ Login required");
+    if (!token || !userId) {
+      showSnackbar({
+        message: 'You must be logged in!',
+        severity: 'error',
+        requireAction: true
+      });
+      return
+    } 
+   
+    
+
+
     try {
       const res = await fetch("http://localhost:5000/api/likes", {
         method: "POST",
@@ -106,17 +118,20 @@ function RecipePage() {
     } catch { }
   };
 
+  useEffect(() => {
+    return () => {
+      videoRefs.current.forEach((video) => {
+        if (video && !video.paused) {
+          video.pause();
+          video.currentTime = 0;
+        }
+      });
+    };
+  }, []);
+
   if (!recipe) return <PageLoading />;
 
-  return (
-    <Box sx={styles.background}>
-      <Box sx={styles.overlay}>
-        <Box sx={styles.pageWrapper}>
-          <Box sx={styles.pageContainer}>
-            {/* LEFT: Recipe Image */}
-            <Box sx={styles.imageSection}>
-            {recipe.media && recipe.media.length > 0 ? (
-              <Carousel showThumbs={false} infiniteLoop useKeyboardArrows autoPlay={false}>
+  {/* <Carousel showThumbs={false} infiniteLoop useKeyboardArrows autoPlay={false}>
   {recipe.media.map((file, idx) => (
     <div key={idx} style={{ backgroundColor: "#fff" }}>
       {file.endsWith('.mp4') || file.endsWith('.mov') || file.endsWith('.avi') ? (
@@ -134,7 +149,74 @@ function RecipePage() {
       )}
     </div>
   ))}
+</Carousel> */}
+
+
+  return (
+    <Box sx={styles.background}>
+      <Box sx={styles.overlay}>
+        <Box sx={styles.pageWrapper}>
+          <Box sx={styles.pageContainer}>
+            {/* LEFT: Recipe Image */}
+            <Box sx={styles.imageSection}>
+            {recipe.media && recipe.media.length > 0 ? (
+            
+              <Carousel
+  showThumbs={false}
+  infiniteLoop
+  useKeyboardArrows
+  autoPlay={false}
+  showStatus={false}
+  onChange={() => {
+    // עצירת כל הסרטונים כשמחליפים שקופית
+    videoRefs.current.forEach((video) => {
+      if (video && !video.paused) {
+        video.pause();
+        video.currentTime = 0;
+      }
+    });
+  }}
+>
+  {recipe.media.map((file, idx) => (
+    <Box
+      key={idx}
+      sx={{
+        width: '100%',
+        height: 500,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+      }}
+    >
+      {file.endsWith('.mp4') || file.endsWith('.mov') || file.endsWith('.avi') ? (
+        <video
+          ref={(el) => (videoRefs.current[idx] = el)}
+          src={file}
+          controls
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'contain',
+          }}
+        />
+      ) : (
+        <img
+          src={file}
+          alt=""
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'contain',
+          }}
+        />
+      )}
+    </Box>
+  ))}
 </Carousel>
+
+
+
 
 ) : (
   <img
@@ -146,37 +228,33 @@ function RecipePage() {
 
 
 
-              <IconButton onClick={() => navigate(-1)} sx={styles.backBtn}>
-                <ArrowForwardIosIcon />
-              </IconButton>
+              
             </Box>
 
-            {/* RIGHT: Recipe Details */}
-            {/* <Box sx={styles.contentSection}>
-              <Box sx={styles.header}>
-                <Avatar />
-                <Box>
-                  <Typography fontWeight="bold">
-                    {recipe.user?.username || "Unknown"}
-                  </Typography>
-                  <Typography fontSize={12} color="gray">
-                    {recipe.createdAt
-                      ? new Date(recipe.createdAt).toLocaleDateString()
-                      : "Unknown Date"}
-                  </Typography>
-                </Box>
-              </Box> */}
-
-              <Box sx={styles.contentSection}>
+            <Box sx={styles.contentSection} position="relative">
+  <IconButton
+    onClick={() => navigate(-1)}
+    sx={{
+      position: 'absolute',
+      top: 16,
+      right: 16,
+      backgroundColor: '#fff',
+      boxShadow: 2,
+      zIndex: 10,
+      '&:hover': {
+        backgroundColor: 'rgba(170, 170, 170, 0.1)',
+      },
+      
+    }}
+  >
+   <ArrowForwardIosIcon sx={{ transform: 'rotate(0deg)' }} />  
+  </IconButton>
                 <Box sx={styles.header}>
                   <Avatar
                     src={getImageUrl(recipe.user?.profileImage)}
                     sx={{ width: 56, height: 56, mr: 2 }}
                   />
                   <Box>
-                    {/* <Typography fontWeight="bold">
-                      {recipe.user?.username || "Unknown"}
-                    </Typography> */}
                     <Typography
                     fontWeight="bold"
                     sx={{ cursor: "pointer", textDecoration: "underline" }}
@@ -290,19 +368,29 @@ function RecipePage() {
               </Box>
               {recipe.user?._id === userId && (
   <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-    <Chip
-      label="Edit"
-      color="primary"
-      onClick={() => navigate(`/edit-recipe/${recipe._id}`)}
-      clickable
-    />
-    <Chip
-      label="Delete"
-      color="error"
-      onClick={async () => {
-        const confirm = window.confirm("Are you sure you want to delete this recipe?");
-        if (!confirm) return;
 
+  <Chip
+  label="Edit"
+  onClick={() => navigate(`/edit-recipe/${recipe._id}`)}
+  clickable
+  variant="outlined"
+  sx={{
+    color: '#000',
+    borderColor: '#000',
+    fontWeight: 'bold',
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    },
+  }}
+/>
+
+<Chip
+  label="Delete"
+  onClick={() => {
+    showConfirmDialog({
+      title: "Delete Recipe",
+      message: "Are you sure you want to delete this recipe?",
+      onConfirm: async () => {
         try {
           const res = await fetch(`http://localhost:5000/api/recipes/${recipe._id}`, {
             method: "DELETE",
@@ -312,20 +400,44 @@ function RecipePage() {
           });
 
           if (res.ok) {
-            alert("Recipe deleted successfully");
-            navigate("/"); // תחזיר לדף הבית או פרופיל
+            showSnackbar({
+              message: 'Recipe deleted successfully',
+              severity: 'success',
+            });
+            navigate("/");
           } else {
-            alert("Failed to delete recipe");
+            showSnackbar({
+              message: 'Failed to delete recipe',
+              severity: 'error',
+              requireAction: true
+            });
           }
         } catch (err) {
           console.error("❌ Delete error:", err);
-          alert("An error occurred while deleting.");
+          showSnackbar({
+            message: 'An error occurred while deleting.',
+            severity: 'error',
+            requireAction: true
+          });
         }
-      }}
-      clickable
-    />
-  </Box>
-)}
+      }
+    });
+  }}
+  clickable
+  variant="outlined"
+  sx={{
+    color: '#ff6600',
+    borderColor: '#ff6600',
+    fontWeight: 'bold',
+    '&:hover': {
+      backgroundColor: 'rgba(255, 102, 0, 0.7)',
+    },
+  }}
+/>
+
+    </Box>
+  )}
+
 
 
               {showComments && <CommentSection recipeId={recipe._id} />}
@@ -373,6 +485,16 @@ function RecipePage() {
 export default RecipePage;
 
 const styles = {
+imageSection: {
+  flex: 1,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: '#fff',
+  minHeight: 500,
+  maxHeight: 500,
+},
+
   pageWrapper: {
     minHeight: "100%",
     paddingTop: "1rem",

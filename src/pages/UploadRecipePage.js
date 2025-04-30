@@ -7,6 +7,8 @@ import {
 import { AddCircle, RemoveCircle, ImageOutlined } from "@mui/icons-material";
 import '../styles/authPages.css';
 import { VolumeUp, VolumeOff, PlayArrow } from '@mui/icons-material';
+import { useSnackbar } from '../components/context/SnackbarContext';
+
 
 function UploadRecipePage() {
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ function UploadRecipePage() {
 
   const [showLoginAlert, setShowLoginAlert] = useState(false);
   const [location, setLocation] = useState('');
-
+  const { showSnackbar } = useSnackbar();
   const tagOptions = [
     "בשרי", "חלבי", "פרווה", "ילדים", "טבעוני",
     "צמחוני", "מתוק", "תוספת", "עיקרית", "חגים", "שבת"
@@ -78,7 +80,13 @@ function UploadRecipePage() {
     const newFiles = [...mediaFiles, ...files];
   
     if (newFiles.length > 10) {
-      alert("You can upload up to 10 files only.");
+      //alert("You can upload up to 10 files only.");
+      showSnackbar({
+        message: "You can upload up to 10 files only.",
+        severity: 'error',
+        requireAction: true
+      });
+      
       return;
     }
   
@@ -128,7 +136,16 @@ function UploadRecipePage() {
       }, 2000);
       return;
     }
-    if (mediaFiles.length === 0) return alert("Please upload at least one image or video.");
+    if (mediaFiles.length === 0) {
+      showSnackbar({
+        message: "Please upload at least one image or video.",
+        severity: 'error',
+        requireAction: true
+      });
+      return;
+    }
+    
+    
 
     try {
       setIsUploading(true);
@@ -156,15 +173,32 @@ function UploadRecipePage() {
       if (!res.ok) {
         const errorData = await res.json();
         console.error("Upload failed:", errorData);
-        alert("Error uploading recipe.");
+        //alert("Error uploading recipe.");
+        showSnackbar({
+          message: "Error uploading recipe.",
+          severity: 'error',
+          requireAction: true
+        });
+        
         return;
       }
 
-      alert("Recipe uploaded!");
+      //alert("Recipe uploaded!");
+      showSnackbar({
+        message: 'Recipe uploaded!',
+        severity: 'success',
+      });
+      
       navigate("/");
     } catch (err) {
       console.error("Upload error:", err);
-      alert("Upload failed.");
+      //alert("Upload failed.");
+      showSnackbar({
+        message: 'Upload failed.',
+        severity: 'error',
+        requireAction: true
+      });
+      
     } finally {
       setIsUploading(false);
     }
@@ -354,8 +388,8 @@ function UploadRecipePage() {
                 </div>
 
                 <div style={styles.row}>
-                  <FormControl fullWidth sx={styles.input}>
-                    <InputLabel>Difficulty</InputLabel>
+                  <FormControl fullWidth required sx={styles.input}>
+                    <InputLabel>Difficulty *</InputLabel>
                     <Select label="Difficulty" name="difficulty"
                       value={recipe.difficulty} onChange={handleChange} required>
                       <MenuItem value="Easy">Easy</MenuItem>

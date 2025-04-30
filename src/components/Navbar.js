@@ -1,4 +1,4 @@
-// Navbar.js – גרסה מלאה כולל תמונת פרופיל ליד שם המשתמש
+
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -34,8 +34,7 @@ function Navbar() {
   const location = useLocation();
   const isMobile = useMediaQuery('(max-width:768px)');
   const [drawerOpen, setDrawerOpen] = React.useState(false);
- // const userName = localStorage.getItem('fullName');
-  // const profileImage = localStorage.getItem('profileImage');
+ 
   const [profileImage, setProfileImage] = React.useState(localStorage.getItem('profileImage') || null);
   const [userName, setUserName] = React.useState(localStorage.getItem('fullName') || '');
 

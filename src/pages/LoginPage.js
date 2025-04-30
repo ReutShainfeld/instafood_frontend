@@ -15,13 +15,15 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { auth, googleProvider } from "../firebase";
 import { signInWithPopup } from "firebase/auth";
+import { useSnackbar } from '../components/context/SnackbarContext';
 
 
 function LoginPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  //const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const { showSnackbar } = useSnackbar();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,9 +33,9 @@ function LoginPage() {
     setShowPassword((prev) => !prev);
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
+  // const handleCloseSnackbar = () => {
+  //   setSnackbar({ ...snackbar, open: false });
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,13 +52,33 @@ function LoginPage() {
         localStorage.setItem('userId', data.userId);
         localStorage.setItem('fullName', data.fullName);
         localStorage.setItem('profileImage', data.profileImage || '');
-        setSnackbar({ open: true, message: 'Login successful! Redirecting...', severity: 'success' });
+        //setSnackbar({ open: true, message: 'Login successful! Redirecting...', severity: 'success' });
+        showSnackbar({
+          open: true,
+          message: 'Login successful! Redirecting...',
+          severity: 'success'
+        });
+        
         setTimeout(() => navigate('/profile'), 1500);
       } else {
-        setSnackbar({ open: true, message: `Incorrect email or password: ${data.message}`, severity: 'error' });
+        //setSnackbar({ open: true, message: `Incorrect email or password: ${data.message}`, severity: 'error' });
+        showSnackbar({
+          open: true,
+          message: `Incorrect email or password: ${data.message}`,
+          severity: 'error',
+          requireAction: true
+        });
+        
       }
     } catch (error) {
-      setSnackbar({ open: true, message: 'Failed to connect to server.', severity: 'error' });
+      //setSnackbar({ open: true, message: 'Failed to connect to server.', severity: 'error' });
+      showSnackbar({
+        open: true,
+        message: 'Failed to connect to server.',
+        severity: 'error',
+        requireAction: true
+      });
+      
     }
   };
 
@@ -87,7 +109,13 @@ function LoginPage() {
         localStorage.setItem('fullName', data.fullName);
         localStorage.setItem('profileImage', data.profileImage || '');
   
-        setSnackbar({ open: true, message: 'Login with Google successful! Redirecting...', severity: 'success' });
+        //setSnackbar({ open: true, message: 'Login with Google successful! Redirecting...', severity: 'success' });
+        showSnackbar({
+          open: true,
+          message: 'Login with Google successful! Redirecting...',
+          severity: 'success'
+        });
+        
         setTimeout(() => navigate('/profile'), 1500);
       } else if (response.status === 404) {
         // יוזר לא קיים - נרשום אותו
@@ -97,7 +125,14 @@ function LoginPage() {
       }
     } catch (error) {
       console.error('Google login error:', error);
-      setSnackbar({ open: true, message: 'Google sign-in failed', severity: 'error' });
+      //setSnackbar({ open: true, message: 'Google sign-in failed', severity: 'error' });
+      showSnackbar({
+        open: true,
+        message: 'Google sign-in failed',
+        severity: 'error',
+        requireAction: true
+      });
+      
     }
   };
 
@@ -125,14 +160,34 @@ function LoginPage() {
         localStorage.setItem('fullName', data.fullName);
         localStorage.setItem('profileImage', data.profileImage || '');
   
-        setSnackbar({ open: true, message: 'Registered with Google! Redirecting...', severity: 'success' });
+        //setSnackbar({ open: true, message: 'Registered with Google! Redirecting...', severity: 'success' });
+        showSnackbar({
+          open: true,
+          message: 'Registered with Google! Redirecting...',
+          severity: 'success'
+        });
+        
         setTimeout(() => navigate('/profile'), 1500);
       } else {
-        setSnackbar({ open: true, message: `Registration failed: ${data.message}`, severity: 'error' });
+        //setSnackbar({ open: true, message: `Registration failed: ${data.message}`, severity: 'error' });
+        showSnackbar({
+          open: true,
+          message: `Registration failed: ${data.message}`,
+          severity: 'error',
+          requireAction: true
+        });
+        
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setSnackbar({ open: true, message: 'Registration failed', severity: 'error' });
+      //setSnackbar({ open: true, message: 'Registration failed', severity: 'error' });
+      showSnackbar({
+        open: true,
+        message: 'Registration failed',
+        severity: 'error',
+        requireAction: true
+      });
+      
     }
   };
   
@@ -252,26 +307,7 @@ function LoginPage() {
         </Container>
       </Grid>
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          variant="outlined"
-          sx={{
-            bgcolor: '#fff',
-            color: snackbar.severity === 'success' ? '#2e7d32' : '#d32f2f',
-            border: `1px solid ${snackbar.severity === 'success' ? '#2e7d32' : '#d32f2f'}`,
-            fontWeight: 'bold',
-          }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+
     </Grid>
   );
 }
