@@ -191,7 +191,7 @@ function RegisterPage() {
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
             Save your favorite dishes, discover new recipes, and get organized with ease.
           </Typography>
-          <img src="/auth.png" alt="Illustration" style={{ width: '100%' }} />
+          <img src="/authpic1.png" alt="Illustration" style={{ width: '100%' }} />
         </Box>
       </Grid>
 

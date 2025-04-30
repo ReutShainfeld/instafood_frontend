@@ -216,7 +216,7 @@ function LoginPage() {
           <Typography variant="body1" color="text.secondary">
             Save recipes, explore tastes, and organize your cooking life—all in one place.
           </Typography>
-          <img src="/auth.png" alt="Illustration" style={{ width: '100%', margin: '40px 0' }} />
+          <img src="/authpic1.png" alt="Illustration" style={{ width: '100%', margin: '40px 0' }} />
         </Box>
       </Grid>
 
