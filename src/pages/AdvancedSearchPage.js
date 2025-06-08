@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box, Typography, InputBase, IconButton, Paper, Divider,
-  Chip, Tabs, Grid, Tab, Card, CardContent
+  Box,
+  Typography,
+  InputBase,
+  IconButton,
+  Paper,
+  Divider,
+  Chip,
+  Tabs,
+  Grid,
+  Tab,
+  Card,
+  CardContent,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -36,22 +46,29 @@ function AdvancedSearchPage() {
 
   const performSearch = () => {
     const lower = query.toLowerCase();
-    let filtered = lower !== "" ? recipes.filter(r =>
-      r.title?.toLowerCase().includes(lower) ||
-      r.description?.toLowerCase().includes(lower) ||
-      r.ingredients?.some(ing => ing.toLowerCase().includes(lower)) ||
-      r.tags?.some(tag => tag.toLowerCase().includes(lower)) ||
-      r.category?.toLowerCase().includes(lower)
-    ) : recipes;
+    let filtered =
+      lower !== ""
+        ? recipes.filter(
+            (r) =>
+              r.title?.toLowerCase().includes(lower) ||
+              r.description?.toLowerCase().includes(lower) ||
+              r.ingredients?.some((ing) => ing.toLowerCase().includes(lower)) ||
+              r.tags?.some((tag) => tag.toLowerCase().includes(lower)) ||
+              r.category?.toLowerCase().includes(lower),
+          )
+        : recipes;
 
     if (activeCategory !== "All") {
-      filtered = filtered.filter(r => r.category === activeCategory);
+      filtered = filtered.filter((r) => r.category === activeCategory);
     }
 
     setResults(filtered);
 
     if (query.length > 1) {
-      const history = [query, ...searchHistory.filter(term => term !== query)].slice(0, 10);
+      const history = [
+        query,
+        ...searchHistory.filter((term) => term !== query),
+      ].slice(0, 10);
       setSearchHistory(history);
       localStorage.setItem("searchHistory", JSON.stringify(history));
 
@@ -78,7 +95,14 @@ function AdvancedSearchPage() {
 
   const handleQuery = (e) => setQuery(e.target.value);
 
-  const categories = ["All", "Breakfast", "Lunch", "Dinner", "Dessert", "Drinks"];
+  const categories = [
+    "All",
+    "Breakfast",
+    "Lunch",
+    "Dinner",
+    "Dessert",
+    "Drinks",
+  ];
 
   return (
     <Box sx={styles.background}>
@@ -86,7 +110,9 @@ function AdvancedSearchPage() {
         <Box sx={{ maxWidth: 1000, mx: "auto", px: 2 }}>
           <Card elevation={6}>
             <CardContent sx={{ py: 4, px: { xs: 2, sm: 4 } }}>
-              <Paper sx={{ p: 1.5, display: "flex", alignItems: "center", mb: 3 }}>
+              <Paper
+                sx={{ p: 1.5, display: "flex", alignItems: "center", mb: 3 }}
+              >
                 <SearchIcon sx={{ mr: 1 }} />
                 <InputBase
                   placeholder="Start typing to search"
@@ -101,7 +127,9 @@ function AdvancedSearchPage() {
                 )}
               </Paper>
 
-              <Typography fontWeight="bold" sx={{ mb: 1 }}>Filter by Category:</Typography>
+              <Typography fontWeight="bold" sx={{ mb: 1 }}>
+                Filter by Category:
+              </Typography>
               <Tabs
                 value={activeCategory}
                 onChange={(e, val) => setActiveCategory(val)}
@@ -109,12 +137,12 @@ function AdvancedSearchPage() {
                 scrollButtons="auto"
                 sx={{
                   mb: 3,
-                  '.MuiTabs-indicator': {
-                    display: 'none' // ✅ completely removes the underline
-                  }
+                  ".MuiTabs-indicator": {
+                    display: "none",
+                  },
                 }}
               >
-                {categories.map(cat => (
+                {categories.map((cat) => (
                   <Tab
                     key={cat}
                     label={cat}
@@ -127,7 +155,8 @@ function AdvancedSearchPage() {
                       px: 2,
                       mx: 0.5,
                       bgcolor: activeCategory === cat ? "#000" : "#f0f0f0",
-                      color: activeCategory === cat ? "#fff !important" : "#333",
+                      color:
+                        activeCategory === cat ? "#fff !important" : "#333",
                       transition: "all 0.2s",
                       "&:hover": {
                         bgcolor: activeCategory === cat ? "#222" : "#e0e0e0",
@@ -136,7 +165,7 @@ function AdvancedSearchPage() {
                         outline: "none",
                         borderBottom: "none",
                         boxShadow: "none",
-                      }
+                      },
                     }}
                   />
                 ))}
@@ -144,7 +173,14 @@ function AdvancedSearchPage() {
 
               {query === "" && searchHistory.length > 0 && (
                 <Box sx={{ mb: 4 }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mb: 1,
+                    }}
+                  >
                     <Typography fontWeight="bold">Recent Searches</Typography>
                     <IconButton onClick={clearHistory} size="small">
                       <ClearIcon fontSize="small" />
@@ -158,15 +194,14 @@ function AdvancedSearchPage() {
                         onClick={() => setQuery(term)}
                         variant="outlined"
                         sx={{
-                          color: '#555',
-                          borderColor: '#aaa',
-                          fontWeight: 'bold',
-                          '&:hover': {
-                            backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                          color: "#555",
+                          borderColor: "#aaa",
+                          fontWeight: "bold",
+                          "&:hover": {
+                            backgroundColor: "rgba(0, 0, 0, 0.08)",
                           },
                         }}
                       />
-
                     ))}
                   </Box>
                 </Box>
@@ -176,16 +211,26 @@ function AdvancedSearchPage() {
 
               {results.length === 0 && query && (
                 <Box sx={{ textAlign: "center", mt: 5 }}>
-                  <SentimentDissatisfiedIcon sx={{ fontSize: 48, color: "gray", mb: 1 }} />
+                  <SentimentDissatisfiedIcon
+                    sx={{ fontSize: 48, color: "gray", mb: 1 }}
+                  />
                   <Typography color="text.secondary">
-                  No recipes were found matching your search
+                    No recipes were found matching your search
                   </Typography>
                 </Box>
               )}
 
               <Grid container spacing={2}>
                 {results.map((recipe) => (
-                  <Grid item key={recipe._id} xs={12} sm={6} md={4} lg={4} sx={{ padding: 3 }}>
+                  <Grid
+                    item
+                    key={recipe._id}
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={4}
+                    sx={{ padding: 3 }}
+                  >
                     <RecipeCard
                       recipe={recipe}
                       uploader={recipe.user?.username || "Unknown"}
@@ -206,20 +251,19 @@ export default AdvancedSearchPage;
 const styles = {
   background: {
     backgroundImage: 'url("/background.jpg")',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   overlay: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-    width: '100%',
-    minHeight: '100vh',
-    paddingTop: '30px',
-    paddingBottom: '30px',
-  }
+    backgroundColor: "rgba(255, 255, 255, 0.85)",
+    width: "100%",
+    minHeight: "100vh",
+    paddingTop: "30px",
+    paddingBottom: "30px",
+  },
 };
-

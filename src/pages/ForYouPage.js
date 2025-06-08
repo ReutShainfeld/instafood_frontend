@@ -1,7 +1,13 @@
-
 import React, { useEffect, useState } from "react";
 import RecipeCard from "../components/RecipeCard";
-import { Box, Typography, Grid, Container, Snackbar, Alert } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Grid,
+  Container,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import PageLoading from "../components/PageLoading";
 import { useNavigate } from "react-router-dom";
 
@@ -15,11 +21,10 @@ function ForYouPage() {
 
   useEffect(() => {
     if (!token) {
-      // Show login alert and then redirect after a delay
       setShowLoginAlert(true);
       setTimeout(() => {
-        navigate('/');
-      }, 2000); // Redirect after 2 seconds
+        navigate("/");
+      }, 2000);
       return;
     }
 
@@ -41,60 +46,59 @@ function ForYouPage() {
 
   return (
     <>
-      {/* Login Alert - Outside the main Box to ensure it shows regardless of loading state */}
-      <Snackbar 
-        open={showLoginAlert} 
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      <Snackbar
+        open={showLoginAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
         autoHideDuration={2000}
       >
-        <Alert 
-          severity="warning" 
+        <Alert
+          severity="warning"
           variant="filled"
-          sx={{ 
-            width: '100%',
-            backgroundColor: '#ff6600',
-            color: 'white',
-            fontWeight: 'bold'
+          sx={{
+            width: "100%",
+            backgroundColor: "#ff6600",
+            color: "white",
+            fontWeight: "bold",
           }}
         >
           You need to login first to access this page
         </Alert>
       </Snackbar>
-    <Box sx={styles.background}>
-      <Box sx={styles.overlay}>
-        <Container maxWidth="lg" sx={{ py: 4 }}>
-          <Typography
-            variant="h3"
-            color="black"
-            align="center"
-            gutterBottom
-            sx={{ fontWeight: "bold", mb: 4 }}
-          >
-            ✨ For You
-          </Typography>
-
-          {error && (
-            <Typography variant="body1" color="error" align="center">
-              ❌ {error}
+      <Box sx={styles.background}>
+        <Box sx={styles.overlay}>
+          <Container maxWidth="lg" sx={{ py: 4 }}>
+            <Typography
+              variant="h3"
+              color="black"
+              align="center"
+              gutterBottom
+              sx={{ fontWeight: "bold", mb: 4 }}
+            >
+              ✨ For You
             </Typography>
-          )}
 
-          {!loading && !error && recipes.length === 0 && (
-            <Typography variant="body1" align="center">
-              No recommendations yet. Start searching to see suggestions! 🌟
-            </Typography>
-          )}
+            {error && (
+              <Typography variant="body1" color="error" align="center">
+                ❌ {error}
+              </Typography>
+            )}
 
-          <Grid container spacing={2} justifyContent="center">
-            {recipes.map((recipe) => (
-              <Grid item key={recipe._id} xs={12} sm={6} md={3}>
-                <RecipeCard recipe={recipe} imageOnly={true} />
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
+            {!loading && !error && recipes.length === 0 && (
+              <Typography variant="body1" align="center">
+                No recommendations yet. Start searching to see suggestions! 🌟
+              </Typography>
+            )}
+
+            <Grid container spacing={2} justifyContent="center">
+              {recipes.map((recipe) => (
+                <Grid item key={recipe._id} xs={12} sm={6} md={3}>
+                  <RecipeCard recipe={recipe} imageOnly={true} />
+                </Grid>
+              ))}
+            </Grid>
+          </Container>
+        </Box>
       </Box>
-    </Box>
     </>
   );
 }

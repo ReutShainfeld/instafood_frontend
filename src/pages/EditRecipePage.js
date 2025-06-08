@@ -1,8 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  TextField, Button, IconButton, InputLabel, MenuItem,
-  FormControl, Select, Autocomplete, Box, Card, CardContent, Typography
+  TextField,
+  Button,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
+  Autocomplete,
+  Box,
+  Card,
+  CardContent,
+  Typography,
 } from "@mui/material";
 import { AddCircle, RemoveCircle, Delete } from "@mui/icons-material";
 import { useSnackbar } from "../components/context/SnackbarContext";
@@ -18,14 +28,23 @@ function EditRecipePage() {
   const [newMediaFiles, setNewMediaFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const tagOptions = [
-    "בשרי", "חלבי", "פרווה", "ילדים", "טבעוני",
-    "צמחוני", "מתוק", "תוספת", "עיקרית", "חגים", "שבת"
+    "בשרי",
+    "חלבי",
+    "פרווה",
+    "ילדים",
+    "טבעוני",
+    "צמחוני",
+    "מתוק",
+    "תוספת",
+    "עיקרית",
+    "חגים",
+    "שבת",
   ];
 
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/recipes/${id}`); 
+        const res = await fetch(`http://localhost:5000/api/recipes/${id}`);
         if (!res.ok) throw new Error("Failed to fetch recipe");
         const data = await res.json();
         setRecipe({
@@ -36,7 +55,11 @@ function EditRecipePage() {
         });
       } catch (err) {
         console.error(err);
-        showSnackbar({ message: "Error loading recipe", severity: "error", requireAction: true });
+        showSnackbar({
+          message: "Error loading recipe",
+          severity: "error",
+          requireAction: true,
+        });
       }
     };
     fetchRecipe();
@@ -65,7 +88,10 @@ function EditRecipePage() {
   const handleAddMedia = (e) => {
     const files = Array.from(e.target.files);
     setNewMediaFiles((prev) => [...prev, ...files]);
-    setPreviewUrls(prev => [...prev, ...files.map(file => URL.createObjectURL(file))]);
+    setPreviewUrls((prev) => [
+      ...prev,
+      ...files.map((file) => URL.createObjectURL(file)),
+    ]);
   };
 
   const handleRemoveMedia = (index, isExisting) => {
@@ -80,7 +106,11 @@ function EditRecipePage() {
 
   const handleSave = async () => {
     if (!recipe.title || !recipe.cookingTime || !recipe.difficulty) {
-      showSnackbar({ message: "Please fill in all required fields", severity: "error", requireAction: true });
+      showSnackbar({
+        message: "Please fill in all required fields",
+        severity: "error",
+        requireAction: true,
+      });
       return;
     }
 
@@ -96,15 +126,14 @@ function EditRecipePage() {
     formData.append("instructions", JSON.stringify(recipe.instructions));
     formData.append("tags", JSON.stringify(recipe.tags));
     formData.append("existingMedia", JSON.stringify(recipe.media));
-    newMediaFiles.forEach(file => formData.append("newMedia", file));
+    newMediaFiles.forEach((file) => formData.append("newMedia", file));
 
     try {
       const res = await fetch(`http://localhost:5000/api/recipes/${id}`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
-        body: formData
+        body: formData,
       });
-      
 
       if (!res.ok) throw new Error("Failed to update recipe");
 
@@ -112,7 +141,11 @@ function EditRecipePage() {
       setTimeout(() => navigate(`/recipe/${id}`), 1500);
     } catch (err) {
       console.error(err);
-      showSnackbar({ message: "Error saving changes", severity: "error", requireAction: true });
+      showSnackbar({
+        message: "Error saving changes",
+        severity: "error",
+        requireAction: true,
+      });
     }
   };
 
@@ -124,41 +157,93 @@ function EditRecipePage() {
         <Box sx={styles.wrapper}>
           <Card sx={styles.card}>
             <CardContent>
-            <IconButton
-  onClick={() => navigate(-1)}
-  sx={{
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    backgroundColor: '#fff',
-    boxShadow: 2,
-    zIndex: 10,
-    '&:hover': {
-      backgroundColor: 'rgba(170, 170, 170, 0.1)',
-    },
-  }}
->
-  <ArrowBackIosIcon sx={{ transform: 'rotate(180deg)' }} />
-</IconButton>
+              <IconButton
+                onClick={() => navigate(-1)}
+                sx={{
+                  position: "absolute",
+                  top: 16,
+                  right: 16,
+                  backgroundColor: "#fff",
+                  boxShadow: 2,
+                  zIndex: 10,
+                  "&:hover": {
+                    backgroundColor: "rgba(170, 170, 170, 0.1)",
+                  },
+                }}
+              >
+                <ArrowBackIosIcon sx={{ transform: "rotate(180deg)" }} />
+              </IconButton>
 
-              <Typography variant="h5" sx={styles.title}>Edit Recipe</Typography>
+              <Typography variant="h5" sx={styles.title}>
+                Edit Recipe
+              </Typography>
 
-              <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} style={styles.form}>
-                <TextField name="title" label="Recipe Title *" value={recipe.title} onChange={handleChange} fullWidth required sx={styles.input} />
-                <TextField name="location" label="Location (optional)" value={recipe.location || ''} onChange={handleChange} fullWidth sx={styles.input} />
-                <TextField name="description" label="Description" value={recipe.description} onChange={handleChange} fullWidth multiline rows={3} sx={styles.input} />
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSave();
+                }}
+                style={styles.form}
+              >
+                <TextField
+                  name="title"
+                  label="Recipe Title *"
+                  value={recipe.title}
+                  onChange={handleChange}
+                  fullWidth
+                  required
+                  sx={styles.input}
+                />
+                <TextField
+                  name="location"
+                  label="Location (optional)"
+                  value={recipe.location || ""}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={styles.input}
+                />
+                <TextField
+                  name="description"
+                  label="Description"
+                  value={recipe.description}
+                  onChange={handleChange}
+                  fullWidth
+                  multiline
+                  rows={3}
+                  sx={styles.input}
+                />
 
                 <Box sx={styles.row}>
-                  <TextField name="cookingTime" label="Cooking Time (minutes) *" type="number"
-                    value={recipe.cookingTime} onChange={handleChange} required fullWidth sx={styles.input} />
-                  <TextField name="servings" label="Servings" type="number"
-                    value={recipe.servings} onChange={handleChange} fullWidth sx={styles.input} />
+                  <TextField
+                    name="cookingTime"
+                    label="Cooking Time (minutes) *"
+                    type="number"
+                    value={recipe.cookingTime}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                    sx={styles.input}
+                  />
+                  <TextField
+                    name="servings"
+                    label="Servings"
+                    type="number"
+                    value={recipe.servings}
+                    onChange={handleChange}
+                    fullWidth
+                    sx={styles.input}
+                  />
                 </Box>
 
                 <Box sx={styles.row}>
                   <FormControl fullWidth required sx={styles.input}>
                     <InputLabel>Difficulty *</InputLabel>
-                    <Select label="Difficulty" name="difficulty" value={recipe.difficulty} onChange={handleChange}>
+                    <Select
+                      label="Difficulty"
+                      name="difficulty"
+                      value={recipe.difficulty}
+                      onChange={handleChange}
+                    >
                       <MenuItem value="Easy">Easy</MenuItem>
                       <MenuItem value="Medium">Medium</MenuItem>
                       <MenuItem value="Hard">Hard</MenuItem>
@@ -167,7 +252,12 @@ function EditRecipePage() {
 
                   <FormControl fullWidth sx={styles.input}>
                     <InputLabel>Category</InputLabel>
-                    <Select label="Category" name="category" value={recipe.category} onChange={handleChange}>
+                    <Select
+                      label="Category"
+                      name="category"
+                      value={recipe.category}
+                      onChange={handleChange}
+                    >
                       <MenuItem value="Breakfast">Breakfast</MenuItem>
                       <MenuItem value="Lunch">Lunch</MenuItem>
                       <MenuItem value="Dinner">Dinner</MenuItem>
@@ -182,36 +272,72 @@ function EditRecipePage() {
                   freeSolo
                   options={tagOptions}
                   value={recipe.tags}
-                  onChange={(e, newValue) => setRecipe({ ...recipe, tags: newValue })}
+                  onChange={(e, newValue) =>
+                    setRecipe({ ...recipe, tags: newValue })
+                  }
                   renderInput={(params) => (
-                    <TextField {...params} label="Tags (optional)" sx={styles.input} />
+                    <TextField
+                      {...params}
+                      label="Tags (optional)"
+                      sx={styles.input}
+                    />
                   )}
                 />
 
                 {recipe.ingredients.map((ing, i) => (
                   <Box key={i} sx={styles.row}>
-                  <TextField fullWidth label={`Ingredient ${i + 1}`} value={ing}
-                    onChange={(e) => handleListChange(i, e.target.value, "ingredients")}
-                    sx={styles.input}
-                  />
-                    <IconButton onClick={() => removeField(i, "ingredients")}><RemoveCircle /></IconButton>
+                    <TextField
+                      fullWidth
+                      label={`Ingredient ${i + 1}`}
+                      value={ing}
+                      onChange={(e) =>
+                        handleListChange(i, e.target.value, "ingredients")
+                      }
+                      sx={styles.input}
+                    />
+                    <IconButton onClick={() => removeField(i, "ingredients")}>
+                      <RemoveCircle />
+                    </IconButton>
                   </Box>
                 ))}
-                <Button onClick={() => addField("ingredients")} startIcon={<AddCircle />} variant="outlined" color="inherit">Add Ingredient</Button>
+                <Button
+                  onClick={() => addField("ingredients")}
+                  startIcon={<AddCircle />}
+                  variant="outlined"
+                  color="inherit"
+                >
+                  Add Ingredient
+                </Button>
 
                 {recipe.instructions.map((step, i) => (
                   <Box key={i} sx={styles.row}>
-                  <TextField fullWidth label={`Step ${i + 1}`} value={step}
-                    onChange={(e) => handleListChange(i, e.target.value, "instructions")}
-                    sx={styles.input}
-                  />
-                    <IconButton onClick={() => removeField(i, "instructions")}><RemoveCircle /></IconButton>
+                    <TextField
+                      fullWidth
+                      label={`Step ${i + 1}`}
+                      value={step}
+                      onChange={(e) =>
+                        handleListChange(i, e.target.value, "instructions")
+                      }
+                      sx={styles.input}
+                    />
+                    <IconButton onClick={() => removeField(i, "instructions")}>
+                      <RemoveCircle />
+                    </IconButton>
                   </Box>
                 ))}
-                <Button onClick={() => addField("instructions")} startIcon={<AddCircle />} variant="outlined" color="inherit">Add Step</Button>
+                <Button
+                  onClick={() => addField("instructions")}
+                  startIcon={<AddCircle />}
+                  variant="outlined"
+                  color="inherit"
+                >
+                  Add Step
+                </Button>
 
                 <Box>
-                  <Typography fontWeight="bold" sx={{ mt: 2 }}>Existing Media:</Typography>
+                  <Typography fontWeight="bold" sx={{ mt: 2 }}>
+                    Existing Media:
+                  </Typography>
                   {recipe.media?.map((url, i) => (
                     <Box key={i} sx={{ position: "relative", mt: 1 }}>
                       {url.endsWith(".mp4") ? (
@@ -219,27 +345,55 @@ function EditRecipePage() {
                       ) : (
                         <img src={url} alt="media" style={styles.media} />
                       )}
-                      <IconButton onClick={() => handleRemoveMedia(i, true)} size="small" sx={styles.deleteBtn}>
+                      <IconButton
+                        onClick={() => handleRemoveMedia(i, true)}
+                        size="small"
+                        sx={styles.deleteBtn}
+                      >
                         <Delete fontSize="small" />
                       </IconButton>
                     </Box>
                   ))}
-                  <Typography fontWeight="bold" sx={{ mt: 2 }}>New Media:</Typography>
+                  <Typography fontWeight="bold" sx={{ mt: 2 }}>
+                    New Media:
+                  </Typography>
                   {previewUrls.map((url, i) => (
                     <Box key={i} sx={{ position: "relative", mt: 1 }}>
                       <img src={url} style={styles.media} alt="preview" />
-                      <IconButton onClick={() => handleRemoveMedia(i, false)} size="small" sx={styles.deleteBtn}>
+                      <IconButton
+                        onClick={() => handleRemoveMedia(i, false)}
+                        size="small"
+                        sx={styles.deleteBtn}
+                      >
                         <Delete fontSize="small" />
                       </IconButton>
                     </Box>
                   ))}
-                  <Button variant="outlined" component="label" fullWidth sx={{ mt: 2 }}>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                  >
                     Add More Media
-                    <input hidden accept="image/*,video/*" multiple type="file" onChange={handleAddMedia} />
+                    <input
+                      hidden
+                      accept="image/*,video/*"
+                      multiple
+                      type="file"
+                      onChange={handleAddMedia}
+                    />
                   </Button>
                 </Box>
 
-                <Button type="submit" variant="contained" fullWidth sx={styles.button}>Save Changes</Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  sx={styles.button}
+                >
+                  Save Changes
+                </Button>
               </form>
             </CardContent>
           </Card>
@@ -254,50 +408,50 @@ export default EditRecipePage;
 const styles = {
   background: {
     backgroundImage: 'url("/background.jpg")',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    minHeight: '100vh',
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    minHeight: "100vh",
   },
   overlay: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'start',
-    paddingTop: '30px',
-    paddingBottom: '30px',
+    backgroundColor: "rgba(255, 255, 255, 0.85)",
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "start",
+    paddingTop: "30px",
+    paddingBottom: "30px",
   },
   wrapper: {
-    width: '100%',
-    maxWidth: '600px',
-    margin: 'auto',
-    padding: '0 20px'
+    width: "100%",
+    maxWidth: "600px",
+    margin: "auto",
+    padding: "0 20px",
   },
   card: {
-    position: 'relative',
+    position: "relative",
     padding: 2,
     borderRadius: 3,
     boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-    backgroundColor: "#fafafa"
+    backgroundColor: "#fafafa",
   },
   title: {
     fontWeight: "bold",
     color: "#ff6600",
-    marginBottom: "20px"
+    marginBottom: "20px",
   },
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "16px"
+    gap: "16px",
   },
   row: {
     display: "flex",
     gap: "10px",
-    alignItems: "center"
+    alignItems: "center",
   },
   input: {
-    borderRadius: "8px"
+    borderRadius: "8px",
   },
   button: {
     backgroundColor: "#ff6600",
@@ -305,18 +459,17 @@ const styles = {
     fontWeight: "bold",
     borderRadius: "8px",
     "&:hover": {
-      backgroundColor: "#e05500"
-    }
+      backgroundColor: "#e05500",
+    },
   },
   media: {
     width: "100%",
-    borderRadius: 8
+    borderRadius: 8,
   },
   deleteBtn: {
     position: "absolute",
     top: 5,
     right: 5,
-    backgroundColor: "white"
-  }
+    backgroundColor: "white",
+  },
 };
-

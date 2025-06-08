@@ -1,14 +1,22 @@
-import React, { useState, useEffect, useCallback, forwardRef } from 'react';
+import React, { useState, useEffect, useCallback, forwardRef } from "react";
 import {
-  Box, TextField, Button, Typography, IconButton, Avatar,
-  Dialog, DialogTitle, DialogContent, Slide
-} from '@mui/material';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ReplyIcon from '@mui/icons-material/Reply';
-import CloseIcon from '@mui/icons-material/Close';
-import { useSnackbar } from '../components/context/SnackbarContext';
-import { useConfirmDialog } from '../components/context/ConfirmDialogContext';
+  Box,
+  TextField,
+  Button,
+  Typography,
+  IconButton,
+  Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Slide,
+} from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ReplyIcon from "@mui/icons-material/Reply";
+import CloseIcon from "@mui/icons-material/Close";
+import { useSnackbar } from "../components/context/SnackbarContext";
+import { useConfirmDialog } from "../components/context/ConfirmDialogContext";
 
 /* ---------- Dialog transition (נחמדות UX) ---------- */
 const Transition = forwardRef(function Transition(props, ref) {
@@ -18,33 +26,39 @@ const Transition = forwardRef(function Transition(props, ref) {
 /* ---------- Component ---------- */
 function CommentSection({ recipeId, onClose }) {
   /* UI state */
-  const [open, setOpen] = useState(true);              // Dialog visibility
+  const [open, setOpen] = useState(true); // Dialog visibility
   const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState('');
+  const [newComment, setNewComment] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const { showSnackbar } = useSnackbar();
   const { showConfirmDialog } = useConfirmDialog();
 
   /* Auth */
-  const token  = localStorage.getItem('token');
-  const userId = localStorage.getItem('userId');
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
 
   /* Helpers ------------------------------------------------------------ */
   const getImageUrl = (url) =>
-    !url ? '/default-user.png' : url.startsWith('http') ? url : `http://localhost:5000${url}`;
+    !url
+      ? "/default-user.png"
+      : url.startsWith("http")
+        ? url
+        : `http://localhost:5000${url}`;
 
   /* Fetch & build tree -------------------------------------------------- */
   const fetchComments = useCallback(async () => {
     try {
-      const res  = await fetch(`http://localhost:5000/api/comments/${recipeId}`);
+      const res = await fetch(`http://localhost:5000/api/comments/${recipeId}`);
       const data = await res.json();
       setComments(buildCommentTree(data));
     } catch (err) {
-      console.error('❌ Error fetching comments:', err);
+      console.error("❌ Error fetching comments:", err);
     }
   }, [recipeId]);
 
-  useEffect(() => { fetchComments(); }, [fetchComments]);
+  useEffect(() => {
+    fetchComments();
+  }, [fetchComments]);
 
   const buildCommentTree = (flat) => {
     const map = {};
@@ -62,149 +76,112 @@ function CommentSection({ recipeId, onClose }) {
   const handleAddComment = async () => {
     if (!token) {
       showSnackbar({
-        message: 'You must be logged in to comment!',
-        severity: 'error',
+        message: "You must be logged in to comment!",
+        severity: "error",
         requireAction: true,
       });
       return;
     }
     try {
       const res = await fetch(
-        `http://localhost:5000/api/comments/${recipeId}${replyingTo ? `/${replyingTo}` : ''}`,
+        `http://localhost:5000/api/comments/${recipeId}${replyingTo ? `/${replyingTo}` : ""}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ text: newComment }),
-        }
+        },
       );
       if (res.ok) {
-        setNewComment('');
+        setNewComment("");
         setReplyingTo(null);
         fetchComments();
       }
     } catch {
       showSnackbar({
-        message: 'Failed to add comment',
-        severity: 'error',
+        message: "Failed to add comment",
+        severity: "error",
         requireAction: true,
       });
-      
     }
   };
-
-  // const handleDeleteComment = async (id) => {
-  //   if (!token) return;
-  //   if (window.confirm('Are you sure you want to delete this comment?')) {
-  //     try {
-  //       const res = await fetch(`http://localhost:5000/api/comments/${id}`, {
-  //         method: 'DELETE',
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       });
-  //       res.ok && fetchComments();
-  //     } catch {
-  //       alert('❌ Error deleting comment.');
-  //     }
-  //   }
-  // };
   const handleDeleteComment = async (id) => {
     if (!token) {
       showSnackbar({
-        message: 'You must be logged in to delete a comment!',
-        severity: 'error',
+        message: "You must be logged in to delete a comment!",
+        severity: "error",
         requireAction: true,
       });
       return;
     }
-  
+
     showConfirmDialog({
-      title: 'Delete Comment',
-      message: 'Are you sure you want to delete this comment?',
+      title: "Delete Comment",
+      message: "Are you sure you want to delete this comment?",
       onConfirm: async () => {
         try {
           const res = await fetch(`http://localhost:5000/api/comments/${id}`, {
-            method: 'DELETE',
+            method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },
           });
           if (res.ok) {
             showSnackbar({
-              message: 'Comment deleted successfully',
-              severity: 'success',
+              message: "Comment deleted successfully",
+              severity: "success",
             });
             fetchComments();
           } else {
             showSnackbar({
-              message: 'Failed to delete comment',
-              severity: 'error',
+              message: "Failed to delete comment",
+              severity: "error",
               requireAction: true,
             });
           }
         } catch {
           showSnackbar({
-            message: 'An error occurred while deleting the comment',
-            severity: 'error',
+            message: "An error occurred while deleting the comment",
+            severity: "error",
             requireAction: true,
           });
         }
       },
     });
   };
-  
-
-  // const handleLikeComment = async (id) => {
-  //   if (!token) {  showSnackbar({
-  //     message: 'You must be logged in to like a comment!',
-  //     severity: 'error',
-  //     requireAction: true,
-  //   });
-  //   return
-  //   }
-  //   try {
-  //     const res = await fetch(`http://localhost:5000/api/comments/like/${id}`, {
-  //       method: 'POST',
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-  //     res.ok && fetchComments();
-  //   } catch {
-  //     alert('❌ Error liking comment.');
-  //   }
-  // };
   const handleLikeComment = async (id) => {
     if (!token) {
       showSnackbar({
-        message: 'You must be logged in to like a comment!',
-        severity: 'error',
+        message: "You must be logged in to like a comment!",
+        severity: "error",
         requireAction: true,
       });
       return;
     }
-  
+
     try {
       const res = await fetch(`http://localhost:5000/api/comments/like/${id}`, {
-        method: 'POST',
+        method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       if (res.ok) {
         fetchComments();
       } else {
         showSnackbar({
-          message: 'Failed to like comment.',
-          severity: 'error',
+          message: "Failed to like comment.",
+          severity: "error",
           requireAction: true,
         });
       }
     } catch {
       showSnackbar({
-        message: 'Server error while liking comment.',
-        severity: 'error',
+        message: "Server error while liking comment.",
+        severity: "error",
         requireAction: true,
       });
     }
   };
-  
 
   /* Render -------------------------------------------------------------- */
   const renderComment = (c, level = 0) => (
@@ -213,7 +190,7 @@ function CommentSection({ recipeId, onClose }) {
       <Box sx={sx.commentHeader}>
         <Avatar src={getImageUrl(c.user?.profileImage)} sx={sx.avatar} />
         <Typography variant="body2" sx={sx.username}>
-          <strong>{c.user?.username || 'User'}:</strong>
+          <strong>{c.user?.username || "User"}:</strong>
         </Typography>
       </Box>
 
@@ -228,8 +205,8 @@ function CommentSection({ recipeId, onClose }) {
           sx={{
             ...sx.iconButton,
             color: c.likes?.some((id) => id.toString() === userId)
-              ? '#ff6600'
-              : 'inherit',
+              ? "#ff6600"
+              : "inherit",
           }}
         >
           <FavoriteIcon fontSize="small" />
@@ -243,7 +220,10 @@ function CommentSection({ recipeId, onClose }) {
         </IconButton>
 
         {c.user?._id === userId && (
-          <IconButton onClick={() => handleDeleteComment(c._id)} sx={sx.iconButton}>
+          <IconButton
+            onClick={() => handleDeleteComment(c._id)}
+            sx={sx.iconButton}
+          >
             <DeleteIcon fontSize="small" />
           </IconButton>
         )}
@@ -270,7 +250,9 @@ function CommentSection({ recipeId, onClose }) {
       onClose={handleClose}
       PaperProps={{ sx: { p: 2 } }}
     >
-      <DialogTitle sx={{ m: 0, p: 0, mb: 2, display: 'flex', alignItems: 'center' }}>
+      <DialogTitle
+        sx={{ m: 0, p: 0, mb: 2, display: "flex", alignItems: "center" }}
+      >
         <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl: 1 }}>
           Comments
         </Typography>
@@ -291,7 +273,7 @@ function CommentSection({ recipeId, onClose }) {
         {/* ----- Add comment box ----- */}
         <Box sx={sx.writeArea}>
           <TextField
-            label={replyingTo ? 'Reply to comment…' : 'Add a comment…'}
+            label={replyingTo ? "Reply to comment…" : "Add a comment…"}
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             fullWidth
@@ -318,59 +300,59 @@ const sx = {
   writeArea: {
     mb: 3,
     px: 1,
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: 1,
   },
   /* comments list */
   commentBox: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
-    mb: '15px',
-    p: '12px',
-    backgroundColor: '#fff',
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    mb: "15px",
+    p: "12px",
+    backgroundColor: "#fff",
     borderRadius: 4,
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
   },
   commentHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
   },
   avatar: { width: 32, height: 32 },
-  username: { fontWeight: 500, color: '#333', fontSize: '14px' },
-  commentText: { color: '#555', fontSize: '14px' },
+  username: { fontWeight: 500, color: "#333", fontSize: "14px" },
+  commentText: { color: "#555", fontSize: "14px" },
   /* input */
-  input: { backgroundColor: '#fafafa', borderRadius: 2 },
+  input: { backgroundColor: "#fafafa", borderRadius: 2 },
   button: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     mt: 1,
-    backgroundColor: '#ff6600',
-    color: '#fff',
-    fontSize: '14px',
+    backgroundColor: "#ff6600",
+    color: "#fff",
+    fontSize: "14px",
     borderRadius: 20,
-    '&:hover': { backgroundColor: '#ff5722' },
+    "&:hover": { backgroundColor: "#ff5722" },
   },
   /* actions */
   actions: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
   },
   iconButton: {
-    color: '#ff6600',
-    p: '8px',
-    borderRadius: '50%',
-    '&:hover': {
-      backgroundColor: 'rgba(255,102,0,0.1)',
-      transform: 'scale(1.1)',
+    color: "#ff6600",
+    p: "8px",
+    borderRadius: "50%",
+    "&:hover": {
+      backgroundColor: "rgba(255,102,0,0.1)",
+      transform: "scale(1.1)",
     },
   },
   noCommentsText: {
-    fontStyle: 'italic',
-    color: '#666',
-    textAlign: 'center',
+    fontStyle: "italic",
+    color: "#666",
+    textAlign: "center",
     mt: 4,
   },
 };

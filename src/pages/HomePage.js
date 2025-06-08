@@ -1,15 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
-import RecipeCard from '../components/RecipeCard';
-import {
-  Container,
-  Typography,
-  Grid,
-  Box,
-  Fade,
-} from '@mui/material';
-import PageLoading from '../components/PageLoading';
-
+import React, { useEffect, useState } from "react";
+import RecipeCard from "../components/RecipeCard";
+import { Container, Typography, Grid, Box, Fade } from "@mui/material";
+import PageLoading from "../components/PageLoading";
 
 function HomePage() {
   const [recipes, setRecipes] = useState([]);
@@ -17,7 +9,7 @@ function HomePage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/recipes')
+    fetch("http://localhost:5000/api/recipes")
       .then((res) => res.json())
       .then((data) => {
         setRecipes(data);
@@ -43,10 +35,10 @@ function HomePage() {
               gutterBottom
               sx={{
                 fontSize: {
-                  xs: '1.8rem',
-                  sm: '2.2rem',
-                  md: '2.8rem',
-                  lg: '3.2rem',
+                  xs: "1.8rem",
+                  sm: "2.2rem",
+                  md: "2.8rem",
+                  lg: "3.2rem",
                 },
               }}
             >
@@ -58,13 +50,13 @@ function HomePage() {
               color="text.secondary"
               sx={{
                 fontSize: {
-                  xs: '0.9rem',
-                  sm: '1rem',
-                  md: '1.1rem',
-                  lg: '1.2rem',
+                  xs: "0.9rem",
+                  sm: "1rem",
+                  md: "1.1rem",
+                  lg: "1.2rem",
                 },
-                maxWidth: '700px',
-                mx: 'auto',
+                maxWidth: "700px",
+                mx: "auto",
               }}
             >
               Browse, cook, and thrive.
@@ -74,7 +66,10 @@ function HomePage() {
           {error && (
             <Box textAlign="center" mb={6} px={2}>
               <Typography color="error" variant="h6">
-                <span role="img" aria-label="cross mark">❌</span> {error}
+                <span role="img" aria-label="cross mark">
+                  ❌
+                </span>{" "}
+                {error}
               </Typography>
             </Box>
           )}
@@ -89,12 +84,18 @@ function HomePage() {
                     sm={6}
                     md={4}
                     lg={3}
-                    sx={{ display: 'flex' }}
+                    sx={{ display: "flex" }}
                   >
-                    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
                       <RecipeCard
                         recipe={recipe}
-                        uploader={recipe.user?.username || 'Anonymous'}
+                        uploader={recipe.user?.username || "Anonymous"}
                       />
                     </Box>
                   </Grid>
@@ -112,13 +113,14 @@ function HomePage() {
                 >
                   <Typography variant="h6">
                     No recipes found. Be the first to share one!{" "}
-                    <span role="img" aria-label="plate with cutlery">🍽️</span>
+                    <span role="img" aria-label="plate with cutlery">
+                      🍽️
+                    </span>
                   </Typography>
                 </Box>
               </Grid>
             )}
           </Grid>
-
         </Container>
       </Box>
     </Box>
@@ -130,30 +132,30 @@ export default HomePage;
 const styles = {
   background: {
     backgroundImage: 'url("/background.jpg")',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   overlay: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    width: '100%',
-    minHeight: '100vh',
-    paddingTop: '60px',
-    paddingBottom: '60px',
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    width: "100%",
+    minHeight: "100vh",
+    paddingTop: "60px",
+    paddingBottom: "60px",
   },
   cardWrapper: {
     flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-    '&:hover': {
-      transform: 'translateY(-6px)',
-      boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+    "&:hover": {
+      transform: "translateY(-6px)",
+      boxShadow: "0 12px 24px rgba(0,0,0,0.1)",
     },
   },
 };

@@ -1,14 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  TextField, Button, IconButton, InputLabel, MenuItem,
-  FormControl, Select, Autocomplete, Box, Card, CardContent, Typography, Snackbar, Alert
+  TextField,
+  Button,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
+  Autocomplete,
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { AddCircle, RemoveCircle, ImageOutlined } from "@mui/icons-material";
-import '../styles/authPages.css';
-import { VolumeUp, VolumeOff, PlayArrow } from '@mui/icons-material';
-import { useSnackbar } from '../components/context/SnackbarContext';
-
+import "../styles/authPages.css";
+import { VolumeUp, VolumeOff, PlayArrow } from "@mui/icons-material";
+import { useSnackbar } from "../components/context/SnackbarContext";
 
 function UploadRecipePage() {
   const navigate = useNavigate();
@@ -22,79 +33,85 @@ function UploadRecipePage() {
     category: "",
     ingredients: [""],
     instructions: [""],
-    tags: []
+    tags: [],
   });
   const [mediaFiles, setMediaFiles] = useState([]); // קבצים מרובים
   const [previewUrls, setPreviewUrls] = useState([]); // תצוגות מקדימות מרובות
 
   const [showLoginAlert, setShowLoginAlert] = useState(false);
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState("");
   const { showSnackbar } = useSnackbar();
   const tagOptions = [
-    "בשרי", "חלבי", "פרווה", "ילדים", "טבעוני",
-    "צמחוני", "מתוק", "תוספת", "עיקרית", "חגים", "שבת"
+    "בשרי",
+    "חלבי",
+    "פרווה",
+    "ילדים",
+    "טבעוני",
+    "צמחוני",
+    "מתוק",
+    "תוספת",
+    "עיקרית",
+    "חגים",
+    "שבת",
   ];
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      // Show login alert and then redirect after a delay
       setShowLoginAlert(true);
       setTimeout(() => {
-        navigate('/');
-      }, 2000); // Redirect after 2 seconds
+        navigate("/");
+      }, 2000);
     }
-  // 🧡 ניסיון להשיג מיקום ולתרגם לכתובת
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          const response = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyBZXi0TxIVSgvV-3e3OKjJzDcrluiZsdtg`
-          );
-          const data = await response.json();
-          console.log("🌍 Full Google Maps API response:", data);
-          if (data.status === "OK") {
-            const address = data.results[0]?.formatted_address || '';
-            console.log("🏡 Detected Address:", address);
-            setLocation(address);
-          } else {
-            console.error("Error with Geocoding API:", data.status);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            const response = await fetch(
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyBZXi0TxIVSgvV-3e3OKjJzDcrluiZsdtg`,
+            );
+            const data = await response.json();
+            console.log("🌍 Full Google Maps API response:", data);
+            if (data.status === "OK") {
+              const address = data.results[0]?.formatted_address || "";
+              console.log("🏡 Detected Address:", address);
+              setLocation(address);
+            } else {
+              console.error("Error with Geocoding API:", data.status);
+            }
+          } catch (err) {
+            console.error("Error fetching address:", err);
           }
-        } catch (err) {
-          console.error("Error fetching address:", err);
-        }
-      },
-      (error) => {
-        console.error("Error getting location:", error);
-      }
-    );
-  }
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        },
+      );
+    }
   }, [navigate]);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
-  
+
     const newFiles = [...mediaFiles, ...files];
-  
+
     if (newFiles.length > 10) {
-      //alert("You can upload up to 10 files only.");
       showSnackbar({
         message: "You can upload up to 10 files only.",
-        severity: 'error',
-        requireAction: true
+        severity: "error",
+        requireAction: true,
       });
-      
+
       return;
     }
-  
+
     setMediaFiles(newFiles);
-    const newPreviews = files.map(file => URL.createObjectURL(file));
-    setPreviewUrls(prev => [...prev, ...newPreviews]);
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+    setPreviewUrls((prev) => [...prev, ...newPreviews]);
   };
-  
+
   const handleRemoveMedia = (index) => {
     const updatedFiles = [...mediaFiles];
     const updatedPreviews = [...previewUrls];
@@ -103,7 +120,6 @@ function UploadRecipePage() {
     setMediaFiles(updatedFiles);
     setPreviewUrls(updatedPreviews);
   };
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -132,20 +148,18 @@ function UploadRecipePage() {
     if (!token) {
       setShowLoginAlert(true);
       setTimeout(() => {
-        navigate('/');
+        navigate("/");
       }, 2000);
       return;
     }
     if (mediaFiles.length === 0) {
       showSnackbar({
         message: "Please upload at least one image or video.",
-        severity: 'error',
-        requireAction: true
+        severity: "error",
+        requireAction: true,
       });
       return;
     }
-    
-    
 
     try {
       setIsUploading(true);
@@ -158,7 +172,7 @@ function UploadRecipePage() {
       formData.append("category", recipe.category);
       formData.append("tags", JSON.stringify(recipe.tags));
       mediaFiles.forEach((file) => {
-        formData.append("media", file); // שים לב: אותו שם לכולם
+        formData.append("media", file);
       });
       formData.append("ingredients", JSON.stringify(recipe.ingredients));
       formData.append("instructions", JSON.stringify(recipe.instructions));
@@ -173,32 +187,27 @@ function UploadRecipePage() {
       if (!res.ok) {
         const errorData = await res.json();
         console.error("Upload failed:", errorData);
-        //alert("Error uploading recipe.");
         showSnackbar({
           message: "Error uploading recipe.",
-          severity: 'error',
-          requireAction: true
+          severity: "error",
+          requireAction: true,
         });
-        
+
         return;
       }
-
-      //alert("Recipe uploaded!");
       showSnackbar({
-        message: 'Recipe uploaded!',
-        severity: 'success',
+        message: "Recipe uploaded!",
+        severity: "success",
       });
-      
+
       navigate("/");
     } catch (err) {
       console.error("Upload error:", err);
-      //alert("Upload failed.");
       showSnackbar({
-        message: 'Upload failed.',
-        severity: 'error',
-        requireAction: true
+        message: "Upload failed.",
+        severity: "error",
+        requireAction: true,
       });
-      
     } finally {
       setIsUploading(false);
     }
@@ -208,7 +217,7 @@ function UploadRecipePage() {
     const [playing, setPlaying] = useState(true);
     const [muted, setMuted] = useState(true);
     const videoRef = useRef(null);
-  
+
     const handleTogglePlay = () => {
       if (playing) {
         videoRef.current.pause();
@@ -217,7 +226,7 @@ function UploadRecipePage() {
       }
       setPlaying(!playing);
     };
-  
+
     const handleToggleMute = (e) => {
       e.stopPropagation();
       setMuted(!muted);
@@ -225,9 +234,9 @@ function UploadRecipePage() {
         videoRef.current.muted = !muted;
       }
     };
-  
+
     return (
-      <Box sx={{ position: 'relative', width: '100%', height: 220 }}>
+      <Box sx={{ position: "relative", width: "100%", height: 220 }}>
         <video
           ref={videoRef}
           src={src}
@@ -236,39 +245,41 @@ function UploadRecipePage() {
           loop
           playsInline
           style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            borderRadius: '10px',
-            cursor: 'pointer',
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            borderRadius: "10px",
+            cursor: "pointer",
           }}
           onClick={handleTogglePlay}
         />
-        {/* כפתור השתקה בצד ימין למעלה */}
         <IconButton
           onClick={handleToggleMute}
           sx={{
-            position: 'absolute',
+            position: "absolute",
             top: 8,
             right: 8,
-            backgroundColor: 'rgba(255,255,255,0.6)',
+            backgroundColor: "rgba(255,255,255,0.6)",
             zIndex: 10,
             width: 32,
             height: 32,
           }}
         >
-          {muted ? <VolumeOff fontSize="small" /> : <VolumeUp fontSize="small" />}
+          {muted ? (
+            <VolumeOff fontSize="small" />
+          ) : (
+            <VolumeUp fontSize="small" />
+          )}
         </IconButton>
-        {/* כפתור פליי במרכז כשהווידאו מושהה */}
         {!playing && (
           <IconButton
             onClick={handleTogglePlay}
             sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              backgroundColor: 'rgba(255,255,255,0.7)',
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              backgroundColor: "rgba(255,255,255,0.7)",
               zIndex: 10,
             }}
           >
@@ -278,192 +289,270 @@ function UploadRecipePage() {
       </Box>
     );
   }
-  
-  
+
   return (
     <>
-      {/* Login Alert - Outside the main Box to ensure it always shows */}
-      <Snackbar 
-        open={showLoginAlert} 
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      <Snackbar
+        open={showLoginAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
         autoHideDuration={2000}
       >
-        <Alert 
-          severity="warning" 
+        <Alert
+          severity="warning"
           variant="filled"
-          sx={{ 
-            width: '100%',
-            backgroundColor: '#ff6600',
-            color: 'white',
-            fontWeight: 'bold'
+          sx={{
+            width: "100%",
+            backgroundColor: "#ff6600",
+            color: "white",
+            fontWeight: "bold",
           }}
         >
           You need to login first to upload recipes
         </Alert>
       </Snackbar>
-    <Box sx={styles.background}>
-      <Box sx={styles.overlay}>
-        <Box sx={styles.wrapper}>
-          <Card sx={styles.card}>
-            <CardContent>
-              <Box sx={{ textAlign: "center" }}>
-                <img src="/instaFood_logo.png" alt="InstaFood Logo" style={styles.logo} />
-                <Typography variant="h5" component="h2" sx={styles.title}>
-                  Upload New Recipe
-                </Typography>
-              </Box>
+      <Box sx={styles.background}>
+        <Box sx={styles.overlay}>
+          <Box sx={styles.wrapper}>
+            <Card sx={styles.card}>
+              <CardContent>
+                <Box sx={{ textAlign: "center" }}>
+                  <img
+                    src="/instaFood_logo.png"
+                    alt="InstaFood Logo"
+                    style={styles.logo}
+                  />
+                  <Typography variant="h5" component="h2" sx={styles.title}>
+                    Upload New Recipe
+                  </Typography>
+                </Box>
 
-              <form onSubmit={handleSubmit} style={styles.form}>
-              <div style={styles.imageUpload}>
-  {/* input הסתרת קובץ */}
-  <input
-    type="file"
-    accept="image/*,video/*"
-    multiple
-    onChange={handleImageChange}
-    style={{ display: "none" }}
-    id="image-upload"
-  />
+                <form onSubmit={handleSubmit} style={styles.form}>
+                  <div style={styles.imageUpload}>
+                    <input
+                      type="file"
+                      accept="image/*,video/*"
+                      multiple
+                      onChange={handleImageChange}
+                      style={{ display: "none" }}
+                      id="image-upload"
+                    />
 
-  {/* תמיד להראות את המלבן להעלאה */}
-  <label htmlFor="image-upload" style={styles.uploadBox}>
-    <Box sx={styles.uploadPlaceholder}>
-      <ImageOutlined sx={{ fontSize: 48, color: "#aaa" }} />
-      <Typography variant="body1" sx={{ color: "#555", mt: 1 }}>
-        Click to upload recipe media
-      </Typography>
-    </Box>
-  </label>
+                    <label htmlFor="image-upload" style={styles.uploadBox}>
+                      <Box sx={styles.uploadPlaceholder}>
+                        <ImageOutlined sx={{ fontSize: 48, color: "#aaa" }} />
+                        <Typography
+                          variant="body1"
+                          sx={{ color: "#555", mt: 1 }}
+                        >
+                          Click to upload recipe media
+                        </Typography>
+                      </Box>
+                    </label>
 
-  {/* הצגת המדיות אם קיימות */}
-  {previewUrls.length > 0 && (
-    previewUrls.map((url, idx) => (
-      <div key={idx} style={{ marginBottom: '10px', position: 'relative' }}>
-        {mediaFiles[idx]?.type?.startsWith('video') ? (
-          <VideoPlayer src={url} />
-        ) : (
-          <img src={url} alt={`Preview ${idx}`} style={styles.imagePreview} />
-        )}
-        <IconButton
-          onClick={() => handleRemoveMedia(idx)}
-          sx={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-            zIndex: 10,
-          }}
-        >
-          <RemoveCircle sx={{ color: '#ff0000' }} />
-        </IconButton>
-      </div>
-    ))
-  )}
-</div>
-
-
-
-                <TextField name="title" label="Recipe Title *" value={recipe.title}
-                  onChange={handleChange} fullWidth required sx={styles.input} />
-
-<TextField
-  name="location"
-  label="Location (optional)"
-  value={location}
-  onChange={(e) => setLocation(e.target.value)}
-  fullWidth
-  sx={styles.input}
-/>
-
-                <TextField name="description" label="Description" value={recipe.description}
-                  onChange={handleChange} fullWidth multiline rows={3} sx={styles.input} />
-
-                <div style={styles.row}>
-                  <TextField name="cookingTime" label="Cooking Time (minutes) *" type="number"
-                    value={recipe.cookingTime} onChange={handleChange} fullWidth required
-                    inputProps={{ min: 0 }} sx={styles.input} />
-                  <TextField name="servings" label="Servings" type="number"
-                    value={recipe.servings} onChange={handleChange} fullWidth 
-                    inputProps={{ min: 0 }} sx={styles.input} />
-                </div>
-
-                <div style={styles.row}>
-                  <FormControl fullWidth required sx={styles.input}>
-                    <InputLabel>Difficulty *</InputLabel>
-                    <Select label="Difficulty" name="difficulty"
-                      value={recipe.difficulty} onChange={handleChange} required>
-                      <MenuItem value="Easy">Easy</MenuItem>
-                      <MenuItem value="Medium">Medium</MenuItem>
-                      <MenuItem value="Hard">Hard</MenuItem>
-                    </Select>
-                  </FormControl>
-
-                  <FormControl fullWidth sx={styles.input}>
-                    <InputLabel>Category</InputLabel>
-                    <Select label="Category" name="category"
-                      value={recipe.category} onChange={handleChange} >
-                      <MenuItem value="Breakfast">Breakfast</MenuItem>
-                      <MenuItem value="Lunch">Lunch</MenuItem>
-                      <MenuItem value="Dinner">Dinner</MenuItem>
-                      <MenuItem value="Dessert">Dessert</MenuItem>
-                      <MenuItem value="Drinks">Drinks</MenuItem>
-                    </Select>
-                  </FormControl>
-                </div>
-
-                <Autocomplete
-                  multiple
-                  freeSolo
-                  options={tagOptions}
-                  value={recipe.tags}
-                  onChange={(e, newValue) =>
-                    setRecipe({ ...recipe, tags: newValue })}
-                  renderInput={(params) => (
-                    <TextField {...params} variant="outlined"
-                      label="Tags (optional)" placeholder="Add tags" sx={styles.input} />
-                  )}
-                />
-
-                {recipe.ingredients.map((ing, i) => (
-                  <div key={i} style={styles.row}>
-                    <TextField fullWidth label={`Ingredient ${i + 1}`} value={ing}
-                      onChange={(e) => handleListChange(i, e.target.value, "ingredients")}
-                      sx={styles.input} />
-                    <IconButton onClick={() => removeField(i, "ingredients")}>
-                      <RemoveCircle />
-                    </IconButton>
+                    {previewUrls.length > 0 &&
+                      previewUrls.map((url, idx) => (
+                        <div
+                          key={idx}
+                          style={{ marginBottom: "10px", position: "relative" }}
+                        >
+                          {mediaFiles[idx]?.type?.startsWith("video") ? (
+                            <VideoPlayer src={url} />
+                          ) : (
+                            <img
+                              src={url}
+                              alt={`Preview ${idx}`}
+                              style={styles.imagePreview}
+                            />
+                          )}
+                          <IconButton
+                            onClick={() => handleRemoveMedia(idx)}
+                            sx={{
+                              position: "absolute",
+                              top: 8,
+                              right: 8,
+                              backgroundColor: "rgba(255, 255, 255, 0.7)",
+                              zIndex: 10,
+                            }}
+                          >
+                            <RemoveCircle sx={{ color: "#ff0000" }} />
+                          </IconButton>
+                        </div>
+                      ))}
                   </div>
-                ))}
-                <Button onClick={() => addField("ingredients")} startIcon={<AddCircle />}
-                  variant="outlined" color="inherit">
-                  Add Ingredient
-                </Button>
 
-                {recipe.instructions.map((step, i) => (
-                  <div key={i} style={styles.row}>
-                    <TextField fullWidth label={`Step ${i + 1}`} value={step}
-                      onChange={(e) => handleListChange(i, e.target.value, "instructions")}
-                      sx={styles.input} />
-                    <IconButton onClick={() => removeField(i, "instructions")}>
-                      <RemoveCircle />
-                    </IconButton>
+                  <TextField
+                    name="title"
+                    label="Recipe Title *"
+                    value={recipe.title}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                    sx={styles.input}
+                  />
+
+                  <TextField
+                    name="location"
+                    label="Location (optional)"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    fullWidth
+                    sx={styles.input}
+                  />
+
+                  <TextField
+                    name="description"
+                    label="Description"
+                    value={recipe.description}
+                    onChange={handleChange}
+                    fullWidth
+                    multiline
+                    rows={3}
+                    sx={styles.input}
+                  />
+
+                  <div style={styles.row}>
+                    <TextField
+                      name="cookingTime"
+                      label="Cooking Time (minutes) *"
+                      type="number"
+                      value={recipe.cookingTime}
+                      onChange={handleChange}
+                      fullWidth
+                      required
+                      inputProps={{ min: 0 }}
+                      sx={styles.input}
+                    />
+                    <TextField
+                      name="servings"
+                      label="Servings"
+                      type="number"
+                      value={recipe.servings}
+                      onChange={handleChange}
+                      fullWidth
+                      inputProps={{ min: 0 }}
+                      sx={styles.input}
+                    />
                   </div>
-                ))}
-                <Button onClick={() => addField("instructions")} startIcon={<AddCircle />}
-                  variant="outlined" color="inherit">
-                  Add Step
-                </Button>
 
-                <Button type="submit" variant="contained" fullWidth
-                  disabled={isUploading} sx={styles.button}>
-                  {isUploading ? "Uploading..." : "Share Recipe"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                  <div style={styles.row}>
+                    <FormControl fullWidth required sx={styles.input}>
+                      <InputLabel>Difficulty *</InputLabel>
+                      <Select
+                        label="Difficulty"
+                        name="difficulty"
+                        value={recipe.difficulty}
+                        onChange={handleChange}
+                        required
+                      >
+                        <MenuItem value="Easy">Easy</MenuItem>
+                        <MenuItem value="Medium">Medium</MenuItem>
+                        <MenuItem value="Hard">Hard</MenuItem>
+                      </Select>
+                    </FormControl>
+
+                    <FormControl fullWidth sx={styles.input}>
+                      <InputLabel>Category</InputLabel>
+                      <Select
+                        label="Category"
+                        name="category"
+                        value={recipe.category}
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="Breakfast">Breakfast</MenuItem>
+                        <MenuItem value="Lunch">Lunch</MenuItem>
+                        <MenuItem value="Dinner">Dinner</MenuItem>
+                        <MenuItem value="Dessert">Dessert</MenuItem>
+                        <MenuItem value="Drinks">Drinks</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </div>
+
+                  <Autocomplete
+                    multiple
+                    freeSolo
+                    options={tagOptions}
+                    value={recipe.tags}
+                    onChange={(e, newValue) =>
+                      setRecipe({ ...recipe, tags: newValue })
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        label="Tags (optional)"
+                        placeholder="Add tags"
+                        sx={styles.input}
+                      />
+                    )}
+                  />
+
+                  {recipe.ingredients.map((ing, i) => (
+                    <div key={i} style={styles.row}>
+                      <TextField
+                        fullWidth
+                        label={`Ingredient ${i + 1}`}
+                        value={ing}
+                        onChange={(e) =>
+                          handleListChange(i, e.target.value, "ingredients")
+                        }
+                        sx={styles.input}
+                      />
+                      <IconButton onClick={() => removeField(i, "ingredients")}>
+                        <RemoveCircle />
+                      </IconButton>
+                    </div>
+                  ))}
+                  <Button
+                    onClick={() => addField("ingredients")}
+                    startIcon={<AddCircle />}
+                    variant="outlined"
+                    color="inherit"
+                  >
+                    Add Ingredient
+                  </Button>
+
+                  {recipe.instructions.map((step, i) => (
+                    <div key={i} style={styles.row}>
+                      <TextField
+                        fullWidth
+                        label={`Step ${i + 1}`}
+                        value={step}
+                        onChange={(e) =>
+                          handleListChange(i, e.target.value, "instructions")
+                        }
+                        sx={styles.input}
+                      />
+                      <IconButton
+                        onClick={() => removeField(i, "instructions")}
+                      >
+                        <RemoveCircle />
+                      </IconButton>
+                    </div>
+                  ))}
+                  <Button
+                    onClick={() => addField("instructions")}
+                    startIcon={<AddCircle />}
+                    variant="outlined"
+                    color="inherit"
+                  >
+                    Add Step
+                  </Button>
+
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    disabled={isUploading}
+                    sx={styles.button}
+                  >
+                    {isUploading ? "Uploading..." : "Share Recipe"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </Box>
         </Box>
       </Box>
-    </Box>
     </>
   );
 }
@@ -473,32 +562,32 @@ export default UploadRecipePage;
 const styles = {
   background: {
     backgroundImage: 'url("/background.jpg")',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    minHeight: '100vh',
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    minHeight: "100vh",
   },
   overlay: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'start',
-    paddingTop: '30px',
-    paddingBottom: '30px',
+    backgroundColor: "rgba(255, 255, 255, 0.85)",
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "start",
+    paddingTop: "30px",
+    paddingBottom: "30px",
   },
   wrapper: {
-    width: '100%',
-    maxWidth: '600px',
-    margin: 'auto',
-    padding: '0 20px'
+    width: "100%",
+    maxWidth: "600px",
+    margin: "auto",
+    padding: "0 20px",
   },
   card: {
     padding: 2,
     borderRadius: 3,
     boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
     marginBottom: "16px",
-    backgroundColor: "#fafafa"
+    backgroundColor: "#fafafa",
   },
   uploadPlaceholder: {
     display: "flex",
@@ -515,26 +604,26 @@ const styles = {
     borderRadius: "16px",
     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
     border: "2px solid #ff6600",
-    marginBottom: "12px"
+    marginBottom: "12px",
   },
   title: {
     fontWeight: "bold",
     color: "#ff6600",
     marginBottom: "20px",
-    fontFamily: "'Roboto', sans-serif"
+    fontFamily: "'Roboto', sans-serif",
   },
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: "15px"
+    gap: "15px",
   },
   row: {
     display: "flex",
     gap: "10px",
-    alignItems: "center"
+    alignItems: "center",
   },
   input: {
-    borderRadius: "8px"
+    borderRadius: "8px",
   },
   button: {
     backgroundColor: "#ff6600",
@@ -542,11 +631,11 @@ const styles = {
     fontWeight: "bold",
     borderRadius: "8px",
     "&:hover": {
-      backgroundColor: "#e05500"
-    }
+      backgroundColor: "#e05500",
+    },
   },
   imageUpload: {
-    textAlign: "center"
+    textAlign: "center",
   },
   uploadBox: {
     border: "2px dashed #ccc",
@@ -566,6 +655,6 @@ const styles = {
     width: "100%",
     maxHeight: 200,
     objectFit: "cover",
-    borderRadius: "10px"
-  }
+    borderRadius: "10px",
+  },
 };

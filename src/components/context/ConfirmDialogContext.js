@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from "react";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Button,
-  Typography
-} from '@mui/material';
+  Typography,
+} from "@mui/material";
 
 const ConfirmDialogContext = createContext();
 
@@ -17,9 +17,9 @@ export function useConfirmDialog() {
 export function ConfirmDialogProvider({ children }) {
   const [dialogConfig, setDialogConfig] = useState({
     open: false,
-    title: '',
-    message: '',
-    onConfirm: null
+    title: "",
+    message: "",
+    onConfirm: null,
   });
 
   const showConfirmDialog = ({ title, message, onConfirm }) => {
@@ -27,12 +27,12 @@ export function ConfirmDialogProvider({ children }) {
       open: true,
       title,
       message,
-      onConfirm
+      onConfirm,
     });
   };
 
   const handleClose = () => {
-    setDialogConfig(prev => ({ ...prev, open: false }));
+    setDialogConfig((prev) => ({ ...prev, open: false }));
   };
 
   const handleConfirm = () => {
@@ -45,7 +45,7 @@ export function ConfirmDialogProvider({ children }) {
       {children}
       <Dialog open={dialogConfig.open} onClose={handleClose}>
         <DialogTitle>
-          <Typography sx={{ color: '#ff6600', fontWeight: 'bold' }}>
+          <Typography sx={{ color: "#ff6600", fontWeight: "bold" }}>
             {dialogConfig.title}
           </Typography>
         </DialogTitle>
@@ -53,13 +53,13 @@ export function ConfirmDialogProvider({ children }) {
           <Typography>{dialogConfig.message}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} sx={{ color: '#555' }}>
+          <Button onClick={handleClose} sx={{ color: "#555" }}>
             Cancel
           </Button>
           <Button
             variant="contained"
             color="error"
-            sx={{ backgroundColor: '#ff6600' }}
+            sx={{ backgroundColor: "#ff6600" }}
             onClick={handleConfirm}
           >
             Confirm

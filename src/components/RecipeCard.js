@@ -1,23 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-  Card, CardMedia, CardContent, Typography, Box, Avatar,
-  IconButton, Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, Button
-} from '@mui/material';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import GroupsIcon from '@mui/icons-material/Groups';
-import { useNavigate } from 'react-router-dom';
-import CommentSection from './Comments';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Box,
+  Avatar,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  List,
+  ListItem,
+  ListItemText,
+  Button,
+} from "@mui/material";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import GroupsIcon from "@mui/icons-material/Groups";
+import { useNavigate } from "react-router-dom";
+import CommentSection from "./Comments";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
   const navigate = useNavigate();
-  const userId = localStorage.getItem('userId');
-  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
 
   const [likes, setLikes] = useState(recipe.likes || 0);
   const [liked, setLiked] = useState(false);
@@ -29,16 +41,16 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
   useEffect(() => {
     if (!userId || imageOnly) return;
     fetch(`http://localhost:5000/api/likes/${recipe._id}/${userId}`)
-      .then(res => res.json())
-      .then(data => setLiked(data.liked))
+      .then((res) => res.json())
+      .then((data) => setLiked(data.liked))
       .catch(() => {});
   }, [recipe._id, userId, imageOnly]);
 
   useEffect(() => {
     if (imageOnly) return;
     fetch(`http://localhost:5000/api/comments/${recipe._id}`)
-      .then(res => res.json())
-      .then(data => setCommentsCount(data.length))
+      .then((res) => res.json())
+      .then((data) => setCommentsCount(data.length))
       .catch(() => {});
   }, [recipe._id, imageOnly]);
 
@@ -49,9 +61,9 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ recipe: recipe._id, user: userId })
+        body: JSON.stringify({ recipe: recipe._id, user: userId }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -63,7 +75,9 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
 
   const handleShowLikes = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/likes/users/${recipe._id}`);
+      const res = await fetch(
+        `http://localhost:5000/api/likes/users/${recipe._id}`,
+      );
       const data = await res.json();
       setLikeUsers(data.users || []);
       setShowLikes(true);
@@ -72,12 +86,17 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
 
   const getFirstMediaFile = (recipe) => {
     if (!recipe.media || recipe.media.length === 0) {
-      return { url: '/default-image.png', type: 'image' };
+      return { url: "/default-image.png", type: "image" };
     }
     const firstFile = recipe.media[0];
-    const isVideo = firstFile.endsWith('.mp4') || firstFile.endsWith('.mov') || firstFile.endsWith('.avi');
-    const url = firstFile.startsWith('http') ? firstFile : `http://localhost:5000${firstFile}`;
-    return { url, type: isVideo ? 'video' : 'image' };
+    const isVideo =
+      firstFile.endsWith(".mp4") ||
+      firstFile.endsWith(".mov") ||
+      firstFile.endsWith(".avi");
+    const url = firstFile.startsWith("http")
+      ? firstFile
+      : `http://localhost:5000${firstFile}`;
+    return { url, type: isVideo ? "video" : "image" };
   };
 
   if (imageOnly) {
@@ -94,8 +113,15 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
           lineHeight: 0,
         }}
       >
-        <Box sx={{ position: "relative", width: "100%", paddingTop: "65%", overflow: "hidden" }}>
-          {type === 'image' ? (
+        <Box
+          sx={{
+            position: "relative",
+            width: "100%",
+            paddingTop: "65%",
+            overflow: "hidden",
+          }}
+        >
+          {type === "image" ? (
             <CardMedia
               component="img"
               image={url}
@@ -113,7 +139,9 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
                 "&:hover": { transform: "scale(1.05)" },
               }}
               onClick={() => navigate(`/recipe/${recipe._id}`)}
-              onError={(e) => { e.target.src = "/default-image.png"; }}
+              onError={(e) => {
+                e.target.src = "/default-image.png";
+              }}
             />
           ) : (
             <video
@@ -134,7 +162,9 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
                 cursor: "pointer",
               }}
               onClick={() => navigate(`/recipe/${recipe._id}`)}
-              onError={(e) => { e.target.poster = "/default-image.png"; }}
+              onError={(e) => {
+                e.target.poster = "/default-image.png";
+              }}
             />
           )}
         </Box>
@@ -146,55 +176,74 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
 
   return (
     <Card sx={styles.card}>
-      {type === 'image' ? (
+      {type === "image" ? (
         <CardMedia
           component="img"
           image={url}
           alt={recipe.title}
           sx={styles.image}
           onClick={() => navigate(`/recipe/${recipe._id}`)}
-          onError={(e) => { e.target.src = "/default-image.png"; }}
+          onError={(e) => {
+            e.target.src = "/default-image.png";
+          }}
         />
       ) : (
         <video
           src={url}
           controls
-          style={{ ...styles.image, objectFit: 'contain' }}
+          style={{ ...styles.image, objectFit: "contain" }}
           onClick={() => navigate(`/recipe/${recipe._id}`)}
-          onError={(e) => { e.target.poster = "/default-image.png"; }}
+          onError={(e) => {
+            e.target.poster = "/default-image.png";
+          }}
         />
       )}
 
-      <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+      <CardContent
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
         <Box>
           <Box sx={styles.uploaderBox}>
             <Avatar
               src={
-                recipe.user?.profileImage?.startsWith('/uploads')
+                recipe.user?.profileImage?.startsWith("/uploads")
                   ? `http://localhost:5000${recipe.user.profileImage}`
-                  : recipe.user?.profileImage || '/default-user.png'
+                  : recipe.user?.profileImage || "/default-user.png"
               }
             />
             <Box sx={{ ml: 1 }}>
-              <Typography variant="subtitle2" fontWeight="bold">{uploader}</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <CalendarTodayIcon sx={{ fontSize: 16, color: 'gray', mr: 0.5 }} />
+              <Typography variant="subtitle2" fontWeight="bold">
+                {uploader}
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <CalendarTodayIcon
+                  sx={{ fontSize: 16, color: "gray", mr: 0.5 }}
+                />
                 <Typography variant="caption" color="text.secondary">
-                  {recipe.createdAt ? new Date(recipe.createdAt).toLocaleDateString() : 'Unknown Date'}
+                  {recipe.createdAt
+                    ? new Date(recipe.createdAt).toLocaleDateString()
+                    : "Unknown Date"}
                 </Typography>
               </Box>
               {recipe.location && (
-                <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                  <LocationOnIcon sx={{ fontSize: 16, color: 'gray', mr: 0.5 }} />
+                <Box sx={{ display: "flex", alignItems: "center", mt: 0.5 }}>
+                  <LocationOnIcon
+                    sx={{ fontSize: 16, color: "gray", mr: 0.5 }}
+                  />
                   <Typography
                     variant="caption"
                     color="text.secondary"
                     noWrap
                     sx={{
-                      maxWidth: '120px',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
+                      maxWidth: "120px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
                     }}
                   >
                     {recipe.location}
@@ -217,12 +266,12 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
             color="text.secondary"
             sx={{
               mb: 1,
-              height: '40px',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              display: '-webkit-box',
+              height: "40px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              display: "-webkit-box",
               WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical'
+              WebkitBoxOrient: "vertical",
             }}
           >
             {recipe.description || "No description provided"}
@@ -244,7 +293,11 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
                 {recipe.tags.length > 3 && (
                   <Typography
                     variant="caption"
-                    sx={{ ...styles.tag, backgroundColor: '#ff8a33', color: '#fff' }}
+                    sx={{
+                      ...styles.tag,
+                      backgroundColor: "#ff8a33",
+                      color: "#fff",
+                    }}
                     onClick={() => navigate(`/recipe/${recipe._id}`)}
                   >
                     +{recipe.tags.length - 3}
@@ -254,7 +307,11 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
             ) : (
               <Typography
                 variant="caption"
-                sx={{ ...styles.tag, backgroundColor: '#f0f0f0', color: '#999' }}
+                sx={{
+                  ...styles.tag,
+                  backgroundColor: "#f0f0f0",
+                  color: "#999",
+                }}
               >
                 No tags
               </Typography>
@@ -264,20 +321,28 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
           <Box sx={styles.recipeInfo}>
             <Box sx={styles.infoItem}>
               <AccessTimeIcon sx={{ fontSize: 16 }} />
-              <Typography variant="caption" sx={{ ml: 0.5 }}>{recipe.cookingTime || 25} mins</Typography>
+              <Typography variant="caption" sx={{ ml: 0.5 }}>
+                {recipe.cookingTime || 25} mins
+              </Typography>
             </Box>
             <Box sx={styles.infoItem}>
               <GroupsIcon sx={{ fontSize: 16 }} />
-              <Typography variant="caption" sx={{ ml: 0.5 }}>{recipe.servings || 4} servings</Typography>
+              <Typography variant="caption" sx={{ ml: 0.5 }}>
+                {recipe.servings || 4} servings
+              </Typography>
             </Box>
           </Box>
         </Box>
 
-        <Box sx={{ marginTop: 'auto', paddingTop: '0px' }}>
+        <Box sx={{ marginTop: "auto", paddingTop: "0px" }}>
           <Box sx={styles.actions}>
             <Box sx={styles.iconGroup}>
               <IconButton onClick={handleLike} sx={styles.iconButton}>
-                {liked ? <FavoriteIcon sx={styles.iconSvg} /> : <FavoriteBorderIcon sx={styles.iconSvg} />}
+                {liked ? (
+                  <FavoriteIcon sx={styles.iconSvg} />
+                ) : (
+                  <FavoriteBorderIcon sx={styles.iconSvg} />
+                )}
               </IconButton>
               <Typography variant="body2">{likes}</Typography>
             </Box>
@@ -289,7 +354,10 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
             </Box>
 
             <Box sx={styles.iconGroup}>
-              <IconButton onClick={() => setShowComments(!showComments)} sx={styles.iconButton}>
+              <IconButton
+                onClick={() => setShowComments(!showComments)}
+                sx={styles.iconButton}
+              >
                 <ChatBubbleOutlineIcon sx={styles.iconSvg} />
               </IconButton>
               <Typography variant="body2">{commentsCount}</Typography>
@@ -306,7 +374,9 @@ function RecipeCard({ recipe, uploader = "Anonymous", imageOnly = false }) {
           {likeUsers.length > 0 ? (
             <List>
               {likeUsers.map((user, i) => (
-                <ListItem key={i}><ListItemText primary={user} /></ListItem>
+                <ListItem key={i}>
+                  <ListItemText primary={user} />
+                </ListItem>
               ))}
             </List>
           ) : (
@@ -332,7 +402,7 @@ const styles = {
     boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.08)",
     backgroundColor: "#fff",
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   image: {
     width: "100%",
@@ -340,56 +410,56 @@ const styles = {
     objectFit: "cover",
     objectPosition: "center",
     cursor: "pointer",
-    aspectRatio: "3/2"
+    aspectRatio: "3/2",
   },
   uploaderBox: {
     display: "flex",
     alignItems: "center",
-    marginBottom: 1
+    marginBottom: 1,
   },
   title: {
     fontWeight: "bold",
     marginTop: 1,
-    height: '28px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    display: '-webkit-box',
+    height: "28px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "-webkit-box",
     WebkitLineClamp: 1,
-    WebkitBoxOrient: 'vertical'
+    WebkitBoxOrient: "vertical",
   },
   recipeInfo: {
     display: "flex",
     gap: 2,
     marginTop: 1,
-    marginBottom: 0
+    marginBottom: 0,
   },
   infoItem: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
   },
   actions: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 0
+    marginTop: 0,
   },
   iconGroup: {
     display: "flex",
     alignItems: "center",
-    gap: "4px"
+    gap: "4px",
   },
   iconButton: {
-    color: "#ff6600"
+    color: "#ff6600",
   },
   iconSvg: {
-    fontSize: 20
+    fontSize: 20,
   },
   tagsBox: {
     display: "flex",
     flexWrap: "nowrap",
     gap: "6px",
     marginBottom: "8px",
-    overflow: "hidden"
+    overflow: "hidden",
   },
   tag: {
     backgroundColor: "#f2f2f2",
@@ -398,6 +468,6 @@ const styles = {
     padding: "4px 8px",
     fontWeight: "bold",
     fontSize: "0.75rem",
-    cursor: "pointer"
-  }
+    cursor: "pointer",
+  },
 };
